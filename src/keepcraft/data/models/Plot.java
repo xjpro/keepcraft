@@ -108,17 +108,6 @@ public class Plot {
         return intersects(new WorldPoint(loc), protection.getTriggerRadius());
     }
 
-    public boolean isWithinChestLevel(Location loc) {
-        if (protection == null) {
-            return true;
-        }
-
-        double maxY = this.getLocation().y + protection.getChestLevel();
-        double minY = this.getLocation().y - protection.getChestLevel();
-
-        return (loc.getY() <= maxY && loc.getY() >= minY);
-    }
-
     public int getId() {
         return id;
     }
@@ -179,6 +168,8 @@ public class Plot {
             return true;
         }
 
+        /*
+        1/17/2017 - removed this nonsense that created TNT windows when enough people were on 
         double attackerCount = 0;
         double defenderCount = 0;
 
@@ -196,7 +187,7 @@ public class Plot {
 
         if (defenderCount < ServerConditions.getMinimumDefenderCount() && lastExplosionSeconds > 600) {
             return false;
-        }
+        }*/
 
         return true;
     }
@@ -239,21 +230,6 @@ public class Plot {
 
     public long getLastExplosion() {
         return lastExplosion;
-    }
-
-    public void resetLastExplosion() {
-        int defenderCount = 0;
-        for (User user : DataCache.retrieveAll(User.class)) {
-            if (user.isAdmin()) {
-                continue; // admins don't count for this
-            } else if (isFactionProtected(user.getFaction())) {
-                defenderCount++; // The plot under attack matches this user's plot, they are a defender
-            }
-        }
-
-        if (defenderCount >= ServerConditions.getMinimumDefenderCount()) {
-            lastExplosion = System.currentTimeMillis();
-        }
     }
 
     public String getInfo() {

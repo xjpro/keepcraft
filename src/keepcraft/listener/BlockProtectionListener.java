@@ -56,26 +56,6 @@ public class BlockProtectionListener implements Listener {
         if (!canModify(user, block)) {
             event.setCancelled(true);
             event.setBuild(false);
-        } else {
-            switch (event.getBlock().getType()) {
-                case CHEST:
-                case STORAGE_MINECART:
-                case POWERED_MINECART:
-                case DISPENSER:
-                case FURNACE:
-                case IRON_BLOCK:
-                case GOLD_BLOCK:
-                case DIAMOND_BLOCK:
-                case IRON_ORE:
-                case GOLD_ORE:
-                case DIAMOND_ORE:
-                    if (!plot.isWithinChestLevel(block.getLocation())) {
-                        event.setCancelled(true);
-                        event.setBuild(false);
-                        p.sendMessage(Chat.Failure + "Containers and ore cannot be placed at this height");
-                    }
-                    break;
-            }
         }
     }
 

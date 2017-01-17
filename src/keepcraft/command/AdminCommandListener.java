@@ -67,28 +67,8 @@ public class AdminCommandListener extends CommandListener {
                         + UserPrivilege.asString(newPrivilege) + " status");
                 return true;
             }
-        } // Set defender count
-        else if (commandName.equals("defender")) {
-            if (Privilege.canModifyServerConditions(sender)) {
-                if (args.length == 1) {
-                    int defenderCount;
-                    try {
-                        defenderCount = Integer.parseInt(args[0]);
-                    } catch (NumberFormatException e) {
-                        // invalid input
-                        commandSender.sendMessage(Chat.Failure + "Defender count must be an integer");
-                        return false;
-                    }
-
-                    ServerConditions.setMinimumDefenderCount(defenderCount);
-                    commandSender.sendMessage(Chat.Success + "Defenders required for TNT use set to " + defenderCount);
-                    return true;
-                } else {
-                    commandSender.sendMessage(Chat.RequestedInfo + "Defenders required for TNT use is currently " + ServerConditions.getMinimumDefenderCount());
-                    return true;
-                }
-            }
-        } // Set map radius
+        }
+        // Set map radius
         else if (commandName.equals("setradius") && args.length == 1) {
             if (Privilege.canSetSpawn(sender)) {
                 double radius;

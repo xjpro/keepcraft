@@ -183,28 +183,6 @@ public class ActionListener implements Listener {
         }
     }
 
-    /* 1/17/2017 removed chest level rules
-    @EventHandler(priority = EventPriority.LOW)
-    public void onIntentoryOpen(InventoryOpenEvent event) {
-        Player p = (Player) event.getPlayer();
-        User user = DataCache.retrieve(User.class, p.getName());
-        if (user.isAdmin()) {
-            return;
-        }
-
-        InventoryHolder inventoryHolder = event.getInventory().getHolder();
-        if (inventoryHolder instanceof CraftStorageMinecart) {
-            Minecart minecart = (Minecart) inventoryHolder;
-            Location loc = minecart.getLocation();
-
-            Plot plot = ListenerHelper.getIntersectedPlot(loc, new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
-            if (plot != null && !plot.isWithinChestLevel(loc) && plot.isFactionProtected(user.getFaction())) {
-                event.setCancelled(true);
-                p.sendMessage(Chat.Failure + "Containers cannot be accessed at this height");
-            }
-        }
-    }*/
-
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         Player p = event.getPlayer();

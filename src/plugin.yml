@@ -50,9 +50,6 @@ commands:
     plottp:
         description: Teleport to a plot name
         usage: /plottop <plot name>
-    defender:
-        description: Set minimum defender count
-        usage: /defender
     dawn:
         description: Let there be light!
         usage: /dawn

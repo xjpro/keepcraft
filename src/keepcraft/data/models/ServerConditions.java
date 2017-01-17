@@ -23,8 +23,6 @@ public abstract class ServerConditions {
         loadSpawn(UserFaction.FactionBlue, world);
         loadSpawn(UserFaction.FactionGreen, world);
         loadSpawn(UserFaction.FactionGold, world);
-
-        getMinimumDefenderCount();
     }
 
     public static Location getCenterLocation() {
@@ -72,24 +70,6 @@ public abstract class ServerConditions {
     public static void setMapRadius(int value) {
         mapRadius = value;
         config.set("mapRadius", mapRadius);
-        save();
-    }
-
-    public static int getMinimumDefenderCount() {
-        if (minimumDefenderCount == -1) {
-            Integer count = (Integer) config.get("defenderCount");
-            if (count == null) {
-                setMinimumDefenderCount(2);
-            } else {
-                minimumDefenderCount = count;
-            }
-        }
-        return minimumDefenderCount;
-    }
-
-    public static void setMinimumDefenderCount(int value) {
-        minimumDefenderCount = value;
-        config.set("defenderCount", minimumDefenderCount);
         save();
     }
 
