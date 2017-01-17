@@ -1,6 +1,6 @@
 name: Keepcraft
-main: org.summit.keepcraft.Keepcraft
-version: 1.5
+main: keepcraft.Keepcraft
+version: 2
 commands:
     t:
         description: Send private message to user
