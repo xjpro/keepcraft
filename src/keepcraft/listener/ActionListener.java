@@ -39,7 +39,7 @@ public class ActionListener implements Listener {
         // Code for updating player's current plot
         Plot current = user.getCurrentPlot();
         Plot candidate = ListenerHelper.getIntersectedPlot(p.getLocation(),
-                new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
+                new ArrayList<>(DataCache.retrieveAll(Plot.class)));
 
         if (current != candidate) {
             if (current != null && candidate == null) {

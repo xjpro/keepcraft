@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import keepcraft.Chat;
 import keepcraft.Privilege;
+import keepcraft.Keepcraft;
 import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.ServerConditions;
@@ -18,7 +19,7 @@ public class AdminCommandListener extends CommandListener {
 
     private World world = null;
 
-    public void setWorld(World value) {
+    public void setWorld(World value) {        
         world = value;
     }
 
@@ -85,7 +86,12 @@ public class AdminCommandListener extends CommandListener {
                 commandSender.sendMessage(Chat.Success + "Set map radius to " + radius);
                 return true;
             }
-        } // Set a spawn
+        } 
+        else if (commandName.equals("reset")) {
+            Keepcraft.instance().reset();
+            return true;
+        }
+        // Set a spawn
         else if (commandName.equals("setspawn") && args.length == 1) {
             if (Privilege.canSetSpawn(sender)) {
                 int faction;

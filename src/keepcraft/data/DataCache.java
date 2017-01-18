@@ -22,7 +22,7 @@ public abstract class DataCache {
         plotDataManager = plotManager;
         lootBlockDataManager = lootBlockManager;
 
-        userCache = new HashMap<String, User>();
+        userCache = new HashMap<>();
         plotCache = plotDataManager.getAllData();
         lootBlockCache = lootBlockDataManager.getAllData();
     }

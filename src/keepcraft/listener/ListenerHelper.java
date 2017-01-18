@@ -43,7 +43,7 @@ public abstract class ListenerHelper {
     }
 
     public static List<Plot> getIntersectedPlots(Location location, List<Plot> allPlots) {
-        List<Plot> intersectedPlots = new ArrayList<Plot>();
+        List<Plot> intersectedPlots = new ArrayList<>();
         for (Plot plot : allPlots) {
             if (plot.intersectsRadius(location)) {
                 intersectedPlots.add(plot);

@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public abstract class ServerConditions {
 
     private static FileConfiguration config;
-    private static Map<Integer, Location> table = new HashMap<Integer, Location>();
+    private static Map<Integer, Location> table = new HashMap<>();
     private static int mapRadius = -1;
     private static int minimumDefenderCount = -1;
 
@@ -101,6 +101,7 @@ public abstract class ServerConditions {
         try {
             config.save("plugins/Keepcraft/config.yml");
         } catch (IOException e) {
+            System.err.println("could not load keepcraft config!");
         }
     }
 

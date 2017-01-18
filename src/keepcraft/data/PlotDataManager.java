@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
+import keepcraft.Keepcraft;
 import keepcraft.data.models.PlotProtection;
 
 public class PlotDataManager extends DataManager<Plot> {
@@ -98,7 +99,7 @@ public class PlotDataManager extends DataManager<Plot> {
                 logger.log(Level.INFO, String.format("(KC) Plot %s was found at (%s, %s, %s)", new Object[]{name, locX, locY, locZ}));
 
                 Plot plot = new Plot();
-                plot.setLocation(new WorldPoint("world", locX, locY, locZ));
+                plot.setLocation(new WorldPoint(Keepcraft.instance().getWorld().getName(), locX, locY, locZ));
                 plot.setId(id);
                 plot.setRadius(radius);
                 plot.setName(name);

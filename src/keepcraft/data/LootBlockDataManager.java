@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.Bukkit;
 import keepcraft.Keepcraft;
 import keepcraft.data.models.LootBlock;
 
@@ -58,14 +57,14 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
 
     @Override
     public Map<Object, LootBlock> getAllData() {
-        Map<Object, LootBlock> allData = new HashMap<Object, LootBlock>();
+        Map<Object, LootBlock> allData = new HashMap<>();
 
         Keepcraft.log("Beginning lookup of all loot blocks");
 
         try {
             PreparedStatement statement = database.createStatement("SELECT ROWID, LocX, LocY, LocZ, Status, Type, Output FROM lootBlocks");
             ResultSet result = statement.executeQuery();
-
+            
             while (result.next()) {
                 int id = result.getInt("ROWID");
                 int locX = result.getInt("LocX");
@@ -75,7 +74,7 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
                 int type = result.getInt("Type");
                 int output = result.getInt("Output");
 
-                LootBlock block = new LootBlock(id, Bukkit.getWorld("world").getBlockAt(locX, locY, locZ));
+                LootBlock block = new LootBlock(id, Keepcraft.instance().getWorld().getBlockAt(locX, locY, locZ));
                 block.setStatus(status);
                 block.setType(type);
                 block.setOutput(output);

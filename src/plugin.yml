@@ -35,6 +35,9 @@ commands:
     delete:
         description: Delete a user record
         usage: /delete <user name>
+    reset:
+        description: Reset world
+        usage: /reset
     setspawn:
         description: Set a team spawn
         usage: /setspawn <faction #>

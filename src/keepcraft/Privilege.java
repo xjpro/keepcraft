@@ -30,7 +30,7 @@ public abstract class Privilege {
     }
 
     public static boolean canInteract(User user, Location modifyingLocation, Plot plot) {
-        Location center = ServerConditions.getCenterLocation();
+        Location center = null;//ServerConditions.getCenterLocation();
         if (center != null && center.distance(modifyingLocation) > ServerConditions.getMapRadius()) {
             return false; // maximum map size exceeded
         }

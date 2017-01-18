@@ -1,7 +1,6 @@
 package keepcraft;
 
 import keepcraft.listener.UserListener;
-import keepcraft.listener.ListenerHelper;
 import keepcraft.listener.ChatListener;
 import keepcraft.listener.WorldEntityListener;
 import keepcraft.listener.StormListener;
@@ -25,10 +24,8 @@ import keepcraft.command.PlotCommandListener;
 import keepcraft.command.ChatCommandListener;
 import keepcraft.command.CommandListener;
 import keepcraft.command.LootBlockCommandListener;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.Plot;
 import org.bukkit.World;
@@ -46,12 +43,32 @@ public class Keepcraft extends JavaPlugin {
     private final UserDataManager userDataManager = new UserDataManager(database);
     private final DataManager<Plot> plotDataManager = new PlotDataManager(database);
     private final DataManager<LootBlock> lootBlockDataManager = new LootBlockDataManager(database);
+    private World world;
 
     @Override
     public void onEnable() {
         DataCache.init(userDataManager, plotDataManager, lootBlockDataManager);
 
-        World world = this.getServer().getWorld("world");
+        world = this.getServer().getWorlds()
+                .stream()
+                .filter((predicate) -> {
+                    return !predicate.getName().contains("_");
+                })
+                .sorted((o1, o2) -> {
+                    String world1Number = o1.getName().replace("world", "");
+                    String world2Number = o2.getName().replace("world", "");
+                    int w1 = world1Number.equals("") ? 0 : Integer.parseInt(world1Number);
+                    int w2 = world2Number.equals("") ? 0 : Integer.parseInt(world2Number);
+                    if (w1 == w2) {
+                        return 0;
+                    } else if (w1 < w2) {
+                        return 1;
+                    }
+                    return -1;
+                })
+                .findFirst()
+                .get();
+
         ServerConditions.init(this.getConfig(), world);
         Bukkit.getServer().setSpawnRadius(0);
 
@@ -85,10 +102,10 @@ public class Keepcraft extends JavaPlugin {
         // Admin commands
         AdminCommandListener adminCommandListener = new AdminCommandListener();
         adminCommandListener.setWorld(world);
-        String[] adminCommands = {"promote", "demote", "delete", "setspawn", "defender", "setfaction", "setradius",
+        String[] adminCommands = {"promote", "demote", "delete", "reset", "setspawn", "setfaction", "setradius",
             "plottp", "dawn", "noon", "dusk"};
-        for (int i = 0; i < adminCommands.length; i++) {
-            getCommand(adminCommands[i]).setExecutor(adminCommandListener);
+        for (String adminCommand : adminCommands) {
+            getCommand(adminCommand).setExecutor(adminCommandListener);
         }
 
         FactionCommandListener factionCommandListener = new FactionCommandListener();
@@ -128,6 +145,16 @@ public class Keepcraft extends JavaPlugin {
 
     public static Keepcraft instance() {
         return instance;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void reset() {
+        WorldSetter setter = new WorldSetter();
+        world = setter.reset(world);
+        ServerConditions.init(this.getConfig(), world);
     }
 
     public static FileConfiguration config() {
