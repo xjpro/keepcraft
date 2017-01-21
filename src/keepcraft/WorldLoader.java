@@ -1,6 +1,8 @@
 package keepcraft;
 
-import org.bukkit.Server;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -8,7 +10,7 @@ import java.util.stream.Stream;
 
 
 public abstract class WorldLoader {
-	public static void loadLatest(Server server) {
+	public static World loadLatest() {
 		File file = new File(".");
 		String[] allDirectories = file.list(new FilenameFilter() {
 			@Override
@@ -22,6 +24,6 @@ public abstract class WorldLoader {
 				.reduce((a, b) -> b) // reduce to last element
 				.get();
 
-		Keepcraft.log(lastWorldDirectory);
+		return Bukkit.getServer().createWorld(new WorldCreator(lastWorldDirectory));
 	}
 }

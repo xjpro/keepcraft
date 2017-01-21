@@ -2,6 +2,8 @@ package keepcraft;
 
 import java.util.List;
 import java.util.Random;
+
+import keepcraft.data.models.UserFaction;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -13,40 +15,60 @@ import org.bukkit.entity.Player;
 public class WorldSetter {
 
     public World reset(World currentWorld) {
-//- Removes all player data in prep for team reset
-//- Reset map with new seed
-
-        // Unload existing world
-        String currentWorldNameNumber = currentWorld.getName().replace("world", "");
-        int currentWorldNumber = currentWorldNameNumber.equals("") ? 0 : Integer.parseInt(currentWorldNameNumber);
-        
         Server server = Bukkit.getServer();
-        server.unloadWorld(currentWorld, true); // save & unload old world
-        
+
+        String currentWorldNameNumber = currentWorld.getName().replace("world", "");
+        int currentWorldNumber = currentWorldNameNumber.length() == 0 ? 0 : Integer.parseInt(currentWorldNameNumber);
+
         // Create new world
-        WorldCreator creator = (new WorldCreator("world" + (currentWorldNumber+1)))
+        WorldCreator creator = (new WorldCreator("world" + (currentWorldNumber + 1)))
                 .seed(new Random().nextInt())
                 .type(WorldType.NORMAL)
                 .environment(World.Environment.NORMAL);
         World newWorld = server.createWorld(creator);
 
-        // Move players over
-        List<Player> playersInWorld = currentWorld.getPlayers();
-        playersInWorld.stream().forEach((player) -> {
-            player.teleport(new Location(newWorld, 0, 64, 0));
-        });
-        
-        // Have to change the server.properties to be the new world... or rethink this and map the new world named "world" always
+        // Setup new world with plots
+        setBase(new Location(newWorld, 500, 64, 500), UserFaction.FactionRed);
+        setBase(new Location(newWorld, -500, 64, -500), UserFaction.FactionBlue);
+
         newWorld.save();
 
-//- Always places red base at 500,500
-//- Always places blue base at -500,-500
-//- Completely flattens both base areas, replaces all water spots with dirt  (probably a bit further than the plot size so no easy jump-in areas)
-//- Sets team plot area of 75
-//- Sets admin plot area of 10 (for spawn)
-//- Sets spawn points at center of plot area
-//- Opens server
+        // Reset players
+        List<Player> playersInWorld = currentWorld.getPlayers();
+        playersInWorld.forEach(player -> {
+            // Remove all player data
+            // Move players over
+            player.teleport(new Location(newWorld, 0, 64, 0));
+        });
 
-return newWorld;
+        // Unload old world
+        server.unloadWorld(currentWorld, true); // save & unload old world
+
+        return newWorld;
+    }
+
+    private void setBase(Location location, int faction) {
+
+
+        // Flatten things out
+        // Replace water with dirt
+        // Set team plot of 75
+        // Set admin plot
+        // Set spawn
+
+    }
+
+    private void flattenArea(Location center, int radius) {
+        int centerX = center.getBlockX();
+        int centerY = center.getBlockY();
+        for (int x = centerX - radius; x <= centerX; x++) {
+            for (int y = centerY - radius; y <= centerY; y++) {
+                if ((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY) <= radius * radius) {
+                    int otherX = centerX - (x - centerX);
+                    int otherY = centerY - (y - centerY);
+                    // (x, y), (x, otherY), (otherX , y), (otherX, otherY) are in the circle
+                }
+            }
+        }
     }
 }

@@ -1,15 +1,6 @@
 package keepcraft;
 
-import keepcraft.listener.UserListener;
-import keepcraft.listener.ChatListener;
-import keepcraft.listener.WorldEntityListener;
-import keepcraft.listener.StormListener;
-import keepcraft.listener.BlockProtectionListener;
-import keepcraft.listener.CombatListener;
-import keepcraft.listener.LootBlockListener;
-import keepcraft.listener.ChunkListener;
-import keepcraft.listener.ExplosionListener;
-import keepcraft.listener.ActionListener;
+import keepcraft.listener.*;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.Database;
 import keepcraft.data.DataCache;
@@ -49,33 +40,13 @@ public class Keepcraft extends JavaPlugin {
     public void onEnable() {
         DataCache.init(userDataManager, plotDataManager, lootBlockDataManager);
 
-        WorldLoader.loadLatest(this.getServer());
-
-        world = this.getServer().getWorlds()
-                .stream()
-                .filter((predicate) -> {
-                    return !predicate.getName().contains("_");
-                })
-                .sorted((o1, o2) -> {
-                    String world1Number = o1.getName().replace("world", "");
-                    String world2Number = o2.getName().replace("world", "");
-                    int w1 = world1Number.equals("") ? 0 : Integer.parseInt(world1Number);
-                    int w2 = world2Number.equals("") ? 0 : Integer.parseInt(world2Number);
-                    if (w1 == w2) {
-                        return 0;
-                    } else if (w1 < w2) {
-                        return 1;
-                    }
-                    return -1;
-                })
-                .findFirst()
-                .get();
-
+        world = WorldLoader.loadLatest();
         ServerConditions.init(this.getConfig(), world);
         Bukkit.getServer().setSpawnRadius(0);
 
         PluginManager manager = this.getServer().getPluginManager();
 
+        manager.registerEvents(new PlayerWorldListener(), this);
         manager.registerEvents(new UserListener(), this);
         manager.registerEvents(new ActionListener(), this);
         manager.registerEvents(new ChatListener(), this);
@@ -149,8 +120,8 @@ public class Keepcraft extends JavaPlugin {
         return instance;
     }
 
-    public World getWorld() {
-        return world;
+    public static World getWorld() {
+        return instance.world;
     }
 
     public void reset() {
