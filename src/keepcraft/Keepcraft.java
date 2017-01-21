@@ -49,6 +49,8 @@ public class Keepcraft extends JavaPlugin {
     public void onEnable() {
         DataCache.init(userDataManager, plotDataManager, lootBlockDataManager);
 
+        WorldLoader.loadLatest(this.getServer());
+
         world = this.getServer().getWorlds()
                 .stream()
                 .filter((predicate) -> {
