@@ -183,4 +183,10 @@ public abstract class DataCache {
         return true;
     }
 
+    public static void clear() {
+        lootBlockCache.clear();
+        plotCache.clear();
+        userCache.clear();
+    }
+
 }

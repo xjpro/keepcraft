@@ -1,6 +1,5 @@
 package keepcraft;
 
-import com.google.common.collect.ImmutableList;
 import keepcraft.listener.*;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.Database;
@@ -17,15 +16,15 @@ import keepcraft.command.ChatCommandListener;
 import keepcraft.command.CommandListener;
 import keepcraft.command.LootBlockCommandListener;
 
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.Plot;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import keepcraft.data.models.LootBlock;
@@ -129,22 +128,34 @@ public class Keepcraft extends JavaPlugin {
     public void reset() {
         Server server = Bukkit.getServer();
 
+        boolean originallyWhiteListed = server.hasWhitelist();
+
+        // Turn on white listing and remove everyone so nobody can join while reset is in progress
+        server.setWhitelist(true);
+        Set<OfflinePlayer> whitelistedPlayers = server.getWhitelistedPlayers();
+        whitelistedPlayers.forEach(player -> {
+            player.setWhitelisted(false);
+        });
+
         // Kick everyone
-        List<Player> onlinePlayers = ImmutableList.copyOf(server.getOnlinePlayers());
-        onlinePlayers.forEach(player -> {
-            // Remove players
-            player.kickPlayer("World is resetting...");
+        server.getOnlinePlayers().forEach(player -> {
+            player.kickPlayer("World is resetting, please rejoin in 15 seconds...");
         });
 
         // Clean database
         plotDataManager.truncate();
         lootBlockDataManager.truncate();
         userDataManager.deleteNonAdminUserData();
+        DataCache.clear();
 
         WorldSetter setter = new WorldSetter();
         world = setter.reset(world);
-        //ServerConditions.setWorld()
-        //ServerConditions.init(this.getConfig(), world);
+
+        // Restore state of white list
+        server.setWhitelist(originallyWhiteListed);
+        whitelistedPlayers.forEach(player -> {
+            player.setWhitelisted(true);
+        });
     }
 
     public static FileConfiguration config() {
