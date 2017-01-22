@@ -12,7 +12,6 @@ public class Plot {
 
     public final static int DEFAULT_RADIUS = 10;
     public final static int DEFAULT_TRIGGER_RADIUS = 10;
-    public final static int DEFAULT_CHEST_LEVEL = 200;
 
     private WorldPoint location;
     private int id;
@@ -228,10 +227,6 @@ public class Plot {
         activeSiege = value;
     }
 
-    public long getLastExplosion() {
-        return lastExplosion;
-    }
-
     public String getInfo() {
         String info = name + Chat.RequestedInfo + " (Protection: " + protection.asString() + Chat.RequestedInfo + ")\n";
         info += "Radius: " + radius + "\n";
@@ -239,7 +234,6 @@ public class Plot {
         info += "Partial protection radius: " + protection.getPartialRadius() + "\n";
         info += "Admin Radius: " + protection.getAdminRadius() + "\n";
         info += "Trigger Radius: " + protection.getTriggerRadius() + "\n";
-        info += "Containers and ore placable +/- " + protection.getChestLevel() + " y units of center\n";
         info += "Capturable: " + protection.getCapturable() + "\n";
         info += "Capture time: " + protection.getCaptureTime() + "s\n";
         info += "Rally number: " + orderNumber + "\n";

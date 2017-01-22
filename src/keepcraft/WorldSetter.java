@@ -2,6 +2,7 @@ package keepcraft;
 
 import java.util.*;
 
+import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.UserFaction;
 import keepcraft.services.PlotService;
 import org.bukkit.*;
@@ -38,8 +39,8 @@ public class WorldSetter {
 
     private void setBase(Location location, int faction) {
         prepareBaseArea(location, 100);
-        //plotService.createTeamPlot(null, location, faction, 75);
-        //ServerConditions.setSpawn(faction, location);
+        plotService.createTeamPlot(null, location, faction, 75);
+        ServerConditions.setSpawn(faction, location);
     }
 
     private void prepareBaseArea(Location center, int radius) {

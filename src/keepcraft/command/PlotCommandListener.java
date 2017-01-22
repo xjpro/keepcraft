@@ -144,22 +144,7 @@ public class PlotCommandListener extends CommandListener {
                     }
                 }
             } // end radius
-            else if (args[0].equalsIgnoreCase("chest") && args.length == 2) {
-                if (privilege == UserPrivilege.ADMIN) {
-                    int chestLevel;
-                    try {
-                        chestLevel = Integer.parseInt(args[1]);
-                    } catch (Exception e) {
-                        Keepcraft.log("Error while changing chest level: " + e.getMessage());
-                        return false;
-                    }
-                    currentPlot.getProtection().setChestLevel(chestLevel);
-                    DataCache.update(currentPlot);
-
-                    commandSender.sendMessage(Chat.Success + "Plot chest level set to " + currentPlot.getProtection().getChestLevel());
-                    return true;
-                }
-            } // Capturable setting
+            // Capturable setting
             else if (args[0].equals("capture") && args.length > 1) {
                 if (args[1].equalsIgnoreCase("type")) {
                     if (Privilege.canModifyPlotData(sender, currentPlot)) {

@@ -25,7 +25,7 @@ public class PlotDataManager extends DataManager<Plot> {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, DateTimeSet)");
 			statement.execute();
 
-			statement = database.createStatement("CREATE TABLE IF NOT EXISTS plotProtections (PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, ChestLevel, Capturable, CaptureTime, CaptureEffect, SpawnId)");
+			statement = database.createStatement("CREATE TABLE IF NOT EXISTS plotProtections (PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId)");
 			statement.execute();
 		} catch (Exception e) {
 			logger.log(Level.INFO, String.format("(KC) Error initializing tables: %s", e.getMessage()));
@@ -53,13 +53,12 @@ public class PlotDataManager extends DataManager<Plot> {
 				putData(plot);
 			} else {
 				PlotProtection protection = plot.getProtection();
-				statement = database.createStatement("UPDATE plotProtections SET Type = ?, ProtectedRadius = ?, PartialRadius = ?, AdminRadius = ?, TriggerRadius = ?, ChestLevel = ?, Capturable = ?, CaptureTime = ?, CaptureEffect = ?, SpawnId = ? WHERE PlotId = ?");
+				statement = database.createStatement("UPDATE plotProtections SET Type = ?, ProtectedRadius = ?, PartialRadius = ?, AdminRadius = ?, TriggerRadius = ?, Capturable = ?, CaptureTime = ?, CaptureEffect = ?, SpawnId = ? WHERE PlotId = ?");
 				statement.setInt(1, protection.getType());
 				statement.setDouble(2, protection.getProtectedRadius());
 				statement.setDouble(3, protection.getPartialRadius());
 				statement.setDouble(4, protection.getAdminRadius());
 				statement.setDouble(5, protection.getTriggerRadius());
-				statement.setDouble(6, protection.getChestLevel());
 				statement.setBoolean(7, protection.getCapturable());
 				statement.setInt(8, protection.getCaptureTime());
 				statement.setInt(9, 0); // Capture effect
@@ -115,7 +114,7 @@ public class PlotDataManager extends DataManager<Plot> {
 			result.close();
 
 			// Now get protections, if it exists, which it really should
-			statement = database.createStatement("SELECT PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, ChestLevel, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plotProtections");
+			statement = database.createStatement("SELECT PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plotProtections");
 			result = statement.executeQuery();
 
 			while (result.next()) {
@@ -123,7 +122,6 @@ public class PlotDataManager extends DataManager<Plot> {
 				int type = result.getInt("Type");
 				double protectedRadius = result.getDouble("ProtectedRadius");
 				double partialRadius = result.getDouble("PartialRadius");
-				double chestLevel = result.getDouble("ChestLevel");
 				double adminRadius = result.getDouble("AdminRadius");
 				double triggerRadius = result.getDouble("TriggerRadius");
 				boolean capturable = result.getBoolean("Capturable");
@@ -135,7 +133,6 @@ public class PlotDataManager extends DataManager<Plot> {
 				protection.setType(type);
 				protection.setProtectedRadius(protectedRadius);
 				protection.setPartialRadius(partialRadius);
-				protection.setChestLevel(chestLevel);
 				protection.setAdminRadius(adminRadius);
 				protection.setTriggerRadius(triggerRadius);
 				protection.setCapturable(capturable);
@@ -176,13 +173,12 @@ public class PlotDataManager extends DataManager<Plot> {
 			statement.execute();
 
 			PlotProtection protection = plot.getProtection();
-			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, ChestLevel, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(last_insert_rowid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(last_insert_rowid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, protection.getType());
 			statement.setDouble(2, protection.getProtectedRadius());
 			statement.setDouble(3, protection.getPartialRadius());
 			statement.setDouble(4, protection.getAdminRadius());
 			statement.setDouble(5, protection.getTriggerRadius());
-			statement.setDouble(6, protection.getChestLevel());
 			statement.setBoolean(7, protection.getCapturable());
 			statement.setInt(8, protection.getCaptureTime());
 			statement.setInt(9, 0); // Capture effect

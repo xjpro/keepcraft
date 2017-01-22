@@ -14,7 +14,6 @@ public class PlotService {
         protection.setAdminRadius(Plot.DEFAULT_RADIUS);
         protection.setProtectedRadius(radius);
         protection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
-        protection.setChestLevel(Plot.DEFAULT_CHEST_LEVEL);
         protection.setCapturable(false);
 
         plot.setProtection(protection);
@@ -31,7 +30,6 @@ public class PlotService {
         protection.setAdminRadius(Plot.DEFAULT_RADIUS);
         protection.setProtectedRadius(radius);
         protection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
-        protection.setChestLevel(Plot.DEFAULT_CHEST_LEVEL);
         protection.setCapturable(false);
 
         plot.setProtection(protection);

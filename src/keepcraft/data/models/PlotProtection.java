@@ -17,7 +17,6 @@ public class PlotProtection {
 
     private final int plotId;
     private int type;
-    private double chestLevel;
     private double protectedRadius;
     private double partialRadius;
     private double adminRadius;
@@ -47,14 +46,6 @@ public class PlotProtection {
 
     public boolean isSpawn() {
         return type == PlotProtection.SPAWN;
-    }
-
-    public double getChestLevel() {
-        return chestLevel;
-    }
-
-    public void setChestLevel(double value) {
-        chestLevel = value;
     }
 
     public double getProtectedRadius() {
