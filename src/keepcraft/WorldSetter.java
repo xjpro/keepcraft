@@ -1,18 +1,19 @@
 package keepcraft;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.UserFaction;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
+import keepcraft.services.PlotService;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public class WorldSetter {
+
+    private PlotService plotService = new PlotService();
 
     public World reset(World currentWorld) {
         Server server = Bukkit.getServer();
@@ -48,25 +49,43 @@ public class WorldSetter {
     }
 
     private void setBase(Location location, int faction) {
-
-
-        // Flatten things out
-        // Replace water with dirt
-        // Set team plot of 75
-        // Set admin plot
-        // Set spawn
-
+        prepareBaseArea(location, 100);
+        plotService.createTeamPlot(null, location, faction, 75);
+        ServerConditions.setSpawn(faction, location);
     }
 
-    private void flattenArea(Location center, int radius) {
+    private void prepareBaseArea(Location center, int radius) {
+        World world = center.getWorld();
         int centerX = center.getBlockX();
-        int centerY = center.getBlockY();
+        int centerZ = center.getBlockZ();
         for (int x = centerX - radius; x <= centerX; x++) {
-            for (int y = centerY - radius; y <= centerY; y++) {
-                if ((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY) <= radius * radius) {
+            for (int z = centerZ - radius; z <= centerZ; z++) {
+                if ((x - centerX) * (x - centerX) + (z - centerZ) * (z - centerZ) <= radius * radius) {
                     int otherX = centerX - (x - centerX);
-                    int otherY = centerY - (y - centerY);
-                    // (x, y), (x, otherY), (otherX , y), (otherX, otherY) are in the circle
+                    int otherZ = centerZ - (z - centerZ);
+
+                    // (x, z), (x, otherZ), (otherX , z), (otherX, otherZ) are in the circle
+                    for (int y = 0; y <= 150; y++) {
+                        List<Block> blocks = Arrays.asList(
+                                world.getBlockAt(x, y, z),
+                                world.getBlockAt(x, y, otherZ),
+                                world.getBlockAt(otherX, y, z),
+                                world.getBlockAt(otherX, y, otherZ)
+                        );
+
+                        for (Block block : blocks) {
+                            if (block.getType() != Material.AIR) {
+                                // Flatten above 70
+                                if (y > 70) {
+                                    block.setType(Material.AIR);
+                                }
+                                // Remove water at 64
+                                else if (y <= 64 && block.getType() == Material.STATIONARY_WATER) {
+                                    block.setType(Material.DIRT);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

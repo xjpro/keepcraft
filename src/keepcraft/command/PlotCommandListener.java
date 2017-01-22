@@ -1,5 +1,6 @@
 package keepcraft.command;
 
+import keepcraft.services.PlotService;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,6 +16,8 @@ import keepcraft.data.models.UserPrivilege;
 import keepcraft.data.models.WorldPoint;
 
 public class PlotCommandListener extends CommandListener {
+
+    private PlotService plotService = new PlotService();
 
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
@@ -35,23 +38,7 @@ public class PlotCommandListener extends CommandListener {
                         name += args[i] + " ";
                     }
 
-                    Plot plot = new Plot();
-                    plot.setLocation(new WorldPoint("main", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
-                    plot.setRadius(Plot.DEFAULT_RADIUS);
-                    plot.setName(name.trim());
-                    plot.setSetterId(sender.getId());
-
-                    PlotProtection protection = new PlotProtection(-1);
-                    protection.setType(PlotProtection.ADMIN);
-                    protection.setAdminRadius(Plot.DEFAULT_RADIUS);
-                    protection.setProtectedRadius(Plot.DEFAULT_RADIUS);
-                    protection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
-                    protection.setChestLevel(Plot.DEFAULT_CHEST_LEVEL);
-                    protection.setCapturable(false);
-
-                    plot.setProtection(protection);
-
-                    DataCache.load(Plot.class, plot);
+                    plotService.createAdminPlot(sender, loc, name, Plot.DEFAULT_RADIUS);
                     commandSender.sendMessage(Chat.Success + "A new plot has been created");
                     return true;
                 }
