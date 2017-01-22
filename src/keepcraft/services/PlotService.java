@@ -45,7 +45,7 @@ public class PlotService {
         plot.setLocation(new WorldPoint("main", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
         plot.setRadius(radius);
         plot.setName(name.trim());
-        plot.setSetterId(setter.getId());
+        //plot.setSetterId(setter.getId()); todo use this
         return plot;
     }
 

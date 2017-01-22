@@ -26,4 +26,6 @@ public abstract class DataManager<T> {
     public abstract void putData(T value);
 
     public abstract void deleteData(T value);
+
+    public abstract void truncate();
 }

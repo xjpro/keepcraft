@@ -1,15 +1,11 @@
 package keepcraft;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.UserFaction;
 import keepcraft.services.PlotService;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 
 public class WorldSetter {
 
@@ -29,18 +25,10 @@ public class WorldSetter {
         World newWorld = server.createWorld(creator);
 
         // Setup new world with plots
-        setBase(new Location(newWorld, 500, 64, 500), UserFaction.FactionRed);
-        setBase(new Location(newWorld, -500, 64, -500), UserFaction.FactionBlue);
+        setBase(new Location(newWorld, 300, 64, 300), UserFaction.FactionRed);
+        setBase(new Location(newWorld, -300, 64, -300), UserFaction.FactionBlue);
 
         newWorld.save();
-
-        // Reset players
-        List<Player> playersInWorld = currentWorld.getPlayers();
-        playersInWorld.forEach(player -> {
-            // Remove all player data
-            // Move players over
-            player.teleport(new Location(newWorld, 0, 64, 0));
-        });
 
         // Unload old world
         server.unloadWorld(currentWorld, true); // save & unload old world
@@ -50,8 +38,8 @@ public class WorldSetter {
 
     private void setBase(Location location, int faction) {
         prepareBaseArea(location, 100);
-        plotService.createTeamPlot(null, location, faction, 75);
-        ServerConditions.setSpawn(faction, location);
+        //plotService.createTeamPlot(null, location, faction, 75);
+        //ServerConditions.setSpawn(faction, location);
     }
 
     private void prepareBaseArea(Location center, int radius) {
@@ -75,13 +63,18 @@ public class WorldSetter {
 
                         for (Block block : blocks) {
                             if (block.getType() != Material.AIR) {
-                                // Flatten above 70
-                                if (y > 70) {
+                                // Flatten above 75
+                                if (y > 75) {
                                     block.setType(Material.AIR);
                                 }
                                 // Remove water at 64
-                                else if (y <= 64 && block.getType() == Material.STATIONARY_WATER) {
-                                    block.setType(Material.DIRT);
+                                else if (y <= 64 && block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
+                                    if(y < 58) {
+                                        block.setType(Material.STONE);
+                                    }
+                                    else {
+                                        block.setType(Material.DIRT);
+                                    }
                                 }
                             }
                         }

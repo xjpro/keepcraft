@@ -187,6 +187,33 @@ public class UserDataManager extends DataManager<User> {
         }
     }
 
+    public void deleteNonAdminUserData() {
+        Keepcraft.log("Deleting non-admin user records");
+        try {
+            PreparedStatement statement
+                    = database.createStatement("DELETE FROM users WHERE Privilege != ?");
+            statement.setInt(1, UserPrivilege.ADMIN);
+            statement.execute();
+        } catch (Exception e) {
+            Keepcraft.log("Error non-admin user data: " + e.getMessage());
+        } finally {
+            database.close();
+        }
+    }
+
+    @Override
+    public void truncate() {
+        Keepcraft.log("Truncating users table");
+        try {
+            PreparedStatement statement = database.createStatement("TRUNCATE TABLE users");
+            statement.execute();
+        } catch (Exception e) {
+            Keepcraft.log("(KC) Error truncating users: " + e.getMessage());
+        } finally {
+            database.close();
+        }
+    }
+
     @Override
     public boolean exists(Object key) {
         String name;

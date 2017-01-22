@@ -1,5 +1,6 @@
 package keepcraft;
 
+import com.google.common.collect.ImmutableList;
 import keepcraft.listener.*;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.Database;
@@ -15,19 +16,21 @@ import keepcraft.command.PlotCommandListener;
 import keepcraft.command.ChatCommandListener;
 import keepcraft.command.CommandListener;
 import keepcraft.command.LootBlockCommandListener;
+
+import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.Plot;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import keepcraft.data.models.LootBlock;
 
 public class Keepcraft extends JavaPlugin {
-
-    private static Keepcraft instance = null;
 
     private static final Logger logger = Logger.getLogger("Minecraft");
     private final Database database = new Database("keepcraft.db");
@@ -108,7 +111,6 @@ public class Keepcraft extends JavaPlugin {
             getCommand(siegeCommands[i]).setExecutor(siegeCommandListener);
         }
 
-        instance = this;
         log("Keepcraft enabled");
     }
 
@@ -117,21 +119,36 @@ public class Keepcraft extends JavaPlugin {
     }
 
     public static Keepcraft instance() {
-        return instance;
+        return (Keepcraft) Bukkit.getPluginManager().getPlugin("Keepcraft");
     }
 
     public static World getWorld() {
-        return instance.world;
+        return instance().world;
     }
 
     public void reset() {
+        Server server = Bukkit.getServer();
+
+        // Kick everyone
+        List<Player> onlinePlayers = ImmutableList.copyOf(server.getOnlinePlayers());
+        onlinePlayers.forEach(player -> {
+            // Remove players
+            player.kickPlayer("World is resetting...");
+        });
+
+        // Clean database
+        plotDataManager.truncate();
+        lootBlockDataManager.truncate();
+        userDataManager.deleteNonAdminUserData();
+
         WorldSetter setter = new WorldSetter();
         world = setter.reset(world);
-        ServerConditions.init(this.getConfig(), world);
+        //ServerConditions.setWorld()
+        //ServerConditions.init(this.getConfig(), world);
     }
 
     public static FileConfiguration config() {
-        return instance.getConfig();
+        return instance().getConfig();
     }
 
     public static void log(String text) {

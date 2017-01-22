@@ -25,10 +25,6 @@ public abstract class ServerConditions {
         loadSpawn(UserFaction.FactionGold, world);
     }
 
-    public static Location getCenterLocation() {
-        return table.get(0);
-    }
-
     public static Location getSpawn(int faction) {
         return table.get(faction);
     }
