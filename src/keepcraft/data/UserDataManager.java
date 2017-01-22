@@ -187,15 +187,16 @@ public class UserDataManager extends DataManager<User> {
         }
     }
 
-    public void deleteNonAdminUserData() {
-        Keepcraft.log("Deleting non-admin user records");
+    public void resetNonAdminUserData() {
+        Keepcraft.log("Reset non-admin user records");
         try {
             PreparedStatement statement
-                    = database.createStatement("DELETE FROM users WHERE Privilege != ?");
-            statement.setInt(1, UserPrivilege.ADMIN);
+                    = database.createStatement("UPDATE users SET Privilege = ?, Money = 0, LastPlotId = NULL WHERE Privilege < ?");
+            statement.setInt(1, UserPrivilege.INIT);
+            statement.setInt(2, UserPrivilege.ADMIN);
             statement.execute();
         } catch (Exception e) {
-            Keepcraft.log("Error non-admin user data: " + e.getMessage());
+            Keepcraft.log("Error resetting non-admin user data: " + e.getMessage());
         } finally {
             database.close();
         }
@@ -205,7 +206,7 @@ public class UserDataManager extends DataManager<User> {
     public void truncate() {
         Keepcraft.log("Truncating users table");
         try {
-            PreparedStatement statement = database.createStatement("TRUNCATE TABLE users");
+            PreparedStatement statement = database.createStatement("DELETE FROM users");
             statement.execute();
         } catch (Exception e) {
             Keepcraft.log("(KC) Error truncating users: " + e.getMessage());

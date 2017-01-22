@@ -131,7 +131,7 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
     public void truncate() {
         Keepcraft.log("Truncating lootBlocks table");
         try {
-            PreparedStatement statement = database.createStatement("TRUNCATE TABLE lootBlocks");
+            PreparedStatement statement = database.createStatement("DELETE FROM lootBlocks");
             statement.execute();
         } catch (Exception e) {
             Keepcraft.log("(KC) Error truncating lootBlocks: " + e.getMessage());

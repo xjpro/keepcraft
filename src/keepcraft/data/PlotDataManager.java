@@ -59,11 +59,11 @@ public class PlotDataManager extends DataManager<Plot> {
 				statement.setDouble(3, protection.getPartialRadius());
 				statement.setDouble(4, protection.getAdminRadius());
 				statement.setDouble(5, protection.getTriggerRadius());
-				statement.setBoolean(7, protection.getCapturable());
-				statement.setInt(8, protection.getCaptureTime());
-				statement.setInt(9, 0); // Capture effect
-				statement.setInt(10, 0); // spawn
-				statement.setInt(11, plot.getId());
+				statement.setBoolean(6, protection.getCapturable());
+				statement.setInt(7, protection.getCaptureTime());
+				statement.setInt(8, 0); // Capture effect
+				statement.setInt(9, 0); // spawn
+				statement.setInt(10, plot.getId());
 				statement.executeUpdate();
 			}
 		} catch (Exception e) {
@@ -173,16 +173,16 @@ public class PlotDataManager extends DataManager<Plot> {
 			statement.execute();
 
 			PlotProtection protection = plot.getProtection();
-			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(last_insert_rowid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(last_insert_rowid(), ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, protection.getType());
 			statement.setDouble(2, protection.getProtectedRadius());
 			statement.setDouble(3, protection.getPartialRadius());
 			statement.setDouble(4, protection.getAdminRadius());
 			statement.setDouble(5, protection.getTriggerRadius());
-			statement.setBoolean(7, protection.getCapturable());
-			statement.setInt(8, protection.getCaptureTime());
-			statement.setInt(9, 0); // Capture effect
-			statement.setInt(10, 0); // spawn
+			statement.setBoolean(6, protection.getCapturable());
+			statement.setInt(7, protection.getCaptureTime());
+			statement.setInt(8, 0); // Capture effect
+			statement.setInt(9, 0); // spawn
 			statement.execute();
 		} catch (Exception e) {
 			logger.log(Level.INFO, String.format("(KC) Error creating plot record: %s", e.getMessage()));
@@ -213,7 +213,7 @@ public class PlotDataManager extends DataManager<Plot> {
 	public void truncate() {
 		Keepcraft.log("Truncating plots table");
 		try {
-			PreparedStatement statement = database.createStatement("TRUNCATE TABLE plots");
+			PreparedStatement statement = database.createStatement("DELETE FROM plots");
 			statement.execute();
 		} catch (Exception e) {
 			logger.log(Level.INFO, String.format("(KC) Error truncating plot: %s", e.getMessage()));

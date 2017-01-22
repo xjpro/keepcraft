@@ -40,6 +40,8 @@ public class WorldSetter {
     private void setBase(Location location, int faction) {
         prepareBaseArea(location, 100);
         plotService.createTeamPlot(null, location, faction, 75);
+
+        // MASSIVE TODO FIX SPAWNS
         ServerConditions.setSpawn(faction, location);
     }
 
@@ -63,13 +65,14 @@ public class WorldSetter {
                         );
 
                         for (Block block : blocks) {
-                            if (block.getType() != Material.AIR) {
+                            Material type = block.getType();
+                            if (type != Material.AIR) {
                                 // Flatten above 75
-                                if (y > 75) {
+                                if (y > 75 && type.isSolid() && type != Material.WOOD) {
                                     block.setType(Material.AIR);
                                 }
                                 // Remove water at 64
-                                else if (y <= 64 && block.getType() == Material.STATIONARY_WATER || block.getType() == Material.WATER) {
+                                else if (y <= 64 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
                                     if(y < 58) {
                                         block.setType(Material.STONE);
                                     }

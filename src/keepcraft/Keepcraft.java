@@ -16,12 +16,10 @@ import keepcraft.command.ChatCommandListener;
 import keepcraft.command.CommandListener;
 import keepcraft.command.LootBlockCommandListener;
 
-import java.util.Set;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.Plot;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -132,8 +130,7 @@ public class Keepcraft extends JavaPlugin {
 
         // Turn on white listing and remove everyone so nobody can join while reset is in progress
         server.setWhitelist(true);
-        Set<OfflinePlayer> whitelistedPlayers = server.getWhitelistedPlayers();
-        whitelistedPlayers.forEach(player -> {
+		server.getWhitelistedPlayers().forEach(player -> {
             player.setWhitelisted(false);
         });
 
@@ -145,7 +142,7 @@ public class Keepcraft extends JavaPlugin {
         // Clean database
         plotDataManager.truncate();
         lootBlockDataManager.truncate();
-        userDataManager.deleteNonAdminUserData();
+        userDataManager.resetNonAdminUserData();
         DataCache.clear();
 
         WorldSetter setter = new WorldSetter();
@@ -153,9 +150,7 @@ public class Keepcraft extends JavaPlugin {
 
         // Restore state of white list
         server.setWhitelist(originallyWhiteListed);
-        whitelistedPlayers.forEach(player -> {
-            player.setWhitelisted(true);
-        });
+        server.reloadWhitelist();
     }
 
     public static FileConfiguration config() {
