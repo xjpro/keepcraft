@@ -18,6 +18,8 @@ public class BlockProtectionListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent event) {
+		if(event.isCancelled()) return; // No need to process further
+
 		Block block = event.getBlock();
 
 		Player p = event.getPlayer();
