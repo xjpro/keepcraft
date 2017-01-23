@@ -39,9 +39,9 @@ public class PlotDataManager extends DataManager<Plot> {
 		logger.log(Level.INFO, String.format("(KC) Updating record for plot %s", plot.getName()));
 		try {
 			PreparedStatement statement = database.createStatement("UPDATE plots SET LocX = ?, LocY = ?, LocZ = ?, Radius = ?, Name = ?, OrderNumber = ? WHERE ROWID = ?");
-			statement.setInt(1, plot.getLocation().x);
-			statement.setInt(2, plot.getLocation().y);
-			statement.setInt(3, plot.getLocation().z);
+			statement.setInt(1, plot.getWorldPoint().x);
+			statement.setInt(2, plot.getWorldPoint().y);
+			statement.setInt(3, plot.getWorldPoint().z);
 			statement.setDouble(4, plot.getRadius());
 			statement.setString(5, plot.getName());
 			statement.setInt(6, plot.getOrderNumber());
@@ -101,7 +101,7 @@ public class PlotDataManager extends DataManager<Plot> {
 				logger.log(Level.INFO, String.format("(KC) Plot %s was found at (%s, %s, %s)", new Object[]{name, locX, locY, locZ}));
 
 				Plot plot = new Plot();
-				plot.setLocation(new WorldPoint(Keepcraft.instance().getWorld().getName(), locX, locY, locZ));
+				plot.setWorldPoint(new WorldPoint(locX, locY, locZ));
 				plot.setId(id);
 				plot.setRadius(radius);
 				plot.setName(name);
@@ -163,9 +163,9 @@ public class PlotDataManager extends DataManager<Plot> {
 		try {
 			PreparedStatement statement
 					= database.createStatement("INSERT INTO plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, DateTimeSet) VALUES(?, ?, ?, ?, ?, ?, ?, datetime('now'))");
-			statement.setInt(1, plot.getLocation().x);
-			statement.setInt(2, plot.getLocation().y);
-			statement.setInt(3, plot.getLocation().z);
+			statement.setInt(1, plot.getWorldPoint().x);
+			statement.setInt(2, plot.getWorldPoint().y);
+			statement.setInt(3, plot.getWorldPoint().z);
 			statement.setDouble(4, plot.getRadius());
 			statement.setString(5, plot.getName());
 			statement.setInt(6, plot.getOrderNumber());

@@ -179,8 +179,7 @@ public class AdminCommandListener extends CommandListener {
                 if (plot == null) {
                     commandSender.sendMessage(Chat.Failure + "Plot not found");
                 } else {
-                    WorldPoint plotLocation = plot.getLocation();
-                    p.teleport(new Location(p.getWorld(), plotLocation.x, plotLocation.y, plotLocation.z));
+                    p.teleport(plot.getLocation());
                 }
             }
             return true;

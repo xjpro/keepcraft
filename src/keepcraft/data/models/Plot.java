@@ -2,7 +2,6 @@ package keepcraft.data.models;
 
 import org.bukkit.Location;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
 import keepcraft.tasks.Siege;
 
 /**
@@ -13,7 +12,7 @@ public class Plot {
     public final static int DEFAULT_RADIUS = 10;
     public final static int DEFAULT_TRIGGER_RADIUS = 10;
 
-    private WorldPoint location;
+    private WorldPoint worldPoint;
     private int id;
     private float radius;
     private String name;
@@ -25,12 +24,16 @@ public class Plot {
     //private Timestamp timestampSet;
     private Siege activeSiege = null;
 
-    public WorldPoint getLocation() {
-        return location;
+    public Location getLocation() {
+        return worldPoint.asLocation();
     }
 
-    public void setLocation(WorldPoint value) {
-        location = value;
+    public WorldPoint getWorldPoint() {
+        return worldPoint;
+    }
+
+    public void setWorldPoint(WorldPoint value) {
+        worldPoint = value;
     }
 
     public double distance(Location loc) {
@@ -42,11 +45,11 @@ public class Plot {
     }
 
     public double distance(double locX, double locY, double locZ) {
-        return Math.sqrt(Math.pow(location.x - locX, 2) + Math.pow(location.y - locY, 2) + Math.pow(location.z - locZ, 2));
+        return Math.sqrt(Math.pow(worldPoint.x - locX, 2) + Math.pow(worldPoint.y - locY, 2) + Math.pow(worldPoint.z - locZ, 2));
     }
 
     public double distanceIgnoreY(double locX, double locZ) {
-        return Math.sqrt(Math.pow(location.x - locX, 2) + Math.pow(location.z - locZ, 2));
+        return Math.sqrt(Math.pow(worldPoint.x - locX, 2) + Math.pow(worldPoint.z - locZ, 2));
     }
 
     public boolean intersects(WorldPoint point, double compareRadius) {

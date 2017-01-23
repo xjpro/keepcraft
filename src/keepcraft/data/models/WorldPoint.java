@@ -1,35 +1,26 @@
 package keepcraft.data.models;
 
-import org.bukkit.Bukkit;
+import keepcraft.Keepcraft;
 import org.bukkit.Location;
 
 public class WorldPoint {
 
-    private final String worldName;
     public final int x;
     public final int y;
     public final int z;
 
-    public WorldPoint(Location location) {
-        worldName = location.getWorld().getName();
-        x = location.getBlockX();
-        y = location.getBlockY();
-        z = location.getBlockZ();
-    }
-
-    public WorldPoint(String worldName, int x, int y, int z) {
-        this.worldName = worldName;
+    public WorldPoint(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Location asBukkitLocation() {
-        return new Location(Bukkit.getWorld(worldName), (double) x, (double) y, (double) z);
+    public WorldPoint(Location location) {
+        this(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
-    public String getWorldName() {
-        return worldName;
+    public Location asLocation() {
+        return new Location(Keepcraft.getWorld(), (double) x, (double) y, (double) z);
     }
 
     public double distance(WorldPoint pt) {
@@ -47,18 +38,11 @@ public class WorldPoint {
         }
         if (other instanceof WorldPoint) {
             WorldPoint point = (WorldPoint) other;
-            if (worldName.equals(point.getWorldName()) && x == point.x && y == point.y && z == point.z) {
-                return true;
-            }
-            return false;
+            return x == point.x && y == point.y && z == point.z;
         }
         if (other instanceof Location) {
             Location point = (Location) other;
-            if (worldName.equals(point.getWorld().getName())
-                    && x == point.getBlockX() && y == point.getBlockY() && z == point.getBlockZ()) {
-                return true;
-            }
-            return false;
+            return x == point.getBlockX() && y == point.getBlockY() && z == point.getBlockZ();
         }
         return false;
     }
@@ -66,7 +50,6 @@ public class WorldPoint {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 29 * hash + (this.worldName != null ? this.worldName.hashCode() : 0);
         hash = 29 * hash + this.x;
         hash = 29 * hash + this.y;
         hash = 29 * hash + this.z;

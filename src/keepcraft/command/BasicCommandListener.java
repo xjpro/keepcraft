@@ -164,7 +164,7 @@ public class BasicCommandListener extends CommandListener {
                             commandSender.sendMessage(Chat.Failure + "You are already at that rally point");
                             return true;
                         }
-                        p.teleport(plot.getLocation().asBukkitLocation());
+                        p.teleport(plot.getLocation());
                         return true;
                     }
                 }

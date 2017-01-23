@@ -40,7 +40,7 @@ public class PlotService {
 
     private Plot createPlot(User setter, Location loc, String name, int radius) {
         Plot plot = new Plot();
-        plot.setLocation(new WorldPoint("main", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+        plot.setWorldPoint(new WorldPoint(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
         plot.setRadius(radius);
         plot.setName(name.trim());
         //plot.setSetterId(setter.getId()); todo use this

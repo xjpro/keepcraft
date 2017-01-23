@@ -59,7 +59,7 @@ public class PlotCommandListener extends CommandListener {
                     Player p = (Player) commandSender;
                     Location loc = p.getLocation();
 
-                    currentPlot.setLocation(new WorldPoint(loc));
+                    currentPlot.setWorldPoint(new WorldPoint(loc));
                     DataCache.update(currentPlot);
 
                     commandSender.sendMessage(Chat.Success + "Plot center set to " + loc);
