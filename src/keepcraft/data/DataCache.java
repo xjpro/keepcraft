@@ -23,11 +23,7 @@ public abstract class DataCache {
         plotDataManager = plotManager;
         factionSpawnDataManager = factionSpawnManager;
         lootBlockDataManager = lootBlockManager;
-
-        userCache = new HashMap<>();
-        plotCache = plotDataManager.getAllData();
-        factionSpawnCache = factionSpawnDataManager.getAllData();
-        lootBlockCache = lootBlockDataManager.getAllData();
+        refresh();
     }
 
     /**
@@ -35,8 +31,7 @@ public abstract class DataCache {
      * needed.
      *
      * @param type              Type of object to cache
-     * @param key               Key of object
-     * @param pairedWorldObject An object from the game world that pairs with
+     * @param value  			An object from the game world that pairs with
      *                          the database data
      */
     public static <T> void load(Class<T> type, Object value) {
@@ -202,11 +197,11 @@ public abstract class DataCache {
         return true;
     }
 
-    public static void clear() {
-        lootBlockCache.clear();
-        plotCache.clear();
-        factionSpawnCache.clear();
-        userCache.clear();
+    public static void refresh() {
+		userCache = new HashMap<>();
+		plotCache = plotDataManager.getAllData();
+		factionSpawnCache = factionSpawnDataManager.getAllData();
+		lootBlockCache = lootBlockDataManager.getAllData();
     }
 
 }

@@ -58,6 +58,10 @@ public class UserListener implements Listener {
             setBasicEquipment(p);
             teleportHome(p, user);
         }
+        else if(p.getLocation().getWorld() != Keepcraft.getWorld()) {
+            Keepcraft.log("Player " + p.getName() + " was on the wrong world, moving to " + Keepcraft.getWorld().getName());
+            teleportHome(p, user);
+        }
 
         Plot lastPlot = DataCache.retrieve(Plot.class, user.getLastPlotId());
         if (lastPlot != null && !lastPlot.isFactionProtected(user.getFaction())) {

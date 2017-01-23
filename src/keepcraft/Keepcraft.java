@@ -35,15 +35,13 @@ public class Keepcraft extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        DataCache.init(userDataManager, plotDataManager, factionSpawnManager, lootBlockDataManager);
-
         world = WorldLoader.loadLatest();
+        DataCache.init(userDataManager, plotDataManager, factionSpawnManager, lootBlockDataManager);
         ServerConditions.init(this.getConfig());
         Bukkit.getServer().setSpawnRadius(0);
 
         PluginManager manager = this.getServer().getPluginManager();
 
-        manager.registerEvents(new PlayerWorldListener(), this);
         manager.registerEvents(new UserListener(), this);
         manager.registerEvents(new ActionListener(), this);
         manager.registerEvents(new ChatListener(), this);
@@ -141,10 +139,11 @@ public class Keepcraft extends JavaPlugin {
         factionSpawnManager.truncate();
         lootBlockDataManager.truncate();
         userDataManager.resetNonAdminUserData();
-        DataCache.clear();
 
         WorldSetter setter = new WorldSetter();
         world = setter.reset(world);
+        getConfig().set("spawn.world", world.getName());
+        DataCache.refresh();
 
         // Restore state of white list
         server.setWhitelist(originallyWhiteListed);

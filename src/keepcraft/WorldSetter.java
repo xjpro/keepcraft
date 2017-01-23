@@ -28,8 +28,8 @@ public class WorldSetter {
         World newWorld = server.createWorld(creator);
 
         // Setup new world with plots
-        setBase(new Location(newWorld, 300, 64, 300), UserFaction.FactionRed);
-        setBase(new Location(newWorld, -300, 64, -300), UserFaction.FactionBlue);
+        setBase(UserFaction.FactionRed, new Location(newWorld, 300, 64, 300));
+        setBase(UserFaction.FactionBlue, new Location(newWorld, -300, 64, -300));
 
         newWorld.save();
 
@@ -39,7 +39,8 @@ public class WorldSetter {
         return newWorld;
     }
 
-    private void setBase(Location location, int faction) {
+    private void setBase(int faction, Location location) {
+        Keepcraft.log(String.format("Setting up %s faction...", UserFaction.getName(faction)));
         prepareBaseArea(location, 100);
         plotService.createTeamPlot(null, location, faction, 75);
         DataCache.load(FactionSpawn.class, new FactionSpawn(faction, location));
@@ -64,7 +65,7 @@ public class WorldSetter {
                         );
 
                         for (Block block : blocks) {
-                            if (block.getType().isSolid() && block.getType() != Material.WOOD) {
+                            if (block.getType().isSolid()) {
                                 prepareBlock(block);
                             }
                         }
@@ -75,11 +76,12 @@ public class WorldSetter {
     }
 
     private void prepareBlock(Block block) {
-        if(!block.getWorld().isChunkLoaded(block.getX(), block.getZ())) {
-            // Generate chunks before modifying
-            // This makes the modification much more consistent
-            block.getWorld().loadChunk(block.getX(), block.getZ(), true);
-        }
+    	// This apparently does not work but the idea was to load the chunks first
+//        if(!block.getWorld().isChunkLoaded(block.getX(), block.getZ())) {
+//            // Generate chunks before modifying
+//            // This makes the modification much more consistent
+//            block.getWorld().loadChunk(block.getX(), block.getZ(), true);
+//        }
 
         int y = block.getY();
         Material type = block.getType();
@@ -88,9 +90,9 @@ public class WorldSetter {
         if (y > 75) {
             block.setType(Material.AIR);
         }
-        // Remove water at 64
-        else if (y <= 64 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
-            if (y < 58) {
+        // Remove water at 62
+        else if (y <= 62 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
+            if (y < 57) {
                 block.setType(Material.STONE);
             } else {
                 block.setType(Material.DIRT);

@@ -59,20 +59,19 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 	@Override
 	public Map<Object, FactionSpawn> getAllData() {
 		Map<Object, FactionSpawn> allData = new HashMap<>();
-		Keepcraft.log("(KC) Updating factionSpawn data cache");
+		Keepcraft.log("Updating factionSpawn data cache");
 
 		try {
-			PreparedStatement statement = database.createStatement("SELECT ROWID, FactionValue, LocX, LocY, LocZ FROM factionSpawns");
+			PreparedStatement statement = database.createStatement("SELECT FactionValue, LocX, LocY, LocZ FROM factionSpawns");
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				int id = result.getInt("ROWID");
 				int factionValue = result.getInt("FactionValue");
 				int locX = result.getInt("LocX");
 				int locY = result.getInt("LocY");
 				int locZ = result.getInt("LocZ");
 
-				//logger.log(Level.INFO, String.format("(KC) Plot %s was found at (%s, %s, %s)", new Object[]{name, locX, locY, locZ}));
+				Keepcraft.log(String.format("FactionSpawn for %s was found at at (%s, %s, %s)", new Object[]{factionValue, locX, locY, locZ}));
 
 				FactionSpawn spawn = new FactionSpawn(factionValue, new Location(Keepcraft.getWorld(), locX, locY, locZ));
 				allData.put(factionValue, spawn);
@@ -91,7 +90,7 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 	@Override
 	public void putData(FactionSpawn spawn) {
 
-		//logger.log(Level.INFO, String.format("(KC) Creating record for plot %s", plot.getName()));
+		Keepcraft.log(String.format("Creating record for factionSpawn %s", spawn.getFactionValue()));
 		try {
 			PreparedStatement statement
 					= database.createStatement("INSERT INTO factionSpawns (FactionValue, LocX, LocY, LocZ) VALUES(?, ?, ?, ?)");
