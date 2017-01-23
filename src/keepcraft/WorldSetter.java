@@ -46,10 +46,11 @@ public class WorldSetter {
 
         // Find good spawn location
         Location goodSpawnLocation = location.clone();
-        goodSpawnLocation.setY(TEAM_PLOT_RADIUS);
+        goodSpawnLocation.setY(76);
         while(!goodSpawnLocation.getWorld().getBlockAt(goodSpawnLocation.getBlockX(), goodSpawnLocation.getBlockY(), goodSpawnLocation.getBlockZ()).getType().isSolid()) {
-            goodSpawnLocation.setY(goodSpawnLocation.getBlockY()-1);
+            goodSpawnLocation.add(0, -1, 0);
         }
+		goodSpawnLocation.add(0, 1, 0); // Go one up so we're not buried
 
         plotService.createTeamPlot(null, goodSpawnLocation, faction, TEAM_PLOT_RADIUS);
         DataCache.load(FactionSpawn.class, new FactionSpawn(faction, goodSpawnLocation));

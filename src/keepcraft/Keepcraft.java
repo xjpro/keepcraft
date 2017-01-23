@@ -131,7 +131,7 @@ public class Keepcraft extends JavaPlugin {
 
         // Kick everyone
         server.getOnlinePlayers().forEach(player -> {
-            player.kickPlayer("World is resetting, please rejoin in 15 seconds...");
+            player.kickPlayer("Keepcraft is resetting, please rejoin in 15 seconds...");
         });
 
         // Clean database
@@ -156,5 +156,8 @@ public class Keepcraft extends JavaPlugin {
 
     public static void log(String text) {
         logger.info(String.format("(KC) %s", text));
+    }
+    public static void error(String text) {
+        logger.severe(String.format("(KC) %s", text));
     }
 }
