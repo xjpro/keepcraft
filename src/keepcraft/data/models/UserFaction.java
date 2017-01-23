@@ -27,6 +27,21 @@ public abstract class UserFaction {
         }
     }
 
+    public static String getName(int faction) {
+        switch (faction) {
+            case FactionRed:
+                return "Red";
+            case FactionBlue:
+                return "Blue";
+            case FactionGreen:
+                return "Green";
+            case FactionGold:
+                return "Gold";
+            default:
+                return "Other";
+        }
+    }
+
     public static int getRandomFaction() {
         return (1 + Random.nextInt(3)) * 100;
     }
@@ -50,7 +65,7 @@ public abstract class UserFaction {
     }
 
     public static String asString(int faction) {
-        return ServerConditions.getFactionName(faction);
+        return UserFaction.getName(faction);
     }
 
     public static String asColoredString(int faction) {

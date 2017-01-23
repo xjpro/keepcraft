@@ -31,16 +31,6 @@ public class FactionCommandListener extends CommandListener {
 
                 if (args.length == 1) {
                     // stats
-                } else if (args.length >= 2) {
-                    if (args[1].equalsIgnoreCase("name")) {
-                        String name = "";
-                        for (int i = 2; i < args.length; i++) {
-                            name += args[i] + " ";
-                        }
-                        ServerConditions.setFactionName(faction, name.trim());
-                        commandSender.sendMessage(Chat.Success + "Faction " + faction + "'s name set to " + name);
-                        return true;
-                    }
                 }
             }
         } // Red team chat
