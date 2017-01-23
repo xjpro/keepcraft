@@ -5,6 +5,7 @@ import keepcraft.data.models.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 public class UserService {
 
@@ -12,6 +13,10 @@ public class UserService {
     private Collection<User> onlineUsers = new ArrayList<>();
 
     UserService() {
+    }
+
+    void refreshCache() {
+        onlineUsers.clear();
     }
 
     public Collection<User> getOnlineUsers() {
@@ -23,17 +28,17 @@ public class UserService {
     }
 
     public User getOnlineUser(String name) {
-        return onlineUsers.stream()
+        Optional<User> userOrNull = onlineUsers.stream()
                 .filter(plot -> plot.getName().equals(name))
-                .findFirst()
-                .get();
+                .findFirst();
+        return userOrNull.isPresent() ? userOrNull.get() : null;
     }
 
     public User getOnlineUser(Integer id) {
-        return onlineUsers.stream()
+        Optional<User> userOrNull = onlineUsers.stream()
                 .filter(plot -> plot.getId() == id)
-                .findFirst()
-                .get();
+                .findFirst();
+        return userOrNull.isPresent() ? userOrNull.get() : null;
     }
 
     public User loadOfflineUser(String name) {
@@ -49,5 +54,13 @@ public class UserService {
 
     public void updateUser(User user) {
         userDataManager.updateData(user);
+    }
+
+    public boolean removeUser(User user) {
+        if (!userDataManager.exists(user.getName())) {
+            return false;
+        }
+        userDataManager.deleteData(user);
+        return true;
     }
 }

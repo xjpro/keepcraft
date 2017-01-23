@@ -16,10 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
 import keepcraft.Keepcraft;
 
-/**
- *
- * @author Me
- */
 public class LootBlock implements Runnable {
 
     private static class LootBlockScheduler implements Runnable {

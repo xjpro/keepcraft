@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import keepcraft.Chat;
 import keepcraft.Privilege;
 import keepcraft.Keepcraft;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.User;
@@ -145,8 +144,7 @@ public class AdminCommandListener extends CommandListener {
 
                 User deleted = new User(0);
                 deleted.setName(targetName.trim());
-
-                boolean success = DataCache.delete(deleted);
+                boolean success = userService.removeUser(deleted);
 
                 if (success) {
                     commandSender.sendMessage(Chat.Success + "Deleted " + targetName);

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import keepcraft.services.PlotService;
 import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
@@ -18,6 +18,7 @@ public class Siege implements Runnable {
 
     private final static double CAPTURE_BONUS_MODIFIER = 1.0;
     private UserService userService = ServiceCache.getUserService();
+    private PlotService plotService = ServiceCache.getPlotService();
 
     private final Plot plot;
     private final User initiatingUser;
@@ -101,7 +102,7 @@ public class Siege implements Runnable {
         protection.setType(initiatingUser.getFaction());
         protection.setCaptureInProgress(false);
         plot.setSiege(null);
-        DataCache.update(plot);
+        plotService.updatePlot(plot);
     }
 
     public void cancel() {

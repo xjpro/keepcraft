@@ -1,10 +1,10 @@
 package keepcraft.listener;
 
 import keepcraft.data.models.*;
+import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -20,12 +20,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import keepcraft.Chat;
 import keepcraft.Keepcraft;
-import keepcraft.data.DataCache;
 
 public class UserListener implements Listener {
 
     private UserService userService = ServiceCache.getUserService();
     private PlotService plotService = ServiceCache.getPlotService();
+    private FactionSpawnService factionSpawnService = ServiceCache.getFactionSpawnService();
 
     private static class StartingValueSetter implements Runnable {
 
@@ -100,15 +100,14 @@ public class UserListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player p = event.getPlayer();
         User user = userService.getOnlineUser(p.getName());
-        FactionSpawn spawn = DataCache.retrieve(FactionSpawn.class, user.getFaction());
-        Location respawnLocation = spawn.getLocation();
+        FactionSpawn spawn = factionSpawnService.getFactionSpawn(user.getFaction());
 
-        if (respawnLocation != null) {
-            event.setRespawnLocation(respawnLocation);
+        if (spawn != null) {
+            event.setRespawnLocation(spawn.getLocation());
         }
         // Otherwise they'll go to default spawn (spawn not set yet)
 
-        if (user != null && user.isAdmin()) {
+        if (user.isAdmin()) {
             setAdminEquipment(p);
         } else {
             setBasicEquipment(p);
@@ -168,11 +167,9 @@ public class UserListener implements Listener {
     }
 
     private void teleportHome(Player p, User user) {
-        FactionSpawn respawn = DataCache.retrieve(FactionSpawn.class, user.getFaction());
-        Location respawnLocation = respawn.getLocation();
-
-        if (respawnLocation != null) {
-            p.teleport(respawnLocation);
+        FactionSpawn respawn = factionSpawnService.getFactionSpawn(user.getFaction());
+        if (respawn != null) {
+            p.teleport(respawn.getLocation());
         }
     }
 }

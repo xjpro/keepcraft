@@ -10,9 +10,10 @@ import keepcraft.command.SiegeCommandListener;
 import keepcraft.command.PlotCommandListener;
 import keepcraft.command.ChatCommandListener;
 import keepcraft.command.CommandListener;
-import keepcraft.command.LootBlockCommandListener;
 
 import java.util.logging.Logger;
+
+import keepcraft.services.ServiceCache;
 import org.bukkit.Bukkit;
 import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.Plot;
@@ -36,7 +37,6 @@ public class Keepcraft extends JavaPlugin {
     @Override
     public void onEnable() {
         world = WorldLoader.loadLatest();
-        DataCache.init(userDataManager, plotDataManager, factionSpawnManager, lootBlockDataManager);
         ServerConditions.init(this.getConfig());
         Bukkit.getServer().setSpawnRadius(0);
 
@@ -49,8 +49,8 @@ public class Keepcraft extends JavaPlugin {
         manager.registerEvents(new WorldEntityListener(), this);
         manager.registerEvents(new ExplosionListener(), this);
         manager.registerEvents(new BlockProtectionListener(), this);
-        manager.registerEvents(new ChunkListener(), this);
-        manager.registerEvents(new LootBlockListener(), this);
+        //manager.registerEvents(new ChunkListener(), this);
+        //manager.registerEvents(new LootBlockListener(), this);
         manager.registerEvents(new StormListener(), this);
 
         // Basic commands
@@ -89,12 +89,12 @@ public class Keepcraft extends JavaPlugin {
             getCommand(plotCommands[i]).setExecutor(plotCommandListener);
         }
 
-        // LootBlock commands
-        CommandListener lootBlockCommandListener = new LootBlockCommandListener();
-        String[] lootBlockCommands = {"lootblock"};
-        for (int i = 0; i < lootBlockCommands.length; i++) {
-            getCommand(lootBlockCommands[i]).setExecutor(lootBlockCommandListener);
-        }
+//        // LootBlock commands
+//        CommandListener lootBlockCommandListener = new LootBlockCommandListener();
+//        String[] lootBlockCommands = {"lootblock"};
+//        for (int i = 0; i < lootBlockCommands.length; i++) {
+//            getCommand(lootBlockCommands[i]).setExecutor(lootBlockCommandListener);
+//        }
 
         // Siege commands
         CommandListener siegeCommandListener = new SiegeCommandListener();
@@ -145,7 +145,7 @@ public class Keepcraft extends JavaPlugin {
         WorldSetter setter = new WorldSetter();
         world = setter.reset(world);
         getConfig().set("spawn.world", world.getName());
-        DataCache.refresh();
+        ServiceCache.refreshCaches();
 
         // Restore state of white list
         server.setWhitelist(originallyWhiteListed);

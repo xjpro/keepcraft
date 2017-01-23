@@ -12,8 +12,7 @@ public class StormListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onWeatherChange(WeatherChangeEvent event) {
-        if (event.toWeatherState()) // true == rain
-        {
+        if (event.toWeatherState()) {// true == rain
             if (r.nextDouble() < 0.75) {
                 event.setCancelled(true);
             }

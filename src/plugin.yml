@@ -74,9 +74,6 @@ commands:
     plot:
         description: Plot commands
         usage: /plot
-    lootblock:
-        description: Loot block commands
-        usage: /lootblock <args>
     cap:
         description: Begin capturing a plot
         usage: /cap

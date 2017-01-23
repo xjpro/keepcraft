@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import keepcraft.Chat;
 import keepcraft.Keepcraft;
 import keepcraft.Privilege;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
@@ -63,7 +62,7 @@ public class PlotCommandListener extends CommandListener {
                     Location loc = p.getLocation();
 
                     currentPlot.setWorldPoint(new WorldPoint(loc));
-                    DataCache.update(currentPlot);
+                    plotService.updatePlot(currentPlot);
 
                     commandSender.sendMessage(Chat.Success + "Plot center set to " + loc);
                     return true;
@@ -80,7 +79,7 @@ public class PlotCommandListener extends CommandListener {
                             return false;
                         }
                         currentPlot.setRadius(radius);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot radius set to " + currentPlot.getRadius());
                         return true;
@@ -95,7 +94,7 @@ public class PlotCommandListener extends CommandListener {
                             return false;
                         }
                         currentPlot.getProtection().setProtectedRadius(radius);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot protected radius set to " + currentPlot.getProtection().getProtectedRadius());
                         return true;
@@ -110,7 +109,7 @@ public class PlotCommandListener extends CommandListener {
                             return false;
                         }
                         currentPlot.getProtection().setPartialRadius(radius);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot partial radius set to " + currentPlot.getProtection().getPartialRadius());
                         return true;
@@ -125,7 +124,7 @@ public class PlotCommandListener extends CommandListener {
                             return false;
                         }
                         currentPlot.getProtection().setAdminRadius(radius);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot admin radius set to " + currentPlot.getProtection().getAdminRadius());
                         return true;
@@ -140,7 +139,7 @@ public class PlotCommandListener extends CommandListener {
                             return false;
                         }
                         currentPlot.getProtection().setTriggerRadius(radius);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot trigger radius set to " + currentPlot.getProtection().getTriggerRadius());
                         return true;
@@ -161,7 +160,7 @@ public class PlotCommandListener extends CommandListener {
                         }
 
                         currentPlot.getProtection().setCapturable(capturable);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot capturable flag set to " + capturable);
                         return true;
@@ -178,7 +177,7 @@ public class PlotCommandListener extends CommandListener {
                         }
 
                         currentPlot.getProtection().setCaptureTime(captureSeconds);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot capture time set to " + captureSeconds + " seconds");
                         return true;
@@ -197,7 +196,7 @@ public class PlotCommandListener extends CommandListener {
                             return false;
                         }
                         currentPlot.getProtection().setType(faction);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot protection set to faction " + UserFaction.asString(faction));
                         return true;
@@ -206,7 +205,7 @@ public class PlotCommandListener extends CommandListener {
                 else if (args[1].equals("admin") && args.length == 2) {
                     if (privilege == UserPrivilege.ADMIN) {
                         currentPlot.getProtection().setType(PlotProtection.ADMIN);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot protection set to admin");
                         return true;
@@ -215,7 +214,7 @@ public class PlotCommandListener extends CommandListener {
                 else if (args[1].equals("event") && args.length == 2) {
                     if (privilege == UserPrivilege.ADMIN) {
                         currentPlot.getProtection().setType(PlotProtection.EVENT);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot protection set to event");
                         return true;
@@ -224,7 +223,7 @@ public class PlotCommandListener extends CommandListener {
                 else if (args[1].equals("spawn") && args.length == 2) {
                     if (privilege == UserPrivilege.ADMIN) {
                         currentPlot.getProtection().setType(PlotProtection.SPAWN);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot protection set to spawn");
                         return true;
@@ -233,7 +232,7 @@ public class PlotCommandListener extends CommandListener {
                 else if (args[1].equals("public") && args.length == 2) {
                     if (Privilege.canModifyPlotData(sender, currentPlot)) {
                         currentPlot.getProtection().setType(PlotProtection.PUBLIC);
-                        DataCache.update(currentPlot);
+                        plotService.updatePlot(currentPlot);
 
                         commandSender.sendMessage(Chat.Success + "Plot protection set to public");
                         return true;
@@ -248,7 +247,7 @@ public class PlotCommandListener extends CommandListener {
                     }
 
                     currentPlot.setName(name.trim());
-                    DataCache.update(currentPlot);
+                    plotService.updatePlot(currentPlot);
                     commandSender.sendMessage(Chat.Success + "Plot renamed to " + currentPlot.getName());
                     return true;
                 }
@@ -264,14 +263,14 @@ public class PlotCommandListener extends CommandListener {
                     }
 
                     currentPlot.setOrderNumber(orderNumber);
-                    DataCache.update(currentPlot);
+                    plotService.updatePlot(currentPlot);
                     commandSender.sendMessage(Chat.Success + "Plot order number set to " + currentPlot.getOrderNumber());
                     return true;
                 }
             } // Delete to default
             else if (args[0].equals("delete")) {
                 if (Privilege.canModifyPlotData(sender, currentPlot)) {
-                    DataCache.delete(currentPlot);
+                    plotService.removePlot(currentPlot);
                     commandSender.sendMessage(Chat.Success + "Plot deleted");
                     return true;
                 }

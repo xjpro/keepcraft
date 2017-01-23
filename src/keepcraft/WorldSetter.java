@@ -3,9 +3,9 @@ package keepcraft;
 import java.util.*;
 import java.util.List;
 
-import keepcraft.data.DataCache;
 import keepcraft.data.models.FactionSpawn;
 import keepcraft.data.models.UserFaction;
+import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import keepcraft.services.ServiceCache;
 import org.bukkit.*;
@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 public class WorldSetter {
 
     private PlotService plotService = ServiceCache.getPlotService();
+    private FactionSpawnService factionSpawnService = ServiceCache.getFactionSpawnService();
     private final int TEAM_PLOT_RADIUS = 75;
 
     public World reset(World currentWorld) {
@@ -57,7 +58,7 @@ public class WorldSetter {
 
         // Center faction spawn on block so it's not buried
 		FactionSpawn spawn = new FactionSpawn(faction, goodSpawnLocation.clone().add(0.5, 0, 0.5));
-        DataCache.load(FactionSpawn.class, spawn);
+		factionSpawnService.createFactionSpawn(spawn);
     }
 
     private void prepareBaseArea(Location center, int radius) {

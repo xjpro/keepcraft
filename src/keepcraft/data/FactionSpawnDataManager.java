@@ -17,6 +17,11 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 		init();
 	}
 
+	public FactionSpawnDataManager() {
+		super(Keepcraft.getSqlLiteDatabase());
+		init();
+	}
+
 	private void init() {
 		try {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS factionSpawns (FactionValue, LocX, LocY, LocZ)");

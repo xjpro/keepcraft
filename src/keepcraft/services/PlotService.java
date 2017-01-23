@@ -5,6 +5,7 @@ import keepcraft.data.models.*;
 import org.bukkit.Location;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class PlotService {
 
@@ -12,6 +13,10 @@ public class PlotService {
     private Collection<Plot> plots;
 
     PlotService() {
+        refreshCache();
+    }
+
+    void refreshCache() {
         plots = plotDataManager.getAllData().values();
     }
 
@@ -20,17 +25,26 @@ public class PlotService {
     }
 
     public Plot getPlot(String name) {
-        return plots.stream()
+        Optional<Plot> plotOrNull = plots.stream()
                 .filter(plot -> plot.getName().equals(name))
-                .findFirst()
-                .get();
+                .findFirst();
+        return plotOrNull.isPresent() ? plotOrNull.get() : null;
     }
 
     public Plot getPlot(Integer id) {
-        return plots.stream()
+        Optional<Plot> plotOrNull = plots.stream()
                 .filter(plot -> plot.getId() == id)
-                .findFirst()
-                .get();
+                .findFirst();
+        return plotOrNull.isPresent() ? plotOrNull.get() : null;
+    }
+
+    public void removePlot(Plot plot) {
+        plotDataManager.deleteData(plot);
+        plots.remove(plot);
+    }
+
+    public void updatePlot(Plot plot) {
+        plotDataManager.putData(plot);
     }
 
     public Plot createTeamPlot(User setter, Location loc, int userFaction, int radius) {
