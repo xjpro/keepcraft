@@ -2,6 +2,7 @@ package keepcraft.listener;
 
 import java.util.ArrayList;
 
+import keepcraft.services.PlotService;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -15,6 +16,8 @@ import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 
 public class BlockProtectionListener implements Listener {
+
+	private PlotService plotService = new PlotService();
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent event) {
@@ -35,7 +38,7 @@ public class BlockProtectionListener implements Listener {
 			event.setBuild(false);
 		}
 
-		Plot plot = ListenerHelper.getIntersectedPlot(block.getLocation(), new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
+		Plot plot = ListenerHelper.getIntersectedPlot(block.getLocation(), new ArrayList<>(plotService.getPlots()));
 
 		if (plot == null || plot.getProtection() == null) {
 			return;
@@ -88,7 +91,7 @@ public class BlockProtectionListener implements Listener {
 	}
 
 	private boolean canModify(User user, Block targetBlock) {
-		Plot plot = ListenerHelper.getIntersectedPlot(targetBlock.getLocation(), new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
+		Plot plot = ListenerHelper.getIntersectedPlot(targetBlock.getLocation(), new ArrayList<>(plotService.getPlots()));
 		return Privilege.canInteract(user, targetBlock.getLocation(), plot);
 	}
 }

@@ -118,6 +118,8 @@ public class Keepcraft extends JavaPlugin {
         return instance().world;
     }
 
+    public static Database getSqlLiteDatabase() { return instance().database; }
+
     public void reset() {
         Server server = Bukkit.getServer();
 

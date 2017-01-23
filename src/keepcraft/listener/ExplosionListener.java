@@ -2,6 +2,8 @@ package keepcraft.listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import keepcraft.services.PlotService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -16,16 +18,15 @@ import keepcraft.data.models.Direction;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 
-/**
- *
- * @author Me
- */
+
 public class ExplosionListener implements Listener {
+
+    private PlotService plotService = new PlotService();
 
     @EventHandler(priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {
         Location loc = event.getLocation();
-        Plot plot = ListenerHelper.getIntersectedPlot(loc, new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
+        Plot plot = ListenerHelper.getIntersectedPlot(loc, new ArrayList<>(plotService.getPlots()));
 
         // But wait! no block damage for admin plots
         if (plot != null && (plot.isAdminProtected() || plot.isSpawnProtected() || plot.intersectsAdminRadius(loc))) {

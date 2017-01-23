@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import keepcraft.services.PlotService;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,6 +30,8 @@ import keepcraft.data.models.User;
 
 public class ActionListener implements Listener {
 
+    private PlotService plotService = new PlotService();
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         Location to = event.getTo();
@@ -39,7 +43,7 @@ public class ActionListener implements Listener {
         // Code for updating player's current plot
         Plot current = user.getCurrentPlot();
         Plot candidate = ListenerHelper.getIntersectedPlot(p.getLocation(),
-                new ArrayList<>(DataCache.retrieveAll(Plot.class)));
+                new ArrayList<>(plotService.getPlots()));
 
         if (current != candidate) {
             if (current != null && candidate == null) {
@@ -130,7 +134,7 @@ public class ActionListener implements Listener {
             event.setCancelled(true);
             // Instead, set block on fire
             BlockFace[] facesToCheck = {BlockFace.UP, BlockFace.DOWN,
-                BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
+                    BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
             for (BlockFace face : facesToCheck) {
                 Block neighbor = clicked.getRelative(face);
                 if (neighbor.getType().equals(Material.AIR)) {
@@ -141,7 +145,7 @@ public class ActionListener implements Listener {
         }
         // End TNT fire hack
 
-        Plot plot = ListenerHelper.getIntersectedPlot(clicked.getLocation(), new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
+        Plot plot = ListenerHelper.getIntersectedPlot(clicked.getLocation(), new ArrayList<>(plotService.getPlots()));
         if (plot == null || plot.getProtection() == null) {
             return;
         }
@@ -187,7 +191,7 @@ public class ActionListener implements Listener {
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         Player p = event.getPlayer();
         User user = DataCache.retrieve(User.class, p.getName());
-        Plot plot = ListenerHelper.getIntersectedPlot(event.getBlockClicked().getLocation(), new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
+        Plot plot = ListenerHelper.getIntersectedPlot(event.getBlockClicked().getLocation(), new ArrayList<>(plotService.getPlots()));
         if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
             event.setCancelled(true);
         }
@@ -202,7 +206,7 @@ public class ActionListener implements Listener {
 
         Player p = event.getPlayer();
         User user = DataCache.retrieve(User.class, p.getName());
-        Plot plot = ListenerHelper.getIntersectedPlot(event.getBlockClicked().getLocation(), new ArrayList<Plot>(DataCache.retrieveAll(Plot.class)));
+        Plot plot = ListenerHelper.getIntersectedPlot(event.getBlockClicked().getLocation(), new ArrayList<>(plotService.getPlots()));
         if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
             event.setCancelled(true);
         }

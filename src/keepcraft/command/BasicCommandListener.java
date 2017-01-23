@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import keepcraft.services.PlotService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import keepcraft.Chat;
@@ -16,6 +17,8 @@ import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.UserPrivilege;
 
 public class BasicCommandListener extends CommandListener {
+
+    private PlotService plotService = new PlotService();
 
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
@@ -87,27 +90,21 @@ public class BasicCommandListener extends CommandListener {
             return true;
         } else if (commandName.equalsIgnoreCase("map") || commandName.equalsIgnoreCase("rally")) {
             if (args.length == 0) {
-                List<Plot> allPlots = new ArrayList(DataCache.retrieveAll(Plot.class));
-                Collections.sort(allPlots, new Comparator() {
-                    @Override
-                    public int compare(Object a, Object b) {
-                        Plot plot1 = (Plot) a;
-                        Plot plot2 = (Plot) b;
-                        if (plot1.getOrderNumber() == plot2.getOrderNumber()) {
-                            return 0;
-                        } else if (plot1.getOrderNumber() > plot2.getOrderNumber()) {
-                            return 1;
-                        } else {
-                            return -1;
-                        }
+                ArrayList<Plot> allPlots = new ArrayList(plotService.getPlots());
+                allPlots.sort((plot1, plot2) -> {
+                    if (plot1.getOrderNumber() == plot2.getOrderNumber()) {
+                        return 0;
+                    } else if (plot1.getOrderNumber() > plot2.getOrderNumber()) {
+                        return 1;
+                    } else {
+                        return -1;
                     }
                 });
                 // Now sorted by order number
 
                 String message = "Outposts:\n";
 
-                for (Plot plot : allPlots) // filter out uncapturable plots
-                {
+                for (Plot plot : allPlots) {// filter out uncapturable plots
                     if (plot.getOrderNumber() != -1) {
                         String status;
 
@@ -125,8 +122,8 @@ public class BasicCommandListener extends CommandListener {
                 }
 
                 String[] messages = message.split("\n");
-                for (int i = 0; i < messages.length; i++) {
-                    commandSender.sendMessage(Chat.RequestedInfo + messages[i]);
+                for (String message1 : messages) {
+                    commandSender.sendMessage(Chat.RequestedInfo + message1);
                 }
 
                 return true;
@@ -153,7 +150,7 @@ public class BasicCommandListener extends CommandListener {
                     return true;
                 }
 
-                Collection<Plot> allPlots = DataCache.retrieveAll(Plot.class);
+                Collection<Plot> allPlots = plotService.getPlots();
                 for (Plot plot : allPlots) {
                     if (plot.getOrderNumber() == orderNumber) {
                         // Found it!

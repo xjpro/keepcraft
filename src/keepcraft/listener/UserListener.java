@@ -1,6 +1,7 @@
 package keepcraft.listener;
 
 import keepcraft.data.models.*;
+import keepcraft.services.PlotService;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,6 +21,8 @@ import keepcraft.Keepcraft;
 import keepcraft.data.DataCache;
 
 public class UserListener implements Listener {
+
+    private PlotService plotService = new PlotService();
 
     private static class StartingValueSetter implements Runnable {
 
@@ -63,7 +66,7 @@ public class UserListener implements Listener {
             teleportHome(p, user);
         }
 
-        Plot lastPlot = DataCache.retrieve(Plot.class, user.getLastPlotId());
+        Plot lastPlot = plotService.getPlot(user.getLastPlotId());
         if (lastPlot != null && !lastPlot.isFactionProtected(user.getFaction())) {
             // Last plot id only stored when we logged off in an owned plot.
             // This plot is now longer secured so teleport home.

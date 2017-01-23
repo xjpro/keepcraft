@@ -1,5 +1,6 @@
 package keepcraft.command;
 
+import keepcraft.services.PlotService;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -18,8 +19,9 @@ import keepcraft.data.models.WorldPoint;
 public class AdminCommandListener extends CommandListener {
 
     private World world = null;
+    private PlotService plotService = new PlotService();
 
-    public void setWorld(World value) {        
+    public void setWorld(World value) {
         world = value;
     }
 
@@ -86,8 +88,7 @@ public class AdminCommandListener extends CommandListener {
                 commandSender.sendMessage(Chat.Success + "Set map radius to " + radius);
                 return true;
             }
-        } 
-        else if (commandName.equals("reset")) {
+        } else if (commandName.equals("reset")) {
             Keepcraft.instance().reset();
             return true;
         }
@@ -160,9 +161,8 @@ public class AdminCommandListener extends CommandListener {
                 Plot plot = null;
                 try {
                     int orderNumber = Integer.parseInt(args[0]);
-                    for (Plot possiblePlot : DataCache.retrieveAll(Plot.class)) {
-                        if (possiblePlot.getOrderNumber() == orderNumber) // match
-                        {
+                    for (Plot possiblePlot : plotService.getPlots()) {
+                        if (possiblePlot.getOrderNumber() == orderNumber) {// match
                             plot = possiblePlot;
                             break;
                         }
@@ -173,7 +173,7 @@ public class AdminCommandListener extends CommandListener {
                     for (int i = 0; i < args.length; i++) {
                         name += args[i] + " ";
                     }
-                    plot = DataCache.retrieve(Plot.class, name.trim());
+                    plot = plotService.getPlot(name.trim());
                 }
 
                 if (plot == null) {
