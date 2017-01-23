@@ -3,10 +3,11 @@ package keepcraft;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserPrivilege;
@@ -14,6 +15,7 @@ import keepcraft.data.models.UserPrivilege;
 public abstract class Chat {
 
     private final static Logger logger = Logger.getLogger("Minecraft");
+    private final static UserService userService = ServiceCache.getUserService();
 
     public final static ChatColor NameAdmin = ChatColor.YELLOW;
     public final static ChatColor NameRed = ChatColor.RED;
@@ -52,7 +54,7 @@ public abstract class Chat {
         String message = String.format(Chat.ChatFormat, sender.getChatTag(), Chat.GlobalMessage, "Global", text);
 
         for (Player receiver : Bukkit.getOnlinePlayers()) {
-            User user = DataCache.retrieve(User.class, receiver.getName());
+            User user = userService.getOnlineUser(receiver.getName());
             if (user.getReceiveGlobalMessages()) {
                 receiver.sendMessage(message);
             }

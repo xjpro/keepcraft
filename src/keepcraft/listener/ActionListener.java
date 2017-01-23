@@ -6,6 +6,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import keepcraft.services.PlotService;
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,14 +25,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import keepcraft.Chat;
 import keepcraft.Privilege;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
 
 public class ActionListener implements Listener {
 
-    private PlotService plotService = new PlotService();
+    private UserService userService = ServiceCache.getUserService();
+    private PlotService plotService = ServiceCache.getPlotService();
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -38,7 +40,7 @@ public class ActionListener implements Listener {
         Location from = event.getFrom();
 
         Player p = event.getPlayer();
-        User user = DataCache.retrieve(User.class, p.getName());
+        User user = userService.getOnlineUser(p.getName());
 
         // Code for updating player's current plot
         Plot current = user.getCurrentPlot();
@@ -151,7 +153,7 @@ public class ActionListener implements Listener {
         }
 
         Player p = event.getPlayer();
-        User user = DataCache.retrieve(User.class, p.getName());
+        User user = userService.getOnlineUser(p.getName());
 
         switch (blockType) {
             // Put the things we need to check against in here. Which are switches. Don't need
@@ -190,7 +192,7 @@ public class ActionListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         Player p = event.getPlayer();
-        User user = DataCache.retrieve(User.class, p.getName());
+        User user = userService.getOnlineUser(p.getName());
         Plot plot = ListenerHelper.getIntersectedPlot(event.getBlockClicked().getLocation(), new ArrayList<>(plotService.getPlots()));
         if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
             event.setCancelled(true);
@@ -205,7 +207,7 @@ public class ActionListener implements Listener {
         }
 
         Player p = event.getPlayer();
-        User user = DataCache.retrieve(User.class, p.getName());
+        User user = userService.getOnlineUser(p.getName());
         Plot plot = ListenerHelper.getIntersectedPlot(event.getBlockClicked().getLocation(), new ArrayList<>(plotService.getPlots()));
         if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
             event.setCancelled(true);

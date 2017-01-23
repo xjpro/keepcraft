@@ -1,20 +1,23 @@
 package keepcraft.command;
 
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.User;
 
 public class ChatCommandListener extends CommandListener {
 
+    private UserService userService = ServiceCache.getUserService();
+
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
-        User sender = DataCache.retrieve(User.class, commandSender.getName());
+        User sender = userService.getOnlineUser(commandSender.getName());
 
         // Tell
         if (commandName.equals("t") && args.length > 1) {
             String targetName = args[0];
-            User target = DataCache.retrieve(User.class, targetName);
+            User target = userService.getOnlineUser(targetName);
 
             if (target == null) {
                 commandSender.sendMessage(Chat.Failure + targetName + " is not online"); // no user
@@ -31,7 +34,7 @@ public class ChatCommandListener extends CommandListener {
         } // Reply
         else if (commandName.equals("r") && args.length > 0) {
             String lastSenderName = sender.getLastPrivateMessageSender();
-            User lastMessageSender = DataCache.retrieve(User.class, lastSenderName);
+            User lastMessageSender = userService.getOnlineUser(lastSenderName);
             if (lastMessageSender == null) {
                 if (lastSenderName != null) {
                     commandSender.sendMessage(Chat.Failure + lastSenderName + " is not online"); // no user

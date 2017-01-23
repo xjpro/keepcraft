@@ -1,18 +1,21 @@
 package keepcraft.command;
 
 import java.util.Collection;
+
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
-import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
 
 public class FactionCommandListener extends CommandListener {
 
+    private UserService userService = ServiceCache.getUserService();
+
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
-        User sender = DataCache.retrieve(User.class, commandSender.getName());
+        User sender = userService.getOnlineUser(commandSender.getName());
 
         if (!sender.isAdmin()) {
             return true;
@@ -35,7 +38,7 @@ public class FactionCommandListener extends CommandListener {
             }
         } // Red team chat
         else if (commandName.equals("1") && sender.isAdmin()) {
-            Collection<User> connectedUsers = DataCache.retrieveAll(User.class);
+            Collection<User> connectedUsers = userService.getOnlineUsers();
             String message = "";
             for (int i = 0; i < args.length; i++) {
                 message += args[i] + " ";
@@ -44,7 +47,7 @@ public class FactionCommandListener extends CommandListener {
             return true;
         } // Blue team chat
         else if (commandName.equals("2") && sender.isAdmin()) {
-            Collection<User> connectedUsers = DataCache.retrieveAll(User.class);
+            Collection<User> connectedUsers = userService.getOnlineUsers();
             String message = "";
             for (int i = 0; i < args.length; i++) {
                 message += args[i] + " ";
@@ -53,7 +56,7 @@ public class FactionCommandListener extends CommandListener {
             return true;
         } // Green team chat
         else if (commandName.equals("3") && sender.isAdmin()) {
-            Collection<User> connectedUsers = DataCache.retrieveAll(User.class);
+            Collection<User> connectedUsers = userService.getOnlineUsers();
             String message = "";
             for (int i = 0; i < args.length; i++) {
                 message += args[i] + " ";

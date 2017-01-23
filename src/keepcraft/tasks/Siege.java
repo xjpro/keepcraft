@@ -3,6 +3,9 @@ package keepcraft.tasks;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import keepcraft.Chat;
 import keepcraft.data.DataCache;
@@ -11,13 +14,10 @@ import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
 
-/**
- *
- * @author Me
- */
 public class Siege implements Runnable {
 
     private final static double CAPTURE_BONUS_MODIFIER = 1.0;
+    private UserService userService = ServiceCache.getUserService();
 
     private final Plot plot;
     private final User initiatingUser;
@@ -55,7 +55,7 @@ public class Siege implements Runnable {
             begin();
         } else {
             List<User> attackers = new ArrayList<User>();
-            Collection<User> users = DataCache.retrieveAll(User.class);
+            Collection<User> users = userService.getOnlineUsers();
             for (User user : users) {
                 if (user.getCurrentPlot() == plot && !user.isAdmin() && user.getFaction() == attackingFaction) {
                     // they are in the plot

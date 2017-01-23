@@ -1,19 +1,22 @@
 package keepcraft.command;
 
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.tasks.Siege;
 import keepcraft.data.models.User;
 
 public class SiegeCommandListener extends CommandListener {
 
+    private UserService userService = ServiceCache.getUserService();
+
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
-        User sender = DataCache.retrieve(User.class, commandSender.getName());
+        User sender = userService.getOnlineUser(commandSender.getName());
         Plot currentPlot = sender.getCurrentPlot();
 
         if ((commandName.equalsIgnoreCase("cap") || commandName.equalsIgnoreCase("capture")) && args.length == 0) {

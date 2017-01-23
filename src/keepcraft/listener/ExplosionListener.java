@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import keepcraft.services.PlotService;
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -13,7 +15,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Direction;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
@@ -21,7 +22,8 @@ import keepcraft.data.models.User;
 
 public class ExplosionListener implements Listener {
 
-    private PlotService plotService = new PlotService();
+    private UserService userService = ServiceCache.getUserService();
+    private PlotService plotService = ServiceCache.getPlotService();
 
     @EventHandler(priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {
@@ -36,7 +38,7 @@ public class ExplosionListener implements Listener {
         // Begin notification code
         if (plot != null) {
             Server server = Bukkit.getServer();
-            Collection<User> allUsers = DataCache.retrieveAll(User.class);
+            Collection<User> allUsers = userService.getOnlineUsers();
 
             for (User user : allUsers) {
                 if (plot == user.getCurrentPlot() && plot.isFactionProtected(user.getFaction())) {

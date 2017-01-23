@@ -2,15 +2,14 @@ package keepcraft.command;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import keepcraft.services.PlotService;
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
@@ -18,18 +17,19 @@ import keepcraft.data.models.UserPrivilege;
 
 public class BasicCommandListener extends CommandListener {
 
-    private PlotService plotService = new PlotService();
+    private UserService userService = ServiceCache.getUserService();
+    private PlotService plotService = ServiceCache.getPlotService();
 
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
         Player p = (Player) commandSender;
-        User sender = DataCache.retrieve(User.class, commandSender.getName());
+        User sender = userService.getOnlineUser(commandSender.getName());
         int privilege = sender.getPrivilege();
 
         // Char info
         if ((commandName.equalsIgnoreCase("who")) && args.length == 1) {
             String targetName = args[0];
-            User target = DataCache.retrieve(User.class, targetName);
+            User target = userService.getOnlineUser(targetName);
 
             if (target == null) {
                 commandSender.sendMessage(Chat.Failure + "That user does not exist"); // no user
@@ -51,7 +51,7 @@ public class BasicCommandListener extends CommandListener {
             return true;
         } // Full server listing
         else if (commandName.equalsIgnoreCase("who") && args.length == 0) {
-            Collection<User> allUsers = DataCache.retrieveAll(User.class);
+            Collection<User> allUsers = userService.getOnlineUsers();
 
             List<User> adminUsers = new ArrayList<User>();
             List<User> redUsers = new ArrayList<User>();

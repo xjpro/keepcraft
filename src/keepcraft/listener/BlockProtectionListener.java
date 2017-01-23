@@ -3,6 +3,8 @@ package keepcraft.listener;
 import java.util.ArrayList;
 
 import keepcraft.services.PlotService;
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -11,13 +13,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import keepcraft.Privilege;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 
 public class BlockProtectionListener implements Listener {
 
-	private PlotService plotService = new PlotService();
+	private UserService userService = ServiceCache.getUserService();
+	private PlotService plotService = ServiceCache.getPlotService();
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent event) {
@@ -26,7 +28,7 @@ public class BlockProtectionListener implements Listener {
 		Block block = event.getBlock();
 
 		Player p = event.getPlayer();
-		User user = DataCache.retrieve(User.class, p.getName());
+		User user = userService.getOnlineUser(p.getName());
 
 		if (user.isAdmin()) {
 			return;
@@ -84,7 +86,7 @@ public class BlockProtectionListener implements Listener {
 				return;
 		}
 
-		User user = DataCache.retrieve(User.class, p.getName());
+		User user = userService.getOnlineUser(p.getName());
 		if (!canModify(user, block)) {
 			event.setCancelled(true);
 		}

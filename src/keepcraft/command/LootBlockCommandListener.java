@@ -1,5 +1,7 @@
 package keepcraft.command;
 
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import keepcraft.Chat;
 import keepcraft.data.DataCache;
@@ -8,9 +10,11 @@ import keepcraft.data.models.User;
 
 public class LootBlockCommandListener extends CommandListener {
 
+    private UserService userService = ServiceCache.getUserService();
+
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
-        User sender = DataCache.retrieve(User.class, commandSender.getName());
+        User sender = userService.getOnlineUser(commandSender.getName());
 
         if (!sender.isAdmin()) {
             return true;

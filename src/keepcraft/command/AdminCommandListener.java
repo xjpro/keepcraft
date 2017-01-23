@@ -1,7 +1,8 @@
 package keepcraft.command;
 
 import keepcraft.services.PlotService;
-import org.bukkit.Location;
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,12 +15,12 @@ import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.UserPrivilege;
-import keepcraft.data.models.WorldPoint;
 
 public class AdminCommandListener extends CommandListener {
 
     private World world = null;
-    private PlotService plotService = new PlotService();
+    private UserService userService = ServiceCache.getUserService();
+    private PlotService plotService = ServiceCache.getPlotService();
 
     public void setWorld(World value) {
         world = value;
@@ -28,13 +29,13 @@ public class AdminCommandListener extends CommandListener {
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
         Player p = (Player) commandSender;
-        User sender = DataCache.retrieve(User.class, commandSender.getName());
+        User sender = userService.getOnlineUser(commandSender.getName());
 
         // Promote
         if (commandName.equals("promote") && args.length == 1) {
             if (commandSender.isOp() || Privilege.canPromote(sender)) {
                 String targetName = args[0];
-                User target = DataCache.retrieve(User.class, targetName);
+                User target = userService.getOnlineUser(targetName);
 
                 if (target == null) {
                     commandSender.sendMessage(Chat.Failure + "Requested user '" + targetName + "' does not exist");
@@ -43,7 +44,7 @@ public class AdminCommandListener extends CommandListener {
 
                 int newPrivilege = target.getPrivilege() + 100;
                 target.setPrivilege(newPrivilege);
-                DataCache.update(target);
+                userService.updateUser(target);
 
                 commandSender.sendMessage(Chat.Success + "Promoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
                 commandSender.getServer().getPlayer(targetName).sendMessage(Chat.Change + "You were promoted to "
@@ -54,7 +55,7 @@ public class AdminCommandListener extends CommandListener {
         else if (commandName.equals("demote") && args.length == 1) {
             if (commandSender.isOp() || Privilege.canDemote(sender)) {
                 String targetName = args[0];
-                User target = DataCache.retrieve(User.class, targetName);
+                User target = userService.getOnlineUser(targetName);
 
                 if (target == null) {
                     commandSender.sendMessage(Chat.Failure + "Requested user '" + targetName + "' does not exist");
@@ -63,7 +64,7 @@ public class AdminCommandListener extends CommandListener {
 
                 int newPrivilege = target.getPrivilege() - 100;
                 target.setPrivilege(newPrivilege);
-                DataCache.update(target);
+                userService.updateUser(target);
 
                 commandSender.sendMessage(Chat.Success + "Demoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
                 commandSender.getServer().getPlayer(targetName).sendMessage(Chat.Change + "You were demoted to "
@@ -114,7 +115,7 @@ public class AdminCommandListener extends CommandListener {
         else if (commandName.equals("setfaction") && args.length == 2) {
             if (Privilege.canModifyUserData(sender)) {
                 String targetName = args[0];
-                User target = DataCache.retrieve(User.class, targetName);
+                User target = userService.getOnlineUser(targetName);
 
                 if (target == null) {
                     commandSender.sendMessage(Chat.Failure + "Requested user '" + targetName + "' does not exist");
@@ -131,7 +132,7 @@ public class AdminCommandListener extends CommandListener {
                 }
 
                 target.setFaction(faction);
-                DataCache.update(target);
+                userService.updateUser(target);
 
                 commandSender.sendMessage(Chat.Success + "Set " + targetName + " to faction " + UserFaction.asString(faction));
                 commandSender.getServer().getPlayer(targetName).sendMessage(Chat.Change + "Your faction was changed to " + UserFaction.asString(faction));

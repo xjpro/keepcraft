@@ -1,6 +1,8 @@
 package keepcraft.command;
 
 import keepcraft.services.PlotService;
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,11 +19,12 @@ import keepcraft.data.models.WorldPoint;
 
 public class PlotCommandListener extends CommandListener {
 
-    private PlotService plotService = new PlotService();
+    private UserService userService = ServiceCache.getUserService();
+    private PlotService plotService = ServiceCache.getPlotService();
 
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
-        User sender = DataCache.retrieve(User.class, commandSender.getName());
+        User sender = userService.getOnlineUser(commandSender.getName());
         int privilege = sender.getPrivilege();
 
         Plot currentPlot = sender.getCurrentPlot();

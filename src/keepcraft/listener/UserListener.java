@@ -2,6 +2,8 @@ package keepcraft.listener;
 
 import keepcraft.data.models.*;
 import keepcraft.services.PlotService;
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -22,7 +24,8 @@ import keepcraft.data.DataCache;
 
 public class UserListener implements Listener {
 
-    private PlotService plotService = new PlotService();
+    private UserService userService = ServiceCache.getUserService();
+    private PlotService plotService = ServiceCache.getPlotService();
 
     private static class StartingValueSetter implements Runnable {
 
@@ -49,14 +52,12 @@ public class UserListener implements Listener {
 
         Player p = event.getPlayer();
 
-        boolean firstTimeUser = !DataCache.exists(User.class, p.getName());
-
-        DataCache.load(User.class, p.getName());
-        User user = DataCache.retrieve(User.class, p.getName());
+        boolean firstTimeUser = !userService.userIsRegistered(p.getName());
+        User user = userService.loadOfflineUser(p.getName());
 
         if (firstTimeUser || user.getPrivilege() == UserPrivilege.INIT) {
             user.setPrivilege(UserPrivilege.MEMBER);
-            DataCache.update(user);
+            userService.updateUser(user);
 
             setBasicEquipment(p);
             teleportHome(p, user);
@@ -81,7 +82,7 @@ public class UserListener implements Listener {
         event.setQuitMessage(null);
 
         Player p = event.getPlayer();
-        User user = DataCache.retrieve(User.class, p.getName());
+        User user = userService.getOnlineUser(p.getName());
 
         Plot lastPlot = user.getCurrentPlot();
         if (lastPlot != null && lastPlot.isFactionProtected(user.getFaction())) {
@@ -92,13 +93,13 @@ public class UserListener implements Listener {
             user.setLastPlotId(0);
         }
 
-        DataCache.unload(User.class, p.getName());
+        userService.setUserOffline(user);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player p = event.getPlayer();
-        User user = DataCache.retrieve(User.class, p.getName());
+        User user = userService.getOnlineUser(p.getName());
         FactionSpawn spawn = DataCache.retrieve(FactionSpawn.class, user.getFaction());
         Location respawnLocation = spawn.getLocation();
 
@@ -122,7 +123,7 @@ public class UserListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        User user = DataCache.retrieve(User.class, p.getName());
+        User user = userService.getOnlineUser(p.getName());
 
         ItemStack inHand = event.getItem();
 

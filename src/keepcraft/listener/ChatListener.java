@@ -2,16 +2,19 @@ package keepcraft.listener;
 
 import java.util.Collection;
 
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.User;
 
 public class ChatListener implements Listener {
+
+    private UserService userService = ServiceCache.getUserService();
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerChat(PlayerChatEvent event) {
@@ -19,9 +22,9 @@ public class ChatListener implements Listener {
 
         Player p = event.getPlayer();
         String message = event.getMessage();
-        User sender = DataCache.retrieve(User.class, p.getName());
+        User sender = userService.getOnlineUser(p.getName());
 
-        Collection<User> connectedUsers = DataCache.retrieveAll(User.class);
+        Collection<User> connectedUsers = userService.getOnlineUsers();
 
         if (sender.isAdmin()) {
             Chat.sendAdminMessage(sender, connectedUsers, message);

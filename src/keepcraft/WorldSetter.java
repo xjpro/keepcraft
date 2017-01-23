@@ -7,12 +7,13 @@ import keepcraft.data.DataCache;
 import keepcraft.data.models.FactionSpawn;
 import keepcraft.data.models.UserFaction;
 import keepcraft.services.PlotService;
+import keepcraft.services.ServiceCache;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 
 public class WorldSetter {
 
-    private PlotService plotService = new PlotService();
+    private PlotService plotService = ServiceCache.getPlotService();
     private final int TEAM_PLOT_RADIUS = 75;
 
     public World reset(World currentWorld) {

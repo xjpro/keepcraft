@@ -1,5 +1,7 @@
 package keepcraft.listener;
 
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -14,11 +16,12 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import keepcraft.Chat;
-import keepcraft.data.DataCache;
 import keepcraft.data.models.Armor;
 import keepcraft.data.models.User;
 
 public class CombatListener implements Listener {
+
+    private UserService userService = ServiceCache.getUserService();
 
     @EventHandler(priority = EventPriority.LOW)
     public void onEntityDamage(EntityDamageEvent event) {
@@ -46,9 +49,9 @@ public class CombatListener implements Listener {
                 }
 
                 if (attacker != null) {
-                    User attackingUser = DataCache.retrieve(User.class, attacker.getName());
+                    User attackingUser = userService.getOnlineUser(attacker.getName());
                     Player defender = (Player) damaged;
-                    User defendingUser = DataCache.retrieve(User.class, defender.getName());
+                    User defendingUser = userService.getOnlineUser(defender.getName());
 
                     if (attackingUser.getFaction() == defendingUser.getFaction()) {
                         event.setCancelled(true);
@@ -79,7 +82,7 @@ public class CombatListener implements Listener {
         if (event.getEntity() instanceof Player) {
             // Get target
             Player p = (Player) event.getEntity();
-            User target = DataCache.retrieve(User.class, p.getName());
+            User target = userService.getOnlineUser(p.getName());
 
             if (target != null && target.isAdmin()) {
                 event.getDrops().clear();
@@ -91,7 +94,7 @@ public class CombatListener implements Listener {
             String[] parts = message.trim().split(" ");
             String attackerName = parts[parts.length - 1];
 
-            User attackerUser = DataCache.retrieve(User.class, attackerName);
+            User attackerUser = userService.getOnlineUser(attackerName);
 
             if (attackerUser != null) {
                 String causeSection = "";

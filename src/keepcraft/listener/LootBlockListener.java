@@ -2,6 +2,9 @@ package keepcraft.listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import keepcraft.services.ServiceCache;
+import keepcraft.services.UserService;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -18,6 +21,8 @@ import keepcraft.data.models.User;
 
 public class LootBlockListener implements Listener {
 
+    private UserService userService = ServiceCache.getUserService();
+
     public LootBlockListener() {
         Collection<LootBlock> lootBlocks = DataCache.retrieveAll(LootBlock.class);
         for (LootBlock block : lootBlocks) {
@@ -30,7 +35,7 @@ public class LootBlockListener implements Listener {
         Block placed = event.getBlock();
         if (placed.getType() == Material.NETHER_WART_BLOCK) {
             Player p = event.getPlayer();
-            User user = DataCache.retrieve(User.class, p.getName());
+            User user = userService.getOnlineUser(p.getName());
 
             if (user.isAdmin()) {
                 // create a loot dispenser chest
@@ -50,7 +55,7 @@ public class LootBlockListener implements Listener {
         Block broken = event.getBlock();
         if (broken.getType() == Material.CHEST) {
             Player p = event.getPlayer();
-            User user = DataCache.retrieve(User.class, p.getName());
+            User user = userService.getOnlineUser(p.getName());
 
             if (user.isAdmin()) {
                 // need a copy for thread safety
@@ -71,7 +76,7 @@ public class LootBlockListener implements Listener {
         Block damaged = event.getBlock();
         if (damaged.getType() == Material.CHEST) {
             Player p = (Player) event.getPlayer();
-            User user = DataCache.retrieve(User.class, p.getName());
+            User user = userService.getOnlineUser(p.getName());
 
             if (user.isAdmin()) {
                 Collection<LootBlock> lootBlocks = new ArrayList<LootBlock>(DataCache.retrieveAll(LootBlock.class));

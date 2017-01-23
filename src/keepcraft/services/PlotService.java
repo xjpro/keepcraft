@@ -11,7 +11,7 @@ public class PlotService {
     private PlotDataManager plotDataManager = new PlotDataManager();
     private Collection<Plot> plots;
 
-    public PlotService() {
+    PlotService() {
         plots = plotDataManager.getAllData().values();
     }
 
