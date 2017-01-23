@@ -24,7 +24,6 @@ public class Plot {
     //private User setter;
     //private Timestamp timestampSet;
     private Siege activeSiege = null;
-    private long lastExplosion = System.currentTimeMillis() - 3600000;
 
     public WorldPoint getLocation() {
         return location;

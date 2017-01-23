@@ -13,6 +13,7 @@ import org.bukkit.block.Block;
 public class WorldSetter {
 
     private PlotService plotService = new PlotService();
+    private final int TEAM_PLOT_RADIUS = 75;
 
     public World reset(World currentWorld) {
         Server server = Bukkit.getServer();
@@ -41,9 +42,17 @@ public class WorldSetter {
 
     private void setBase(int faction, Location location) {
         Keepcraft.log(String.format("Setting up %s faction...", UserFaction.getName(faction)));
-        prepareBaseArea(location, 100);
-        plotService.createTeamPlot(null, location, faction, 75);
-        DataCache.load(FactionSpawn.class, new FactionSpawn(faction, location));
+        prepareBaseArea(location, TEAM_PLOT_RADIUS + 25);
+
+        // Find good spawn location
+        Location goodSpawnLocation = location.clone();
+        goodSpawnLocation.setY(TEAM_PLOT_RADIUS);
+        while(!goodSpawnLocation.getWorld().getBlockAt(goodSpawnLocation.getBlockX(), goodSpawnLocation.getBlockY(), goodSpawnLocation.getBlockZ()).getType().isSolid()) {
+            goodSpawnLocation.setY(goodSpawnLocation.getBlockY()-1);
+        }
+
+        plotService.createTeamPlot(null, goodSpawnLocation, faction, TEAM_PLOT_RADIUS);
+        DataCache.load(FactionSpawn.class, new FactionSpawn(faction, goodSpawnLocation));
     }
 
     private void prepareBaseArea(Location center, int radius) {
@@ -65,9 +74,7 @@ public class WorldSetter {
                         );
 
                         for (Block block : blocks) {
-                            if (block.getType().isSolid()) {
-                                prepareBlock(block);
-                            }
+                            prepareBlock(block);
                         }
                     }
                 }
@@ -90,12 +97,12 @@ public class WorldSetter {
         if (y > 75) {
             block.setType(Material.AIR);
         }
-        // Remove water at 62
-        else if (y <= 62 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
-            if (y < 57) {
+        // Remove water at 64
+        else if (y <= 64 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
+            if (y < 58) {
                 block.setType(Material.STONE);
             } else {
-                block.setType(Material.DIRT);
+                block.setType(Material.GRASS);
             }
         }
     }
