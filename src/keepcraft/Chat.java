@@ -16,15 +16,15 @@ public abstract class Chat {
     private final static Logger logger = Logger.getLogger("Minecraft");
 
     public final static ChatColor NameAdmin = ChatColor.YELLOW;
-    public final static ChatColor NameRed = ChatColor.DARK_PURPLE;//ChatColor.RED;
-    public final static ChatColor NameBlue = ChatColor.DARK_GREEN;//ChatColor.BLUE;
-    public final static ChatColor NameGreen = ChatColor.BLUE;
-    public final static ChatColor NameGold = ChatColor.AQUA;
+    public final static ChatColor NameRed = ChatColor.RED;
+    public final static ChatColor NameBlue = ChatColor.BLUE;
+    public final static ChatColor NameGreen = ChatColor.DARK_GREEN;
+    public final static ChatColor NameGold = ChatColor.GOLD;
     public final static ChatColor NameOther = ChatColor.DARK_GRAY;
 
     public final static ChatColor Success = ChatColor.GREEN;
-    public final static ChatColor Failure = ChatColor.RED;
-    public final static ChatColor RequestedInfo = ChatColor.GOLD;
+    public final static ChatColor Failure = ChatColor.DARK_RED;
+    public final static ChatColor RequestedInfo = ChatColor.AQUA;
     public final static ChatColor Info = ChatColor.DARK_GRAY;
     public final static ChatColor Change = ChatColor.DARK_PURPLE;
 

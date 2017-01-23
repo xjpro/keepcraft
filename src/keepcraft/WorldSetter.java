@@ -50,10 +50,13 @@ public class WorldSetter {
         while(!goodSpawnLocation.getWorld().getBlockAt(goodSpawnLocation.getBlockX(), goodSpawnLocation.getBlockY(), goodSpawnLocation.getBlockZ()).getType().isSolid()) {
             goodSpawnLocation.add(0, -1, 0);
         }
-		goodSpawnLocation.add(0, 1, 0); // Go one up so we're not buried
+		goodSpawnLocation.add(0, 1, 0); // Go one up so we're in air
 
         plotService.createTeamPlot(null, goodSpawnLocation, faction, TEAM_PLOT_RADIUS);
-        DataCache.load(FactionSpawn.class, new FactionSpawn(faction, goodSpawnLocation));
+
+        // Center faction spawn on block so it's not buried
+		FactionSpawn spawn = new FactionSpawn(faction, goodSpawnLocation.clone().add(0.5, 0, 0.5));
+        DataCache.load(FactionSpawn.class, spawn);
     }
 
     private void prepareBaseArea(Location center, int radius) {
