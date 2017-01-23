@@ -2,9 +2,7 @@ package keepcraft.listener;
 
 import java.util.ArrayList;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import keepcraft.Keepcraft;
 import keepcraft.services.PlotService;
 import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
@@ -100,7 +98,7 @@ public class ActionListener implements Listener {
             if ((lastLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
                     && (p.getFallDistance() == 0.0F && p.getVelocity().getY() <= -0.6D)
                     && (p.getLocation().getY() > 0.0D)) {
-                Logger.getLogger("Minecraft").log(Level.INFO, String.format("KC: A float by %s was prevented", user.getName()));
+                Keepcraft.log(String.format("A float by %s was prevented", user.getName()));
 
                 // Find the ground
                 Location blockLocation = lastLocation;

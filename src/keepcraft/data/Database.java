@@ -1,5 +1,7 @@
 package keepcraft.data;
 
+import keepcraft.Keepcraft;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,7 +17,7 @@ public class Database {
     public Database(String path) {
         databasePath = path;
 
-        logger.info("KC: init database");
+        Keepcraft.log("init database");
         try {
             // It's a SQLite database
             Class.forName("org.sqlite.JDBC");
