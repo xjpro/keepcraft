@@ -1,5 +1,6 @@
 package keepcraft.listener;
 
+import keepcraft.data.models.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,10 +18,6 @@ import org.bukkit.inventory.PlayerInventory;
 import keepcraft.Chat;
 import keepcraft.Keepcraft;
 import keepcraft.data.DataCache;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.ServerConditions;
-import keepcraft.data.models.User;
-import keepcraft.data.models.UserPrivilege;
 
 public class UserListener implements Listener {
 
@@ -95,7 +92,8 @@ public class UserListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player p = event.getPlayer();
         User user = DataCache.retrieve(User.class, p.getName());
-        Location respawnLocation = ServerConditions.getSpawn(user.getFaction());
+        FactionSpawn spawn = DataCache.retrieve(FactionSpawn.class, user.getFaction());
+        Location respawnLocation = spawn.getLocation();
 
         if (respawnLocation != null) {
             event.setRespawnLocation(respawnLocation);
@@ -162,7 +160,8 @@ public class UserListener implements Listener {
     }
 
     private void teleportHome(Player p, User user) {
-        Location respawnLocation = ServerConditions.getSpawn(user.getFaction());
+        FactionSpawn respawn = DataCache.retrieve(FactionSpawn.class, user.getFaction());
+        Location respawnLocation = respawn.getLocation();
 
         if (respawnLocation != null) {
             p.teleport(respawnLocation);

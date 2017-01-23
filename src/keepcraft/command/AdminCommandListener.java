@@ -104,8 +104,9 @@ public class AdminCommandListener extends CommandListener {
                     return false;
                 }
 
-                ServerConditions.setSpawn(faction, p.getLocation());
-                commandSender.sendMessage(Chat.Success + "Set faction " + faction + "'s spawn to " + p.getLocation());
+                //ServerConditions.setSpawn(faction, p.getLocation());
+                //commandSender.sendMessage(Chat.Success + "Set faction " + faction + "'s spawn to " + p.getLocation());
+                commandSender.sendMessage(Chat.Failure + "Command disabled in favor of resetting the map");
                 return true;
             }
         } // Set team

@@ -1,12 +1,8 @@
 package keepcraft;
 
+import keepcraft.data.*;
+import keepcraft.data.models.*;
 import keepcraft.listener.*;
-import keepcraft.data.UserDataManager;
-import keepcraft.data.Database;
-import keepcraft.data.DataCache;
-import keepcraft.data.LootBlockDataManager;
-import keepcraft.data.PlotDataManager;
-import keepcraft.data.DataManager;
 import keepcraft.command.BasicCommandListener;
 import keepcraft.command.AdminCommandListener;
 import keepcraft.command.FactionCommandListener;
@@ -33,15 +29,16 @@ public class Keepcraft extends JavaPlugin {
     private final Database database = new Database("keepcraft.db");
     private final UserDataManager userDataManager = new UserDataManager(database);
     private final DataManager<Plot> plotDataManager = new PlotDataManager(database);
+    private final DataManager<FactionSpawn> factionSpawnManager = new FactionSpawnDataManager(database);
     private final DataManager<LootBlock> lootBlockDataManager = new LootBlockDataManager(database);
     private World world;
 
     @Override
     public void onEnable() {
-        DataCache.init(userDataManager, plotDataManager, lootBlockDataManager);
+        DataCache.init(userDataManager, plotDataManager, factionSpawnManager, lootBlockDataManager);
 
         world = WorldLoader.loadLatest();
-        ServerConditions.init(this.getConfig(), world);
+        ServerConditions.init(this.getConfig());
         Bukkit.getServer().setSpawnRadius(0);
 
         PluginManager manager = this.getServer().getPluginManager();
@@ -141,6 +138,7 @@ public class Keepcraft extends JavaPlugin {
 
         // Clean database
         plotDataManager.truncate();
+        factionSpawnManager.truncate();
         lootBlockDataManager.truncate();
         userDataManager.resetNonAdminUserData();
         DataCache.clear();

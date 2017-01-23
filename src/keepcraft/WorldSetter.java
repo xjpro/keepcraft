@@ -1,8 +1,10 @@
 package keepcraft;
 
 import java.util.*;
+import java.util.List;
 
-import keepcraft.data.models.ServerConditions;
+import keepcraft.data.DataCache;
+import keepcraft.data.models.FactionSpawn;
 import keepcraft.data.models.UserFaction;
 import keepcraft.services.PlotService;
 import org.bukkit.*;
@@ -40,9 +42,7 @@ public class WorldSetter {
     private void setBase(Location location, int faction) {
         prepareBaseArea(location, 100);
         plotService.createTeamPlot(null, location, faction, 75);
-
-        // MASSIVE TODO FIX SPAWNS
-        ServerConditions.setSpawn(faction, location);
+        DataCache.load(FactionSpawn.class, new FactionSpawn(faction, location));
     }
 
     private void prepareBaseArea(Location center, int radius) {
@@ -54,7 +54,6 @@ public class WorldSetter {
                 if ((x - centerX) * (x - centerX) + (z - centerZ) * (z - centerZ) <= radius * radius) {
                     int otherX = centerX - (x - centerX);
                     int otherZ = centerZ - (z - centerZ);
-
                     // (x, z), (x, otherZ), (otherX , z), (otherX, otherZ) are in the circle
                     for (int y = 0; y <= 150; y++) {
                         List<Block> blocks = Arrays.asList(
@@ -65,25 +64,36 @@ public class WorldSetter {
                         );
 
                         for (Block block : blocks) {
-                            Material type = block.getType();
-                            if (type != Material.AIR) {
-                                // Flatten above 75
-                                if (y > 75 && type.isSolid() && type != Material.WOOD) {
-                                    block.setType(Material.AIR);
-                                }
-                                // Remove water at 64
-                                else if (y <= 64 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
-                                    if(y < 58) {
-                                        block.setType(Material.STONE);
-                                    }
-                                    else {
-                                        block.setType(Material.DIRT);
-                                    }
-                                }
+                            if (block.getType().isSolid() && block.getType() != Material.WOOD) {
+                                prepareBlock(block);
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private void prepareBlock(Block block) {
+        if(!block.getWorld().isChunkLoaded(block.getX(), block.getZ())) {
+            // Generate chunks before modifying
+            // This makes the modification much more consistent
+            block.getWorld().loadChunk(block.getX(), block.getZ(), true);
+        }
+
+        int y = block.getY();
+        Material type = block.getType();
+
+        // Flatten above 75
+        if (y > 75) {
+            block.setType(Material.AIR);
+        }
+        // Remove water at 64
+        else if (y <= 64 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
+            if (y < 58) {
+                block.setType(Material.STONE);
+            } else {
+                block.setType(Material.DIRT);
             }
         }
     }

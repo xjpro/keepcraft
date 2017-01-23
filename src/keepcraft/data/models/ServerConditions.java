@@ -1,54 +1,16 @@
 package keepcraft.data.models;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public abstract class ServerConditions {
 
     private static FileConfiguration config;
-    private static Map<Integer, Location> table = new HashMap<>();
     private static int mapRadius = -1;
-    private static int minimumDefenderCount = -1;
 
-    public static void init(FileConfiguration config, World world) {
+    public static void init(FileConfiguration config) {
         ServerConditions.config = config;
-
-        loadSpawn(0, world); // center location
-        loadSpawn(UserFaction.FactionRed, world);
-        loadSpawn(UserFaction.FactionBlue, world);
-        loadSpawn(UserFaction.FactionGreen, world);
-        loadSpawn(UserFaction.FactionGold, world);
-    }
-
-    public static Location getSpawn(int faction) {
-        return table.get(faction);
-    }
-
-    public static void setSpawn(int faction, Location loc) {
-        table.remove(faction);
-        table.put(faction, loc);
-
-        if (loc != null) {
-            config.set("spawn" + faction, loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ());
-            save();
-        }
-    }
-
-    private static void loadSpawn(int faction, World world) {
-        String spawnString = (String) config.get("spawn" + faction);
-
-        Location spawn = null;
-        if (spawnString != null) {
-            String[] split = spawnString.split(",");
-            spawn = new Location(world, Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-        }
-
-        setSpawn(faction, spawn);
     }
 
     public static int getMapRadius() {
