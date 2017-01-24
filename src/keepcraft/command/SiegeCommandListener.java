@@ -1,6 +1,5 @@
 package keepcraft.command;
 
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -12,7 +11,11 @@ import keepcraft.data.models.User;
 
 public class SiegeCommandListener extends CommandListener {
 
-    private UserService userService = ServiceCache.getUserService();
+    private final UserService userService;
+
+    public SiegeCommandListener(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {

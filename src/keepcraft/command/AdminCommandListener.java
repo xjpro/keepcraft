@@ -1,7 +1,6 @@
 package keepcraft.command;
 
 import keepcraft.services.PlotService;
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -18,8 +17,14 @@ import keepcraft.data.models.UserPrivilege;
 public class AdminCommandListener extends CommandListener {
 
     private World world = null;
-    private UserService userService = ServiceCache.getUserService();
-    private PlotService plotService = ServiceCache.getPlotService();
+
+    private final UserService userService;
+    private final PlotService plotService;
+
+    public AdminCommandListener(UserService userService, PlotService plotService) {
+        this.userService = userService;
+        this.plotService = plotService;
+    }
 
     public void setWorld(World value) {
         world = value;

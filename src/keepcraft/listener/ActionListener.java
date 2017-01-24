@@ -2,7 +2,6 @@ package keepcraft.listener;
 
 import keepcraft.Keepcraft;
 import keepcraft.services.PlotService;
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -27,8 +26,13 @@ import keepcraft.data.models.User;
 
 public class ActionListener implements Listener {
 
-    private UserService userService = ServiceCache.getUserService();
-    private PlotService plotService = ServiceCache.getPlotService();
+    private final UserService userService;
+    private final PlotService plotService;
+
+    public ActionListener(UserService userService, PlotService plotService) {
+        this.userService = userService;
+        this.plotService = plotService;
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {

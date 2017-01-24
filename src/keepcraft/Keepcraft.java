@@ -13,7 +13,7 @@ import keepcraft.command.CommandListener;
 
 import java.util.logging.Logger;
 
-import keepcraft.services.ServiceCache;
+import keepcraft.services.*;
 import org.bukkit.Bukkit;
 import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.Plot;
@@ -27,48 +27,57 @@ import keepcraft.data.models.LootBlock;
 public class Keepcraft extends JavaPlugin {
 
     private static final Logger logger = Logger.getLogger("Minecraft");
+
+    // Data managers
     private final Database database = new Database("keepcraft.db");
     private final UserDataManager userDataManager = new UserDataManager(database);
     private final DataManager<Plot> plotDataManager = new PlotDataManager(database);
     private final DataManager<FactionSpawn> factionSpawnManager = new FactionSpawnDataManager(database);
     private final DataManager<LootBlock> lootBlockDataManager = new LootBlockDataManager(database);
+
+    // Services
+    private final UserService userService = new UserService();
+    private final PlotService plotService = new PlotService();
+    private final FactionSpawnService factionSpawnService = new FactionSpawnService();
+
     private World world;
 
     @Override
     public void onEnable() {
+
         world = WorldLoader.loadLatest();
         ServerConditions.init(this.getConfig());
         Bukkit.getServer().setSpawnRadius(0);
 
         PluginManager manager = this.getServer().getPluginManager();
 
-        manager.registerEvents(new UserListener(), this);
-        manager.registerEvents(new ActionListener(), this);
-        manager.registerEvents(new ChatListener(), this);
-        manager.registerEvents(new CombatListener(), this);
+        manager.registerEvents(new UserListener(userService, plotService, factionSpawnService), this);
+        manager.registerEvents(new ActionListener(userService, plotService), this);
+        manager.registerEvents(new ChatListener(userService), this);
+        manager.registerEvents(new CombatListener(userService), this);
         manager.registerEvents(new WorldEntityListener(), this);
-        manager.registerEvents(new ExplosionListener(), this);
-        manager.registerEvents(new BlockProtectionListener(), this);
+        manager.registerEvents(new ExplosionListener(userService, plotService), this);
+        manager.registerEvents(new BlockProtectionListener(userService, plotService), this);
         //manager.registerEvents(new ChunkListener(), this);
         //manager.registerEvents(new LootBlockListener(), this);
         manager.registerEvents(new StormListener(), this);
 
         // Basic commands
-        CommandListener basicCommandListener = new BasicCommandListener();
+        CommandListener basicCommandListener = new BasicCommandListener(userService, plotService);
         String[] basicCommands = {"die", "who", "map", "rally", "global"};
-        for (int i = 0; i < basicCommands.length; i++) {
-            getCommand(basicCommands[i]).setExecutor(basicCommandListener);
+        for (String basicCommand : basicCommands) {
+            getCommand(basicCommand).setExecutor(basicCommandListener);
         }
 
         // Chat commands
-        CommandListener chatCommandListener = new ChatCommandListener();
+        CommandListener chatCommandListener = new ChatCommandListener(userService);
         String[] chatCommands = {"t", "r", "g"};
-        for (int i = 0; i < chatCommands.length; i++) {
-            getCommand(chatCommands[i]).setExecutor(chatCommandListener);
+        for (String chatCommand : chatCommands) {
+            getCommand(chatCommand).setExecutor(chatCommandListener);
         }
 
         // Admin commands
-        AdminCommandListener adminCommandListener = new AdminCommandListener();
+        AdminCommandListener adminCommandListener = new AdminCommandListener(userService, plotService);
         adminCommandListener.setWorld(world);
         String[] adminCommands = {"promote", "demote", "delete", "reset", "setspawn", "setfaction", "setradius",
             "plottp", "dawn", "noon", "dusk"};
@@ -76,17 +85,17 @@ public class Keepcraft extends JavaPlugin {
             getCommand(adminCommand).setExecutor(adminCommandListener);
         }
 
-        FactionCommandListener factionCommandListener = new FactionCommandListener();
+        FactionCommandListener factionCommandListener = new FactionCommandListener(userService);
         String[] factionCommands = {"faction", "1", "2", "3"};
-        for (int i = 0; i < factionCommands.length; i++) {
-            getCommand(factionCommands[i]).setExecutor(factionCommandListener);
+        for (String factionCommand : factionCommands) {
+            getCommand(factionCommand).setExecutor(factionCommandListener);
         }
 
         // Plot commands
-        CommandListener plotCommandListener = new PlotCommandListener();
+        CommandListener plotCommandListener = new PlotCommandListener(userService, plotService);
         String[] plotCommands = {"plot"};
-        for (int i = 0; i < plotCommands.length; i++) {
-            getCommand(plotCommands[i]).setExecutor(plotCommandListener);
+        for (String plotCommand : plotCommands) {
+            getCommand(plotCommand).setExecutor(plotCommandListener);
         }
 
 //        // LootBlock commands
@@ -97,10 +106,10 @@ public class Keepcraft extends JavaPlugin {
 //        }
 
         // Siege commands
-        CommandListener siegeCommandListener = new SiegeCommandListener();
+        CommandListener siegeCommandListener = new SiegeCommandListener(userService);
         String[] siegeCommands = {"cap", "capture"};
-        for (int i = 0; i < siegeCommands.length; i++) {
-            getCommand(siegeCommands[i]).setExecutor(siegeCommandListener);
+        for (String siegeCommand : siegeCommands) {
+            getCommand(siegeCommand).setExecutor(siegeCommandListener);
         }
 
         log("Keepcraft enabled");
@@ -142,10 +151,13 @@ public class Keepcraft extends JavaPlugin {
         lootBlockDataManager.truncate();
         userDataManager.resetNonAdminUserData();
 
-        WorldSetter setter = new WorldSetter();
+        WorldSetter setter = new WorldSetter(plotService, factionSpawnService);
         world = setter.reset(world);
         getConfig().set("spawn.world", world.getName());
-        ServiceCache.refreshCaches();
+
+        userService.refreshCache();
+        plotService.refreshCache();
+        factionSpawnService.refreshCache();
 
         // Restore state of white list
         server.setWhitelist(originallyWhiteListed);

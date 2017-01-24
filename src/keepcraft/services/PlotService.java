@@ -11,11 +11,11 @@ public class PlotService {
     private PlotDataManager plotDataManager = new PlotDataManager();
     private Collection<Plot> plots;
 
-    PlotService() {
+    public PlotService() {
         refreshCache();
     }
 
-    void refreshCache() {
+    public void refreshCache() {
         plots = plotDataManager.getAllData();
     }
 

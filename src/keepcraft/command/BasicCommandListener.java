@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import keepcraft.services.PlotService;
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,8 +16,13 @@ import keepcraft.data.models.UserPrivilege;
 
 public class BasicCommandListener extends CommandListener {
 
-    private UserService userService = ServiceCache.getUserService();
-    private PlotService plotService = ServiceCache.getPlotService();
+    private final UserService userService;
+    private final PlotService plotService;
+
+    public BasicCommandListener(UserService userService, PlotService plotService) {
+        this.userService = userService;
+        this.plotService = plotService;
+    }
 
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {

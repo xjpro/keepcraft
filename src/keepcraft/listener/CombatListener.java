@@ -1,6 +1,5 @@
 package keepcraft.listener;
 
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -21,7 +20,11 @@ import keepcraft.data.models.User;
 
 public class CombatListener implements Listener {
 
-    private UserService userService = ServiceCache.getUserService();
+    private final UserService userService;
+
+    public CombatListener(UserService userService) {
+        this.userService = userService;
+    }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onEntityDamage(EntityDamageEvent event) {

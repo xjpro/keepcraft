@@ -1,36 +1,20 @@
 package keepcraft.listener;
 
-import java.util.Random;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Creature;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 
 public class WorldEntityListener implements Listener {
 
-    private final Random random = new Random();
-    private double spawnChance = 0.6;
-
-    /*@EventHandler(priority = EventPriority.NORMAL)
-    public void onCreatureSpawn(CreatureSpawnEvent event)
-	{
-        if(event.getSpawnReason() == SpawnReason.NATURAL)
-        {
-            if(random.nextDouble() > spawnChance)
-            {
-                event.setCancelled(true);
-            }
-        }
-	}*/
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEndermanPickup(EntityChangeBlockEvent event) {
-        event.setCancelled(true); // This is annoying
+        // This is annoying
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

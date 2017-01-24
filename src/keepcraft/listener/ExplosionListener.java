@@ -3,7 +3,6 @@ package keepcraft.listener;
 import java.util.Collection;
 
 import keepcraft.services.PlotService;
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,8 +20,13 @@ import keepcraft.data.models.User;
 
 public class ExplosionListener implements Listener {
 
-    private UserService userService = ServiceCache.getUserService();
-    private PlotService plotService = ServiceCache.getPlotService();
+    private final UserService userService;
+    private final PlotService plotService;
+
+    public ExplosionListener(UserService userService, PlotService plotService) {
+        this.userService = userService;
+        this.plotService = plotService;
+    }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {

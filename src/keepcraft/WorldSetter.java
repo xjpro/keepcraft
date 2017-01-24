@@ -13,9 +13,14 @@ import org.bukkit.block.Block;
 
 public class WorldSetter {
 
-    private PlotService plotService = ServiceCache.getPlotService();
-    private FactionSpawnService factionSpawnService = ServiceCache.getFactionSpawnService();
+    private final PlotService plotService;
+    private final FactionSpawnService factionSpawnService;
     private final int TEAM_PLOT_RADIUS = 75;
+
+    public WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService) {
+        this.plotService = plotService;
+        this.factionSpawnService = factionSpawnService;
+    }
 
     public World reset(World currentWorld) {
         Server server = Bukkit.getServer();

@@ -10,11 +10,11 @@ public class FactionSpawnService {
     private FactionSpawnDataManager factionSpawnDataManager = new FactionSpawnDataManager();
     private HashMap<Integer, FactionSpawn> factionSpawns;
 
-    FactionSpawnService() {
+    public FactionSpawnService() {
         refreshCache();
     }
 
-    void refreshCache() {
+    public void refreshCache() {
         factionSpawns = new HashMap<>();
         for(FactionSpawn spawn : factionSpawnDataManager.getAllData()) {
             factionSpawns.put(spawn.getFactionValue(), spawn);

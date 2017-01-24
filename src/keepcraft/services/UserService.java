@@ -11,7 +11,7 @@ public class UserService {
     private UserDataManager userDataManager = new UserDataManager();
     private HashMap<String, User> onlineUsers = new HashMap<>();
 
-    void refreshCache() {
+    public void refreshCache() {
         onlineUsers.clear();
     }
 

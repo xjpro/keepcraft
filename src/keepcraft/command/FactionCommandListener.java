@@ -2,7 +2,6 @@ package keepcraft.command;
 
 import java.util.Collection;
 
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import keepcraft.Chat;
@@ -11,7 +10,11 @@ import keepcraft.data.models.UserFaction;
 
 public class FactionCommandListener extends CommandListener {
 
-    private UserService userService = ServiceCache.getUserService();
+    private final UserService userService;
+
+    public FactionCommandListener(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     protected boolean handle(String commandName, CommandSender commandSender, String[] args) {

@@ -2,7 +2,6 @@ package keepcraft.listener;
 
 import java.util.Collection;
 
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +13,11 @@ import keepcraft.data.models.User;
 
 public class ChatListener implements Listener {
 
-    private UserService userService = ServiceCache.getUserService();
+    private final UserService userService;
+
+    public ChatListener(UserService userService) {
+        this.userService = userService;
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerChat(PlayerChatEvent event) {
