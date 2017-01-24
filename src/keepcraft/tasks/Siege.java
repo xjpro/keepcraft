@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
-import keepcraft.Chat;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
@@ -17,8 +17,9 @@ import keepcraft.data.models.UserFaction;
 public class Siege implements Runnable {
 
     private final static double CAPTURE_BONUS_MODIFIER = 1.0;
-    private UserService userService = ServiceCache.getUserService();
-    private PlotService plotService = ServiceCache.getPlotService();
+    private final UserService userService;
+    private final PlotService plotService;
+    private final ChatService chatService;
 
     private final Plot plot;
     private final User initiatingUser;
@@ -30,7 +31,11 @@ public class Siege implements Runnable {
     private final int attackingFaction;
     private final int defendingFaction;
 
-    public Siege(Plot plot, User initiatingUser) {
+    // TODO refactor this into a siegeService
+    public Siege(UserService userService, PlotService plotService, ChatService chatService, Plot plot, User initiatingUser) {
+        this.userService = userService;
+        this.plotService = plotService;
+        this.chatService = chatService;
         this.plot = plot;
         this.initiatingUser = initiatingUser;
 
@@ -78,7 +83,7 @@ public class Siege implements Runnable {
             } else // Carry on
             {
                 for (User attacker : attackers) {
-                    Chat.sendAlertMessage(attacker, "Capture will complete in " + timeLeft(remainingTime) + " (" + (int) Math.round((attackerBonus - CAPTURE_BONUS_MODIFIER) * 100) + "% force bonus)");
+                    chatService.sendAlertMessage(attacker, "Capture will complete in " + timeLeft(remainingTime) + " (" + (int) Math.round((attackerBonus - CAPTURE_BONUS_MODIFIER) * 100) + "% force bonus)");
                 }
             }
         }
@@ -86,7 +91,7 @@ public class Siege implements Runnable {
 
     private void begin() {
         remainingTime = plot.getProtection().getCaptureTime();
-        Chat.sendPlotCaptureMessage(initiatingUser, "has begun capturing", plot, "(" + timeLeft(remainingTime) + ")");
+        chatService.sendPlotCaptureMessage(initiatingUser, "has begun capturing", plot, "(" + timeLeft(remainingTime) + ")");
         inProgress = true;
 
         PlotProtection protection = plot.getProtection();
@@ -95,7 +100,7 @@ public class Siege implements Runnable {
     }
 
     private void finish() {
-        Chat.sendGlobalAlertMessage(UserFaction.asColoredString(attackingFaction) + Chat.Info + " has secured " + plot.getColoredName());
+        chatService.sendGlobalAlertMessage(UserFaction.asColoredString(attackingFaction) + ChatService.Info + " has secured " + plot.getColoredName());
         Bukkit.getServer().getScheduler().cancelTask(taskId);
 
         PlotProtection protection = plot.getProtection();
@@ -106,14 +111,14 @@ public class Siege implements Runnable {
     }
 
     public void cancel() {
-        Chat.sendGlobalAlertMessage(UserFaction.asColoredString(attackingFaction) + Chat.Info + " failed to capture " + plot.getColoredName());
+        chatService.sendGlobalAlertMessage(UserFaction.asColoredString(attackingFaction) + ChatService.Info + " failed to capture " + plot.getColoredName());
         Bukkit.getServer().getScheduler().cancelTask(taskId);
         plot.setSiege(null);
         plot.getProtection().setCaptureInProgress(false);
     }
 
     public void cancel(User canceller) {
-        Chat.sendPlotDefendMessage(canceller, "has defended", plot);
+        chatService.sendPlotDefendMessage(canceller, "has defended", plot);
         Bukkit.getServer().getScheduler().cancelTask(taskId);
         plot.setSiege(null);
         plot.getProtection().setCaptureInProgress(false);

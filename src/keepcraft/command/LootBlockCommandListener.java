@@ -3,7 +3,7 @@
 //import keepcraft.services.ServiceCache;
 //import keepcraft.services.UserService;
 //import org.bukkit.command.CommandSender;
-//import keepcraft.Chat;
+//import keepcraft.services.ChatService;
 //import keepcraft.data.DataCache;
 //import keepcraft.data.models.LootBlock;
 //import keepcraft.data.models.User;
@@ -23,7 +23,7 @@
 //        LootBlock block = sender.getTargetLootBlock();
 //
 //        if (block == null) {
-//            commandSender.sendMessage(Chat.Failure + "No target - punch a loot block to target it");
+//            commandSender.sendMessage(ChatService.Failure + "No target - punch a loot block to target it");
 //            return true;
 //        }
 //
@@ -40,7 +40,7 @@
 //                block.setOutput(output);
 //                block.startDispensing();
 //                DataCache.update(block);
-//                commandSender.sendMessage(Chat.Success + "Loot block output set to " + output + " per minute");
+//                commandSender.sendMessage(ChatService.Success + "Loot block output set to " + output + " per minute");
 //                return true;
 //            } else if (args[0].equalsIgnoreCase("type") && args.length == 2) {
 //                int type;
@@ -54,7 +54,7 @@
 //                block.setType(type);
 //                block.startDispensing();
 //                DataCache.update(block);
-//                commandSender.sendMessage(Chat.Success + "Loot block type set to " + type);
+//                commandSender.sendMessage(ChatService.Success + "Loot block type set to " + type);
 //                return true;
 //            } else if (args[0].equalsIgnoreCase("status") && args.length == 2) {
 //                int status;
@@ -68,7 +68,7 @@
 //                block.setStatus(status);
 //                block.startDispensing();
 //                DataCache.update(block);
-//                commandSender.sendMessage(Chat.Success + "Loot block status set to " + status);
+//                commandSender.sendMessage(ChatService.Success + "Loot block status set to " + status);
 //                return true;
 //            }
 //        }

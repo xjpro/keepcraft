@@ -1,10 +1,11 @@
 package keepcraft.command;
 
+import keepcraft.services.ChatService;
+import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import keepcraft.Chat;
 import keepcraft.data.models.Plot;
 import keepcraft.tasks.Siege;
 import keepcraft.data.models.User;
@@ -12,9 +13,13 @@ import keepcraft.data.models.User;
 public class SiegeCommandListener extends CommandListener {
 
     private final UserService userService;
+    private final PlotService plotService;
+    private final ChatService chatService;
 
-    public SiegeCommandListener(UserService userService) {
+    public SiegeCommandListener(UserService userService, PlotService plotService, ChatService chatService) {
         this.userService = userService;
+        this.plotService = plotService;
+        this.chatService = chatService;
     }
 
     @Override
@@ -27,7 +32,7 @@ public class SiegeCommandListener extends CommandListener {
             // Attempt to capture a plot
 
             if (currentPlot == null) {
-                commandSender.sendMessage(Chat.Failure + "You are not in a plot");
+                commandSender.sendMessage(ChatService.Failure + "You are not in a plot");
                 return true;
             }
 
@@ -35,13 +40,13 @@ public class SiegeCommandListener extends CommandListener {
 
             if (!currentPlot.getProtection().isCapturable() || currentPlot.getProtection().getTriggerRadius() == 0
                     || currentPlot.isAdminProtected() || currentPlot.isSpawnProtected()) {
-                commandSender.sendMessage(Chat.Failure + "This area is not capturable");
+                commandSender.sendMessage(ChatService.Failure + "This area is not capturable");
                 return true;
             } else if (currentPlot.isFactionProtected(sender.getFaction()) && existingSiege == null) {
-                commandSender.sendMessage(Chat.Failure + "This area is already secured");
+                commandSender.sendMessage(ChatService.Failure + "This area is already secured");
                 return true;
             } else if (!currentPlot.intersectsTriggerRadius(p.getLocation())) {
-                commandSender.sendMessage(Chat.Failure + "Move closer to the area's center");
+                commandSender.sendMessage(ChatService.Failure + "Move closer to the area's center");
                 return true;
             } else {
                 // We're in a plot, it can be triggered, and we're close to center
@@ -51,18 +56,18 @@ public class SiegeCommandListener extends CommandListener {
                         existingSiege.cancel(sender);
                         return true;
                     } else if (existingSiege.getAttackingFaction() == sender.getFaction()) {
-                        commandSender.sendMessage(Chat.Failure + "This area is already being captured");
+                        commandSender.sendMessage(ChatService.Failure + "This area is already being captured");
                         return true;
                     } else // A third faction is attacking
                     {
                         existingSiege.cancel();
-                        commandSender.sendMessage(Chat.Success + "You begin capturing " + currentPlot.getName());
+                        commandSender.sendMessage(ChatService.Success + "You begin capturing " + currentPlot.getName());
                         startSiege(sender, currentPlot);
                         return true;
                     }
                 } else {
                     // begin siege?
-                    commandSender.sendMessage(Chat.Success + "You begin capturing " + currentPlot.getName());
+                    commandSender.sendMessage(ChatService.Success + "You begin capturing " + currentPlot.getName());
                     startSiege(sender, currentPlot);
                     return true;
                 }
@@ -73,7 +78,7 @@ public class SiegeCommandListener extends CommandListener {
     }
 
     private void startSiege(User sender, Plot plot) {
-        Siege siege = new Siege(plot, sender);
+        Siege siege = new Siege(userService, plotService, chatService, plot, sender);
 
         int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Bukkit.getPluginManager().getPlugin("Keepcraft"), siege, 0, 600);
         // 20 tick value = 1 second

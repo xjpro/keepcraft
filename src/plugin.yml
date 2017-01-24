@@ -63,13 +63,13 @@ commands:
         description: Make it dusk
         usage: /dusk
     1:
-        description: Chat in team 1's faction channel
+        description: ChatService in team 1's faction channel
         usage: /1 <message>
     2:
-        description: Chat in team 2's faction channel
+        description: ChatService in team 2's faction channel
         usage: /2 <message>
     3:
-        description: Chat in team 3's faction channel
+        description: ChatService in team 3's faction channel
         usage: /3 <message>
     plot:
         description: Plot commands

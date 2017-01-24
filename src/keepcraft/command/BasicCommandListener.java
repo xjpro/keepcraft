@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import keepcraft.Chat;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
@@ -36,19 +36,19 @@ public class BasicCommandListener extends CommandListener {
             User target = userService.getOnlineUser(targetName);
 
             if (target == null) {
-                commandSender.sendMessage(Chat.Failure + "That user does not exist"); // no user
+                commandSender.sendMessage(ChatService.Failure + "That user does not exist"); // no user
                 return true;
             }
 
             if (privilege == UserPrivilege.ADMIN) {
                 String[] messages = target.getPrivateInfo().split("\n");
-                for (int i = 0; i < messages.length; i++) {
-                    commandSender.sendMessage(Chat.RequestedInfo + messages[i]); // all info
+                for (String message : messages) {
+                    commandSender.sendMessage(ChatService.RequestedInfo + message); // all info
                 }
             } else {
                 String[] messages = target.getInfo().split("\n");
-                for (int i = 0; i < messages.length; i++) {
-                    commandSender.sendMessage(Chat.RequestedInfo + messages[i]); // all info
+                for (String message : messages) {
+                    commandSender.sendMessage(ChatService.RequestedInfo + message); // all info
                 }
             }
 
@@ -57,11 +57,11 @@ public class BasicCommandListener extends CommandListener {
         else if (commandName.equalsIgnoreCase("who") && args.length == 0) {
             Collection<User> allUsers = userService.getOnlineUsers();
 
-            List<User> adminUsers = new ArrayList<User>();
-            List<User> redUsers = new ArrayList<User>();
-            List<User> blueUsers = new ArrayList<User>();
-            List<User> greenUsers = new ArrayList<User>();
-            List<User> otherUsers = new ArrayList<User>();
+            List<User> adminUsers = new ArrayList<>();
+            List<User> redUsers = new ArrayList<>();
+            List<User> blueUsers = new ArrayList<>();
+            List<User> greenUsers = new ArrayList<>();
+            List<User> otherUsers = new ArrayList<>();
 
             for (User user : allUsers) {
                 if (user.getPrivilege() == UserPrivilege.ADMIN) {
@@ -85,8 +85,8 @@ public class BasicCommandListener extends CommandListener {
             message += this.getPlayersServerListing(otherUsers);
 
             String[] messages = message.split("\n");
-            for (int i = 0; i < messages.length; i++) {
-                commandSender.sendMessage(Chat.RequestedInfo + messages[i]); // all info
+            for (String message1 : messages) {
+                commandSender.sendMessage(ChatService.RequestedInfo + message1); // all info
             }
             return true;
         } else if (commandName.equalsIgnoreCase("die") && args.length == 0) {
@@ -121,13 +121,13 @@ public class BasicCommandListener extends CommandListener {
                             }
                         }
 
-                        message += Chat.RequestedInfo + "" + plot.getOrderNumber() + ": " + plot.getColoredName() + Chat.RequestedInfo + " - " + status + "\n";
+                        message += ChatService.RequestedInfo + "" + plot.getOrderNumber() + ": " + plot.getColoredName() + ChatService.RequestedInfo + " - " + status + "\n";
                     }
                 }
 
                 String[] messages = message.split("\n");
                 for (String message1 : messages) {
-                    commandSender.sendMessage(Chat.RequestedInfo + message1);
+                    commandSender.sendMessage(ChatService.RequestedInfo + message1);
                 }
 
                 return true;
@@ -135,7 +135,7 @@ public class BasicCommandListener extends CommandListener {
                 Plot currentPlot = sender.getCurrentPlot();
                 if (currentPlot == null || currentPlot.getOrderNumber() == -1 || !currentPlot.intersectsTriggerRadius(p.getLocation())
                         || !currentPlot.isFactionProtected(sender.getFaction()) || currentPlot.getProtection().isCaptureInProgress()) {
-                    commandSender.sendMessage(Chat.Failure + "You can only rally from a secured rally point");
+                    commandSender.sendMessage(ChatService.Failure + "You can only rally from a secured rally point");
                     return true;
                 }
 
@@ -144,13 +144,13 @@ public class BasicCommandListener extends CommandListener {
                 try {
                     orderNumber = Integer.parseInt(args[0]);
                 } catch (Exception e) {
-                    commandSender.sendMessage(Chat.Failure + "Use /map to find the number of the area you wish to rally to");
+                    commandSender.sendMessage(ChatService.Failure + "Use /map to find the number of the area you wish to rally to");
                     return true;
                 }
 
                 if (orderNumber < 1) // minimum
                 {
-                    commandSender.sendMessage(Chat.Failure + "Use /map to find the number of the area you wish to rally to");
+                    commandSender.sendMessage(ChatService.Failure + "Use /map to find the number of the area you wish to rally to");
                     return true;
                 }
 
@@ -159,10 +159,10 @@ public class BasicCommandListener extends CommandListener {
                     if (plot.getOrderNumber() == orderNumber) {
                         // Found it!
                         if (!plot.isFactionProtected(sender.getFaction()) || plot.getProtection().isCaptureInProgress()) {
-                            commandSender.sendMessage(Chat.Failure + "That rally point has not been secured");
+                            commandSender.sendMessage(ChatService.Failure + "That rally point has not been secured");
                             return true;
                         } else if (plot == currentPlot) {
-                            commandSender.sendMessage(Chat.Failure + "You are already at that rally point");
+                            commandSender.sendMessage(ChatService.Failure + "You are already at that rally point");
                             return true;
                         }
                         p.teleport(plot.getLocation());
@@ -171,17 +171,17 @@ public class BasicCommandListener extends CommandListener {
                 }
 
                 // Fell through? Possibly didn't find whatever they asked for
-                commandSender.sendMessage(Chat.Failure + "Use /map to find the number of the area you wish to rally to");
+                commandSender.sendMessage(ChatService.Failure + "Use /map to find the number of the area you wish to rally to");
                 return true;
             }
         } else if (commandName.equalsIgnoreCase("global") && args.length == 1) {
             if (args[0].equalsIgnoreCase("on")) {
                 sender.setReceiveGlobalMessages(true);
-                commandSender.sendMessage(Chat.Success + "Global chat enabled");
+                commandSender.sendMessage(ChatService.Success + "Global chat enabled");
                 return true;
             } else if (args[0].equalsIgnoreCase("off")) {
                 sender.setReceiveGlobalMessages(false);
-                commandSender.sendMessage(Chat.Success + "Global chat disabled");
+                commandSender.sendMessage(ChatService.Success + "Global chat disabled");
                 return true;
             }
         }

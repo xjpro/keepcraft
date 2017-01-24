@@ -1,7 +1,7 @@
 package keepcraft.data.models;
 
+import keepcraft.services.ChatService;
 import org.bukkit.Location;
-import keepcraft.Chat;
 import keepcraft.tasks.Siege;
 
 /**
@@ -230,7 +230,7 @@ public class Plot {
     }
 
     public String getInfo() {
-        String info = name + Chat.RequestedInfo + " (Protection: " + protection.asString() + Chat.RequestedInfo + ")\n";
+        String info = name + ChatService.RequestedInfo + " (Protection: " + protection.asString() + ChatService.RequestedInfo + ")\n";
         info += "Radius: " + radius + "\n";
         info += "Protected Radius: " + protection.getProtectedRadius() + "\n";
         info += "Partial protection radius: " + protection.getPartialRadius() + "\n";

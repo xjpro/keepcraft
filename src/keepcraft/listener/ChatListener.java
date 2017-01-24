@@ -8,15 +8,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
-import keepcraft.Chat;
+import keepcraft.services.ChatService;
 import keepcraft.data.models.User;
 
 public class ChatListener implements Listener {
 
     private final UserService userService;
+    private final ChatService chatService;
 
-    public ChatListener(UserService userService) {
+    public ChatListener(UserService userService, ChatService chatService) {
         this.userService = userService;
+        this.chatService = chatService;
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -30,9 +32,9 @@ public class ChatListener implements Listener {
         Collection<User> connectedUsers = userService.getOnlineUsers();
 
         if (sender.isAdmin()) {
-            Chat.sendAdminMessage(sender, connectedUsers, message);
+            chatService.sendAdminMessage(sender, connectedUsers, message);
         } else {
-            Chat.sendFactionMessage(sender, connectedUsers, sender.getFaction(), message);
+            chatService.sendFactionMessage(sender, connectedUsers, sender.getFaction(), message);
         }
     }
 

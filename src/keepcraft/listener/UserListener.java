@@ -1,6 +1,7 @@
 package keepcraft.listener;
 
 import keepcraft.data.models.*;
+import keepcraft.services.ChatService;
 import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
@@ -17,7 +18,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import keepcraft.Chat;
 import keepcraft.Keepcraft;
 
 public class UserListener implements Listener {
@@ -78,7 +78,7 @@ public class UserListener implements Listener {
             // This plot is now longer secured so teleport home.
             Keepcraft.log(String.format("Player %s logged into a formerly secured area, teleporting home", p.getName()));
             teleportHome(p, user);
-            p.sendMessage(Chat.Info + "The area you logged into is no longer secure, returing home");
+            p.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returing home");
         }
     }
 
@@ -137,12 +137,12 @@ public class UserListener implements Listener {
 
         if (inHand.getType().equals(Material.ENDER_PEARL)) {
             event.setCancelled(true);
-            p.sendMessage(Chat.Failure + "Ender pearl teleporting disabled, pending balance changes");
+            p.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled, pending balance changes");
         } else if (inHand.getType().equals(Material.POTION)) {
             byte data = inHand.getData().getData();
             if (data == 12 || data == 5 || data == 37 || data == 44 || data == 36 || data == 33) {
                 event.setCancelled(true);
-                p.sendMessage(Chat.Failure + "This potion is disabled, pending balance changes");
+                p.sendMessage(ChatService.Failure + "This potion is disabled, pending balance changes");
             }
         }
     }

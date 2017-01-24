@@ -1,8 +1,8 @@
 package keepcraft.data.models;
 
+import keepcraft.services.ChatService;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import keepcraft.Chat;
 
 /**
  * Data for a player.
@@ -38,7 +38,7 @@ public class User {
 
     public String getColoredName() {
         if (privilege == UserPrivilege.ADMIN) {
-            return Chat.NameAdmin + name;
+            return ChatService.NameAdmin + name;
         } else {
             return UserFaction.getChatColor(this.faction) + name;
         }
@@ -46,7 +46,7 @@ public class User {
 
     public String getChatTag() {
         if (privilege == UserPrivilege.ADMIN) {
-            return Chat.NameAdmin + "<" + name + ">";
+            return ChatService.NameAdmin + "<" + name + ">";
         } else {
             return UserFaction.getChatColor(this.faction) + "<" + name + ">";
         }
@@ -55,7 +55,7 @@ public class User {
     public String getChatTag(int faction) {
         if (privilege == UserPrivilege.ADMIN) {
             ChatColor factionChatColor = UserFaction.getChatColor(faction);
-            return factionChatColor + "<" + Chat.NameAdmin + name + factionChatColor + ">";
+            return factionChatColor + "<" + ChatService.NameAdmin + name + factionChatColor + ">";
         }
         return getChatTag();
     }
@@ -90,11 +90,11 @@ public class User {
     }
 
     public String getInfo() {
-        return getColoredName() + Chat.RequestedInfo + " (" + UserPrivilege.asString(privilege) + ")";
+        return getColoredName() + ChatService.RequestedInfo + " (" + UserPrivilege.asString(privilege) + ")";
     }
 
     public String getPrivateInfo() {
-        return getColoredName() + Chat.RequestedInfo + " (" + UserPrivilege.asString(privilege) + ")";
+        return getColoredName() + ChatService.RequestedInfo + " (" + UserPrivilege.asString(privilege) + ")";
     }
 
     public int getMoney() {

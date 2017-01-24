@@ -14,7 +14,7 @@
 //import org.bukkit.event.block.BlockBreakEvent;
 //import org.bukkit.event.block.BlockDamageEvent;
 //import org.bukkit.event.block.BlockPlaceEvent;
-//import keepcraft.Chat;
+//import keepcraft.services.ChatService;
 //import keepcraft.data.DataCache;
 //import keepcraft.data.models.LootBlock;
 //import keepcraft.data.models.User;
@@ -45,7 +45,7 @@
 //                DataCache.load(LootBlock.class, lootBlock);
 //                lootBlock.startDispensing();
 //
-//                p.sendMessage(Chat.Success + "Loot block placed");
+//                p.sendMessage(ChatService.Success + "Loot block placed");
 //            }
 //        }
 //    }
@@ -64,7 +64,7 @@
 //                    if (block.getLocation().equals(broken.getLocation())) {
 //                        block.stopDispensing();
 //                        DataCache.delete(block);
-//                        p.sendMessage(Chat.Success + "Loot block destroyed");
+//                        p.sendMessage(ChatService.Success + "Loot block destroyed");
 //                    }
 //                }
 //            }
@@ -83,7 +83,7 @@
 //                for (LootBlock block : lootBlocks) {
 //                    if (block.getLocation().equals(damaged.getLocation())) {
 //                        user.setTargetLootBlock(block);
-//                        p.sendMessage(Chat.Success + "Loot block targeted");
+//                        p.sendMessage(ChatService.Success + "Loot block targeted");
 //                    }
 //                }
 //            }

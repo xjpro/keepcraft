@@ -1,11 +1,11 @@
 package keepcraft.command;
 
+import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import keepcraft.Chat;
 import keepcraft.Privilege;
 import keepcraft.Keepcraft;
 import keepcraft.data.models.Plot;
@@ -42,7 +42,7 @@ public class AdminCommandListener extends CommandListener {
                 User target = userService.getOnlineUser(targetName);
 
                 if (target == null) {
-                    commandSender.sendMessage(Chat.Failure + "Requested user '" + targetName + "' does not exist");
+                    commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
                     return true;
                 }
 
@@ -50,8 +50,8 @@ public class AdminCommandListener extends CommandListener {
                 target.setPrivilege(newPrivilege);
                 userService.updateUser(target);
 
-                commandSender.sendMessage(Chat.Success + "Promoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
-                commandSender.getServer().getPlayer(targetName).sendMessage(Chat.Change + "You were promoted to "
+                commandSender.sendMessage(ChatService.Success + "Promoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
+                commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "You were promoted to "
                         + UserPrivilege.asString(newPrivilege) + " status");
                 return true;
             }
@@ -62,7 +62,7 @@ public class AdminCommandListener extends CommandListener {
                 User target = userService.getOnlineUser(targetName);
 
                 if (target == null) {
-                    commandSender.sendMessage(Chat.Failure + "Requested user '" + targetName + "' does not exist");
+                    commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
                     return true;
                 }
 
@@ -70,8 +70,8 @@ public class AdminCommandListener extends CommandListener {
                 target.setPrivilege(newPrivilege);
                 userService.updateUser(target);
 
-                commandSender.sendMessage(Chat.Success + "Demoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
-                commandSender.getServer().getPlayer(targetName).sendMessage(Chat.Change + "You were demoted to "
+                commandSender.sendMessage(ChatService.Success + "Demoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
+                commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "You were demoted to "
                         + UserPrivilege.asString(newPrivilege) + " status");
                 return true;
             }
@@ -85,12 +85,12 @@ public class AdminCommandListener extends CommandListener {
                     radius = Double.parseDouble(args[0]);
                 } catch (NumberFormatException e) {
                     // invalid input
-                    commandSender.sendMessage(Chat.Failure + "Radius must be a number");
+                    commandSender.sendMessage(ChatService.Failure + "Radius must be a number");
                     return false;
                 }
 
                 ServerConditions.setMapRadius((int) radius);
-                commandSender.sendMessage(Chat.Success + "Set map radius to " + radius);
+                commandSender.sendMessage(ChatService.Success + "Set map radius to " + radius);
                 return true;
             }
         } else if (commandName.equals("reset")) {
@@ -106,13 +106,13 @@ public class AdminCommandListener extends CommandListener {
                     faction = Integer.parseInt(args[0]);
                 } catch (NumberFormatException e) {
                     // invalid input
-                    commandSender.sendMessage(Chat.Failure + "Faction must be an integer");
+                    commandSender.sendMessage(ChatService.Failure + "Faction must be an integer");
                     return false;
                 }
 
                 //ServerConditions.setSpawn(faction, p.getLocation());
-                //commandSender.sendMessage(Chat.Success + "Set faction " + faction + "'s spawn to " + p.getLocation());
-                commandSender.sendMessage(Chat.Failure + "Command disabled in favor of resetting the map");
+                //commandSender.sendMessage(ChatService.Success + "Set faction " + faction + "'s spawn to " + p.getLocation());
+                commandSender.sendMessage(ChatService.Failure + "Command disabled in favor of resetting the map");
                 return true;
             }
         } // Set team
@@ -122,7 +122,7 @@ public class AdminCommandListener extends CommandListener {
                 User target = userService.getOnlineUser(targetName);
 
                 if (target == null) {
-                    commandSender.sendMessage(Chat.Failure + "Requested user '" + targetName + "' does not exist");
+                    commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
                     return true;
                 }
 
@@ -131,15 +131,15 @@ public class AdminCommandListener extends CommandListener {
                     faction = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
                     // invalid input
-                    commandSender.sendMessage(Chat.Failure + "Options for factions are 100 or 200");
+                    commandSender.sendMessage(ChatService.Failure + "Options for factions are 100 or 200");
                     return false;
                 }
 
                 target.setFaction(faction);
                 userService.updateUser(target);
 
-                commandSender.sendMessage(Chat.Success + "Set " + targetName + " to faction " + UserFaction.asString(faction));
-                commandSender.getServer().getPlayer(targetName).sendMessage(Chat.Change + "Your faction was changed to " + UserFaction.asString(faction));
+                commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserFaction.asString(faction));
+                commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserFaction.asString(faction));
                 return true;
             }
         } // Delete a user's record
@@ -152,9 +152,9 @@ public class AdminCommandListener extends CommandListener {
                 boolean success = userService.removeUser(deleted);
 
                 if (success) {
-                    commandSender.sendMessage(Chat.Success + "Deleted " + targetName);
+                    commandSender.sendMessage(ChatService.Success + "Deleted " + targetName);
                 } else {
-                    commandSender.sendMessage(Chat.Failure + "Requested user '" + targetName + "' does not exist (case matters)");
+                    commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist (case matters)");
                 }
 
                 return true;
@@ -181,7 +181,7 @@ public class AdminCommandListener extends CommandListener {
                 }
 
                 if (plot == null) {
-                    commandSender.sendMessage(Chat.Failure + "Plot not found");
+                    commandSender.sendMessage(ChatService.Failure + "Plot not found");
                 } else {
                     p.teleport(plot.getLocation());
                 }

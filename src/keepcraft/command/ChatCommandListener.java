@@ -1,16 +1,18 @@
 package keepcraft.command;
 
+import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
-import keepcraft.Chat;
 import keepcraft.data.models.User;
 
 public class ChatCommandListener extends CommandListener {
 
     private final UserService userService;
+    private final ChatService chatService;
 
-    public ChatCommandListener(UserService userService) {
+    public ChatCommandListener(UserService userService, ChatService chatService) {
         this.userService = userService;
+        this.chatService = chatService;
     }
 
     @Override
@@ -23,7 +25,7 @@ public class ChatCommandListener extends CommandListener {
             User target = userService.getOnlineUser(targetName);
 
             if (target == null) {
-                commandSender.sendMessage(Chat.Failure + targetName + " is not online"); // no user
+                commandSender.sendMessage(ChatService.Failure + targetName + " is not online"); // no user
                 return true;
             }
 
@@ -32,7 +34,7 @@ public class ChatCommandListener extends CommandListener {
                 message += args[i] + " ";
             }
 
-            Chat.sendPrivateMessage(sender, target, message);
+            chatService.sendPrivateMessage(sender, target, message);
             return true;
         } // Reply
         else if (commandName.equals("r") && args.length > 0) {
@@ -40,9 +42,9 @@ public class ChatCommandListener extends CommandListener {
             User lastMessageSender = userService.getOnlineUser(lastSenderName);
             if (lastMessageSender == null) {
                 if (lastSenderName != null) {
-                    commandSender.sendMessage(Chat.Failure + lastSenderName + " is not online"); // no user
+                    commandSender.sendMessage(ChatService.Failure + lastSenderName + " is not online"); // no user
                 } else {
-                    commandSender.sendMessage(Chat.Failure + "You have not received any private messages");
+                    commandSender.sendMessage(ChatService.Failure + "You have not received any private messages");
                 }
                 return true;
             }
@@ -52,7 +54,7 @@ public class ChatCommandListener extends CommandListener {
                 message += args[i] + " ";
             }
 
-            Chat.sendPrivateMessage(sender, lastMessageSender, message);
+            chatService.sendPrivateMessage(sender, lastMessageSender, message);
             return true;
         } // Global
         else if (commandName.equals("g") && args.length > 0) {
@@ -60,7 +62,7 @@ public class ChatCommandListener extends CommandListener {
             for (int i = 0; i < args.length; i++) {
                 message += args[i] + " ";
             }
-            Chat.sendGlobalMessage(sender, message);
+            chatService.sendGlobalMessage(sender, message);
             return true;
         }
 

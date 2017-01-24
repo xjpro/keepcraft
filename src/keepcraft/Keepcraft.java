@@ -39,6 +39,7 @@ public class Keepcraft extends JavaPlugin {
     private final UserService userService = new UserService();
     private final PlotService plotService = new PlotService();
     private final FactionSpawnService factionSpawnService = new FactionSpawnService();
+    private final ChatService chatService = new ChatService(userService);
 
     private World world;
 
@@ -53,10 +54,10 @@ public class Keepcraft extends JavaPlugin {
 
         manager.registerEvents(new UserListener(userService, plotService, factionSpawnService), this);
         manager.registerEvents(new ActionListener(userService, plotService), this);
-        manager.registerEvents(new ChatListener(userService), this);
+        manager.registerEvents(new ChatListener(userService, chatService), this);
         manager.registerEvents(new CombatListener(userService), this);
         manager.registerEvents(new WorldEntityListener(), this);
-        manager.registerEvents(new ExplosionListener(userService, plotService), this);
+        manager.registerEvents(new ExplosionListener(userService, plotService, chatService), this);
         manager.registerEvents(new BlockProtectionListener(userService, plotService), this);
         //manager.registerEvents(new ChunkListener(), this);
         //manager.registerEvents(new LootBlockListener(), this);
@@ -69,8 +70,8 @@ public class Keepcraft extends JavaPlugin {
             getCommand(basicCommand).setExecutor(basicCommandListener);
         }
 
-        // Chat commands
-        CommandListener chatCommandListener = new ChatCommandListener(userService);
+        // ChatService commands
+        CommandListener chatCommandListener = new ChatCommandListener(userService, chatService);
         String[] chatCommands = {"t", "r", "g"};
         for (String chatCommand : chatCommands) {
             getCommand(chatCommand).setExecutor(chatCommandListener);
@@ -85,7 +86,7 @@ public class Keepcraft extends JavaPlugin {
             getCommand(adminCommand).setExecutor(adminCommandListener);
         }
 
-        FactionCommandListener factionCommandListener = new FactionCommandListener(userService);
+        FactionCommandListener factionCommandListener = new FactionCommandListener(userService, chatService);
         String[] factionCommands = {"faction", "1", "2", "3"};
         for (String factionCommand : factionCommands) {
             getCommand(factionCommand).setExecutor(factionCommandListener);
@@ -106,7 +107,7 @@ public class Keepcraft extends JavaPlugin {
 //        }
 
         // Siege commands
-        CommandListener siegeCommandListener = new SiegeCommandListener(userService);
+        CommandListener siegeCommandListener = new SiegeCommandListener(userService, plotService, chatService);
         String[] siegeCommands = {"cap", "capture"};
         for (String siegeCommand : siegeCommands) {
             getCommand(siegeCommand).setExecutor(siegeCommandListener);

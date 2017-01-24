@@ -1,8 +1,9 @@
 package keepcraft.data.models;
 
 import java.util.Random;
+
+import keepcraft.services.ChatService;
 import org.bukkit.ChatColor;
-import keepcraft.Chat;
 
 public abstract class UserFaction {
 
@@ -15,15 +16,15 @@ public abstract class UserFaction {
     public static ChatColor getChatColor(int faction) {
         switch (faction) {
             case FactionRed:
-                return Chat.NameRed;
+                return ChatService.NameRed;
             case FactionBlue:
-                return Chat.NameBlue;
+                return ChatService.NameBlue;
             case FactionGreen:
-                return Chat.NameGreen;
+                return ChatService.NameGreen;
             case FactionGold:
-                return Chat.NameGold;
+                return ChatService.NameGold;
             default:
-                return Chat.NameOther;
+                return ChatService.NameOther;
         }
     }
 

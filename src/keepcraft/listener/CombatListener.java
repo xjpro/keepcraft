@@ -1,5 +1,6 @@
 package keepcraft.listener;
 
+import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -14,7 +15,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import keepcraft.Chat;
 import keepcraft.data.models.Armor;
 import keepcraft.data.models.User;
 
@@ -105,14 +105,14 @@ public class CombatListener implements Listener {
                     causeSection += parts[i] + " ";
                 }
 
-                e.setDeathMessage(target.getColoredName() + Chat.Info + " " + causeSection + attackerUser.getColoredName());
+                e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection + attackerUser.getColoredName());
             } else {
                 String causeSection = "";
                 for (int i = 1; i < parts.length; i++) {
                     causeSection += parts[i] + " ";
                 }
 
-                e.setDeathMessage(target.getColoredName() + Chat.Info + " " + causeSection);
+                e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection);
             }
         } else {
             Entity target = event.getEntity();

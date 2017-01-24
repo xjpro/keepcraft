@@ -1,6 +1,7 @@
 package keepcraft.listener;
 
 import keepcraft.Keepcraft;
+import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.GameMode;
@@ -18,7 +19,6 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import keepcraft.Chat;
 import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
@@ -49,14 +49,14 @@ public class ActionListener implements Listener {
         if (current != candidate) {
             if (current != null && candidate == null) {
                 if (!current.isSpawnProtected()) {
-                    p.sendMessage(Chat.Info + "Leaving " + current.getColoredName());
+                    p.sendMessage(ChatService.Info + "Leaving " + current.getColoredName());
                 }
                 user.setCurrentPlot(null);
             }
 
             if (candidate != null) {
                 if (!candidate.isSpawnProtected() && (current == null || !current.isSpawnProtected())) {
-                    p.sendMessage(Chat.Info + "Entering " + candidate.getColoredName());
+                    p.sendMessage(ChatService.Info + "Entering " + candidate.getColoredName());
                 }
                 user.setCurrentPlot(candidate);
             }
@@ -65,10 +65,10 @@ public class ActionListener implements Listener {
         {
             // if are going to intersects protected but didn't before
             if (current.intersectsProtectedRadius(to) && !current.intersectsProtectedRadius(from)) {
-                p.sendMessage(Chat.Info + "Entering " + candidate.getColoredName() + " (Keep)");
+                p.sendMessage(ChatService.Info + "Entering " + candidate.getColoredName() + " (Keep)");
             } // if we are not going to intersects protected but did before
             else if (!current.intersectsProtectedRadius(to) && current.intersectsProtectedRadius(from)) {
-                p.sendMessage(Chat.Info + "Leaving " + candidate.getColoredName() + " (Keep)");
+                p.sendMessage(ChatService.Info + "Leaving " + candidate.getColoredName() + " (Keep)");
             }
         }
         // End plot update code

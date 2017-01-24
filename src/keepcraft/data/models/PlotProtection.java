@@ -1,6 +1,6 @@
 package keepcraft.data.models;
 
-import keepcraft.Chat;
+import keepcraft.services.ChatService;
 
 public class PlotProtection {
 
@@ -115,23 +115,23 @@ public class PlotProtection {
     public static String asString(int protection) {
         switch (protection) {
             case ADMIN:
-                return Chat.NameAdmin + "Admin";
+                return ChatService.NameAdmin + "Admin";
             case SPAWN:
-                return Chat.NameOther + "Spawn";
+                return ChatService.NameOther + "Spawn";
             case EVENT:
-                return Chat.NameAdmin + "Event";
+                return ChatService.NameAdmin + "Event";
             case PRIVATE:
                 return "Private";
             case PROTECTED:
                 return "Protected";
             case FACTION_B:
-                return Chat.NameBlue + UserFaction.asString(FACTION_B);
+                return ChatService.NameBlue + UserFaction.asString(FACTION_B);
             case FACTION_A:
-                return Chat.NameRed + UserFaction.asString(FACTION_A);
+                return ChatService.NameRed + UserFaction.asString(FACTION_A);
             case FACTION_C:
-                return Chat.NameGreen + UserFaction.asString(FACTION_C);
+                return ChatService.NameGreen + UserFaction.asString(FACTION_C);
             case FACTION_E:
-                return Chat.NameGold + UserFaction.asString(FACTION_E);
+                return ChatService.NameGold + UserFaction.asString(FACTION_E);
             case PUBLIC:
                 return "Public";
             default:
