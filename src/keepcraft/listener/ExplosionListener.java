@@ -17,9 +17,12 @@ public class ExplosionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityExplode(EntityExplodeEvent event) {
+        if (event.isCancelled()) return;
+
         Plot plot = plotService.getIntersectedPlot(event.getLocation());
+
         // No block damage for admin plots and spawn plots
-        if (plot != null && plot.isAdminProtected() || plot.isSpawnProtected() || plot.intersectsAdminRadius(event.getLocation())) {
+        if (plot != null && plot.isImmuneToAttack()) {
             event.setCancelled(true);
         }
     }

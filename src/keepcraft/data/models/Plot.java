@@ -4,6 +4,8 @@ import keepcraft.services.ChatService;
 import org.bukkit.Location;
 import keepcraft.tasks.Siege;
 
+import java.time.LocalTime;
+
 /**
  * Persistent data for a plot.
  */
@@ -11,6 +13,8 @@ public class Plot {
 
     public final static int DEFAULT_RADIUS = 10;
     public final static int DEFAULT_TRIGGER_RADIUS = 10;
+    private final static LocalTime TNT_START_TIME = LocalTime.MIDNIGHT.minusHours(4);
+    private final static LocalTime TNT_END_TIME = LocalTime.MIDNIGHT;
 
     private WorldPoint worldPoint;
     private int id;
@@ -161,36 +165,18 @@ public class Plot {
         return protection.getType() == faction;
     }
 
-    public boolean isTNTable() {
+    public boolean isImmuneToAttack() {
+        if (isAdminProtected() || isSpawnProtected()) {
+            // Admin and spawn plots always immune
+            return true;
+        }
         if (protection.isCapturable()) {
-            return true;
-        }
-        if (isFactionProtected(UserFaction.FactionGold)) {
-            return true;
-        }
-
-        /*
-        1/17/2017 - removed this nonsense that created TNT windows when enough people were on 
-        double attackerCount = 0;
-        double defenderCount = 0;
-
-        for (User user : DataCache.retrieveAll(User.class)) {
-            if (user.isAdmin()) {
-                continue; // admins don't count for this
-            } else if (isFactionProtected(user.getFaction())) {
-                defenderCount++; // The plot under attack matches this user's plot, they are a defender
-            } else if (this == user.getCurrentPlot() && !isFactionProtected(user.getFaction())) {
-                attackerCount++; // They are in the plot and the plot is not theirs, they are an attacker
-            }
-        }
-
-        long lastExplosionSeconds = (System.currentTimeMillis() - getLastExplosion()) / 1000;
-
-        if (defenderCount < ServerConditions.getMinimumDefenderCount() && lastExplosionSeconds > 600) {
+            // Capturable plots never immune
             return false;
-        }*/
+        }
 
-        return true;
+        LocalTime now = LocalTime.now();
+        return now.isBefore(TNT_START_TIME) || now.isAfter(TNT_END_TIME);
     }
 
     public void setProtection(PlotProtection value) {

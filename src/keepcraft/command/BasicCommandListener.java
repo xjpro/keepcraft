@@ -116,7 +116,7 @@ public class BasicCommandListener extends CommandListener {
                             status = (plot.getProtection().isCaptureInProgress()) ? "Under attack" : "Secured";
                         } else {
                             status = "Base";
-                            if (!plot.isTNTable()) {
+                            if (plot.isImmuneToAttack()) {
                                 status += " (Immune)";
                             }
                         }

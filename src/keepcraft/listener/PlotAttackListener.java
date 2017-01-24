@@ -36,6 +36,7 @@ public class PlotAttackListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityExplode(EntityExplodeEvent event) {
         if (event.isCancelled()) return;
+
         Location location = event.getLocation();
         Plot plot = plotService.getIntersectedPlot(location);
         if (plot != null) {
@@ -50,6 +51,7 @@ public class PlotAttackListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockForm(BlockFormEvent event) {
         if (event.isCancelled()) return;
+
         if (event.getBlock().getType() == Material.MOSSY_COBBLESTONE) {
             Location location = event.getBlock().getLocation();
             Plot plot = plotService.getIntersectedPlot(location);
