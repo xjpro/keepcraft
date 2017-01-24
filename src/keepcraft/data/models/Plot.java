@@ -4,7 +4,8 @@ import keepcraft.services.ChatService;
 import org.bukkit.Location;
 import keepcraft.tasks.Siege;
 
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * Persistent data for a plot.
@@ -13,8 +14,6 @@ public class Plot {
 
     public final static int DEFAULT_RADIUS = 10;
     public final static int DEFAULT_TRIGGER_RADIUS = 10;
-    private final static LocalTime TNT_START_TIME = LocalTime.MIDNIGHT.minusHours(4);
-    private final static LocalTime TNT_END_TIME = LocalTime.MIDNIGHT;
 
     private WorldPoint worldPoint;
     private int id;
@@ -175,8 +174,17 @@ public class Plot {
             return false;
         }
 
-        LocalTime now = LocalTime.now();
-        return now.isBefore(TNT_START_TIME) || now.isAfter(TNT_END_TIME);
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("CST"));
+        int hour = now.getHour();
+
+        // Immune if before 8:00pm (hour values 19 and below), resets to 0 at midnight so we don't have to check upper bound
+        return hour < 20;
+
+        // Example of use:
+        // immune if before 7pm (hour values 18 and below) or after 11 (hour values 23 and above)
+        // return hour < 19 || hour > 22;
+        // immune if before 6pm (hour values 17 and below) or after 10 (hour values 22 and above)
+        // return hour < 18 || hour > 21;
     }
 
     public void setProtection(PlotProtection value) {
