@@ -55,17 +55,16 @@ public class WorldSetter {
         // Find good spawn location
         Location goodSpawnLocation = location.clone();
         goodSpawnLocation.setY(76);
-        while(!world.getBlockAt(goodSpawnLocation.getBlockX(), goodSpawnLocation.getBlockY(), goodSpawnLocation.getBlockZ()).getType().isSolid()) {
+        while (!world.getBlockAt(goodSpawnLocation.getBlockX(), goodSpawnLocation.getBlockY(), goodSpawnLocation.getBlockZ()).getType().isSolid()) {
             goodSpawnLocation.add(0, -1, 0);
         }
 
-        // Make center of plot a beacon
-        world.getBlockAt(goodSpawnLocation).setType(Material.BEACON);
+        prepareSpawnArea(goodSpawnLocation);
         plotService.createTeamPlot(null, goodSpawnLocation, faction, TEAM_PLOT_RADIUS);
 
         // Go in air one block and center on block so spawn is not buried
-		FactionSpawn spawn = new FactionSpawn(faction, goodSpawnLocation.clone().add(0.5, 1, 0.5));
-		factionSpawnService.createFactionSpawn(spawn);
+        FactionSpawn spawn = new FactionSpawn(faction, goodSpawnLocation.clone().add(0.5, 1, 0.5));
+        factionSpawnService.createFactionSpawn(spawn);
     }
 
     private void prepareBaseArea(Location center, int radius) {
@@ -87,7 +86,7 @@ public class WorldSetter {
                         );
 
                         for (Block block : blocks) {
-                            prepareBlock(block);
+                            prepareBaseAreaBlock(block);
                         }
                     }
                 }
@@ -95,8 +94,8 @@ public class WorldSetter {
         }
     }
 
-    private void prepareBlock(Block block) {
-    	// This apparently does not work but the idea was to load the chunks first
+    private void prepareBaseAreaBlock(Block block) {
+        // This apparently does not work but the idea was to load the chunks first
 //        if(!block.getWorld().isChunkLoaded(block.getX(), block.getZ())) {
 //            // Generate chunks before modifying
 //            // This makes the modification much more consistent
@@ -118,5 +117,18 @@ public class WorldSetter {
                 block.setType(Material.GRASS);
             }
         }
+    }
+
+    private void prepareSpawnArea(Location location) {
+        World world = location.getWorld();
+        Block center = world.getBlockAt(location);
+
+        for (int x = -2; x <= 2; x++) {
+            for (int z = -2; z <= 2; z++) {
+                center.getRelative(x, 0, z).setType(Material.BEDROCK);
+            }
+        }
+
+        center.setType(Material.BEACON);
     }
 }

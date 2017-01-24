@@ -6,7 +6,6 @@ import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -77,7 +76,7 @@ public class UserListener implements Listener {
             // This plot is now longer secured so teleport home.
             Keepcraft.log(String.format("Player %s logged into a formerly secured area, teleporting home", p.getName()));
             teleportHome(p, user);
-            p.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returing home");
+            p.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returning home");
         }
     }
 

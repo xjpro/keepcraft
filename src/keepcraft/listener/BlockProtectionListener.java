@@ -28,7 +28,6 @@ public class BlockProtectionListener implements Listener {
         if (event.isCancelled()) return; // No need to process further
 
         Block block = event.getBlock();
-
         Player p = event.getPlayer();
         User user = userService.getOnlineUser(p.getName());
 
@@ -44,18 +43,19 @@ public class BlockProtectionListener implements Listener {
         }
 
         Plot plot = plotService.getIntersectedPlot(block.getLocation());
-
         if (plot == null || plot.getProtection() == null) {
             return;
         }
 
         switch (event.getBlock().getType()) {
             case FIRE:
-                if (event.getBlockAgainst().getType() == Material.TNT) {
+                Material blockAgainstType = event.getBlockAgainst().getType();
+                if (blockAgainstType == Material.TNT || blockAgainstType == Material.REDSTONE_BLOCK) {
                     return; // allow fire on TNT
                 }
                 break;
             case TNT:
+            case REDSTONE_BLOCK:
                 if (!plot.isAdminProtected() && !plot.isEventProtected()) {
                     return;
                 }
@@ -85,12 +85,12 @@ public class BlockProtectionListener implements Listener {
             case RED_MUSHROOM:
             case BROWN_MUSHROOM:
             case VINE:
+            case POTATO:
                 event.setCancelled(false);
                 return;
         }
 
-        User user = userService.getOnlineUser(p.getName());
-        if (!canModify(user, block)) {
+        if (!canModify(userService.getOnlineUser(p.getName()), block)) {
             event.setCancelled(true);
         }
     }
