@@ -50,18 +50,21 @@ public class WorldSetter {
         Keepcraft.log(String.format("Setting up %s faction...", UserFaction.getName(faction)));
         prepareBaseArea(location, TEAM_PLOT_RADIUS + 25);
 
+        World world = location.getWorld();
+
         // Find good spawn location
         Location goodSpawnLocation = location.clone();
         goodSpawnLocation.setY(76);
-        while(!goodSpawnLocation.getWorld().getBlockAt(goodSpawnLocation.getBlockX(), goodSpawnLocation.getBlockY(), goodSpawnLocation.getBlockZ()).getType().isSolid()) {
+        while(!world.getBlockAt(goodSpawnLocation.getBlockX(), goodSpawnLocation.getBlockY(), goodSpawnLocation.getBlockZ()).getType().isSolid()) {
             goodSpawnLocation.add(0, -1, 0);
         }
-		goodSpawnLocation.add(0, 1, 0); // Go one up so we're in air
 
+        // Make center of plot a beacon
+        world.getBlockAt(goodSpawnLocation).setType(Material.BEACON);
         plotService.createTeamPlot(null, goodSpawnLocation, faction, TEAM_PLOT_RADIUS);
 
-        // Center faction spawn on block so it's not buried
-		FactionSpawn spawn = new FactionSpawn(faction, goodSpawnLocation.clone().add(0.5, 0, 0.5));
+        // Go in air one block and center on block so spawn is not buried
+		FactionSpawn spawn = new FactionSpawn(faction, goodSpawnLocation.clone().add(0.5, 1, 0.5));
 		factionSpawnService.createFactionSpawn(spawn);
     }
 
