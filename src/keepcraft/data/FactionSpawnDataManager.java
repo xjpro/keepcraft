@@ -6,8 +6,9 @@ import org.bukkit.Location;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 
 public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
@@ -62,8 +63,8 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 	}
 
 	@Override
-	public Map<Object, FactionSpawn> getAllData() {
-		Map<Object, FactionSpawn> allData = new HashMap<>();
+	public Collection<FactionSpawn> getAllData() {
+		List<FactionSpawn> allData = new ArrayList<>();
 		Keepcraft.log("Updating factionSpawn data cache");
 
 		try {
@@ -79,7 +80,7 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 				Keepcraft.log(String.format("FactionSpawn for %s was found at at (%s, %s, %s)", new Object[]{factionValue, locX, locY, locZ}));
 
 				FactionSpawn spawn = new FactionSpawn(factionValue, new Location(Keepcraft.getWorld(), locX, locY, locZ));
-				allData.put(factionValue, spawn);
+				allData.add(spawn);
 			}
 
 			result.close();

@@ -1,5 +1,7 @@
 package keepcraft.data;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 
 import keepcraft.data.models.WorldPoint;
@@ -7,8 +9,6 @@ import keepcraft.data.models.Plot;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
 
 import keepcraft.Keepcraft;
 import keepcraft.data.models.PlotProtection;
@@ -85,8 +85,8 @@ public class PlotDataManager extends DataManager<Plot> {
 	}
 
 	@Override
-	public Map<Object, Plot> getAllData() {
-		Map<Object, Plot> allData = new HashMap<Object, Plot>();
+	public Collection<Plot> getAllData() {
+		ArrayList<Plot> allData = new ArrayList<>();
 		logger.info("(KC) Updating plot data cache");
 
 		try {
@@ -113,7 +113,7 @@ public class PlotDataManager extends DataManager<Plot> {
 				plot.setOrderNumber(orderNumber);
 				plot.setSetterId(setterId);
 
-				allData.put(plot.getId(), plot);
+				allData.add(plot);
 			}
 
 			result.close();
@@ -145,11 +145,12 @@ public class PlotDataManager extends DataManager<Plot> {
 				//protection.set capture effect
 				// spawn
 
-				Plot plot = allData.get(plotId);
-				if (plot != null) {
-					plot.setProtection(protection);
+				for(Plot plot : allData) {
+					if (plot.getId() == protection.getPlotId()) {
+						plot.setProtection(protection);
+						break;
+					}
 				}
-
 			}
 			result.close();
 		} catch (Exception e) {

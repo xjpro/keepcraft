@@ -2,8 +2,9 @@ package keepcraft.data;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import keepcraft.Keepcraft;
 import keepcraft.data.models.LootBlock;
 
@@ -56,8 +57,8 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
     }
 
     @Override
-    public Map<Object, LootBlock> getAllData() {
-        Map<Object, LootBlock> allData = new HashMap<>();
+    public Collection<LootBlock> getAllData() {
+        ArrayList<LootBlock> allData = new ArrayList<>();
 
         Keepcraft.log("Beginning lookup of all loot blocks");
 
@@ -74,12 +75,12 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
                 int type = result.getInt("Type");
                 int output = result.getInt("Output");
 
-                LootBlock block = new LootBlock(id, Keepcraft.instance().getWorld().getBlockAt(locX, locY, locZ));
+                LootBlock block = new LootBlock(id, Keepcraft.getWorld().getBlockAt(locX, locY, locZ));
                 block.setStatus(status);
                 block.setType(type);
                 block.setOutput(output);
 
-                allData.put(id, block);
+                allData.add(block);
             }
 
             result.close();

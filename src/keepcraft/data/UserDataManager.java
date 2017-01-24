@@ -5,8 +5,8 @@ import keepcraft.data.models.UserPrivilege;
 import keepcraft.data.models.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 import keepcraft.Keepcraft;
 
 public class UserDataManager extends DataManager<User> {
@@ -119,8 +119,8 @@ public class UserDataManager extends DataManager<User> {
     }
 
     @Override
-    public Map<Object, User> getAllData() {
-        Map<Object, User> allData = new HashMap<Object, User>();
+    public Collection<User> getAllData() {
+        ArrayList<User> allData = new ArrayList<>();
 
         Keepcraft.log("Beginning lookup of all user data");
 
@@ -144,7 +144,7 @@ public class UserDataManager extends DataManager<User> {
                 user.setMoney(money);
                 user.setLastPlotId(lastPlotId);
 
-                allData.put(name, user);
+                allData.add(user);
             }
 
             result.close();

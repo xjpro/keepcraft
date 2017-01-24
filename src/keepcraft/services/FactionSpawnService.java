@@ -4,7 +4,6 @@ import keepcraft.data.FactionSpawnDataManager;
 import keepcraft.data.models.FactionSpawn;
 
 import java.util.Collection;
-import java.util.Optional;
 
 public class FactionSpawnService {
 
@@ -16,12 +15,14 @@ public class FactionSpawnService {
     }
 
     void refreshCache() {
-        factionSpawns = factionSpawnDataManager.getAllData().values();
+        factionSpawns = factionSpawnDataManager.getAllData();
     }
 
     public FactionSpawn getFactionSpawn(int faction) {
-        Optional<FactionSpawn> factionSpawnOrNull = factionSpawns.stream().filter(spawn -> spawn.getFactionValue() == faction).findFirst();
-        return factionSpawnOrNull.isPresent() ? factionSpawnOrNull.get() : null;
+        for(FactionSpawn spawn : factionSpawns) {
+            if(spawn.getFactionValue() == faction) return spawn;
+        }
+        return null;
     }
 
     public FactionSpawn createFactionSpawn(FactionSpawn factionSpawn) {

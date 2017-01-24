@@ -1,17 +1,17 @@
 package keepcraft.data;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 public abstract class DataManager<T> {
     // For logging of course
 
-    protected final static Logger logger = Logger.getLogger("Minecraft");
+    final static Logger logger = Logger.getLogger("Minecraft");
 
     // Database we'll be utilizing
-    protected final Database database;
+    final Database database;
 
-    public DataManager(Database database) {
+    DataManager(Database database) {
         this.database = database;
     }
 
@@ -19,7 +19,7 @@ public abstract class DataManager<T> {
 
     public abstract T getData(Object key);
 
-    public abstract Map<Object, T> getAllData();
+    public abstract Collection<T> getAllData();
 
     public abstract void updateData(T value);
 
