@@ -40,10 +40,8 @@ public class PlotAttackListener implements Listener {
         Plot plot = plotService.getIntersectedPlot(location);
         if (plot != null) {
             notifyAllUsersInPlot(location, plot, (user, distance, direction) -> {
-                if (distance > 30) {
-                    chatService.sendAlertMessage(user, "The rumble of an explosion echoes from the " + direction);
-                } else if (distance > 12) {
-                    chatService.sendAlertMessage(user, "The roar of an explosion thunders from the " + direction);
+                if (distance > 10) {
+                    chatService.sendAlertMessage(user, "Invaders are attacking from the " + direction);
                 }
             });
         }
@@ -57,10 +55,8 @@ public class PlotAttackListener implements Listener {
             Plot plot = plotService.getIntersectedPlot(location);
             if (plot != null) {
                 notifyAllUsersInPlot(location, plot, (user, distance, direction) -> {
-                    if (distance > 30) {
-                        chatService.sendAlertMessage(user, "The sizzle of magical construction echoes from the " + direction);
-                    } else if (distance > 10) {
-                        chatService.sendAlertMessage(user, "The roar of magical construction thunders from the " + direction);
+                    if (distance > 10) {
+                        chatService.sendAlertMessage(user, "Invaders are building to the " + direction);
                     }
                 });
             }
