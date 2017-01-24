@@ -161,10 +161,6 @@ public class Keepcraft extends JavaPlugin {
         server.reloadWhitelist();
     }
 
-    public static FileConfiguration config() {
-        return instance().getConfig();
-    }
-
     public static void log(String text) {
         logger.info(String.format("(KC) %s", text));
     }

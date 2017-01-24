@@ -42,9 +42,8 @@ public class UserListener implements Listener {
 
         @Override
         public void run() {
-            FileConfiguration config = Keepcraft.config();
-            int startingHealth = config.getInt("player.startingHealth", 10);
-            int startingFood = config.getInt("player.startingFood", 10);
+            int startingHealth = 10;
+            int startingFood = 100;
 
             p.setHealth(startingHealth);
             p.setFoodLevel(startingFood);
