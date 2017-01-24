@@ -24,21 +24,31 @@ public class PlotService {
     }
 
     public Plot getPlot(String name) {
-        for(Plot plot : plots) {
-            if (plot.getName().equals(name)) {
-                return plot;
-            }
-        }
-        return null;
+        return plots.stream().filter(plot -> plot.getName().equals(name)).findFirst().orElse(null);
     }
 
     public Plot getPlot(Integer id) {
-        for(Plot plot : plots) {
-            if (plot.getId() == id) {
-                return plot;
+        return plots.stream().filter(plot -> plot.getId() == id).findFirst().orElse(null);
+    }
+
+    public Plot getIntersectedPlot(Location location) {
+        Plot[] intersectedPlots = plots.stream().filter(plot -> plot.intersectsRadius(location)).toArray(Plot[]::new);
+
+        if (intersectedPlots.length == 0) {
+            return null;
+        } else if (intersectedPlots.length == 1) {
+            return intersectedPlots[0];
+        } else {
+            Plot selected = intersectedPlots[0];
+            for (int i = 1; i < intersectedPlots.length; i++) {
+                Plot plot = intersectedPlots[i];
+                // When we have multiple plots intersected, prioritize admin/spawn plots
+                if (plot.isSpawnProtected() || plot.isAdminProtected()) {
+                    return plot;
+                }
             }
+            return selected;
         }
-        return null;
     }
 
     public void removePlot(Plot plot) {
@@ -92,5 +102,4 @@ public class PlotService {
         //plot.setSetterId(setter.getId()); todo use this
         return plot;
     }
-
 }

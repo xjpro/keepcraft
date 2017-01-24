@@ -3,23 +3,20 @@ package keepcraft.services;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.models.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 public class UserService {
 
     private UserDataManager userDataManager = new UserDataManager();
-    private Collection<User> onlineUsers = new ArrayList<>();
-
-    UserService() {
-    }
+    private HashMap<String, User> onlineUsers = new HashMap<>();
 
     void refreshCache() {
         onlineUsers.clear();
     }
 
     public Collection<User> getOnlineUsers() {
-        return onlineUsers;
+        return onlineUsers.values();
     }
 
     public boolean userIsRegistered(String name) {
@@ -27,32 +24,18 @@ public class UserService {
     }
 
     public User getOnlineUser(String name) {
-        for(User user : onlineUsers) {
-            if(user.getName().equals(name)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    public User getOnlineUser(Integer id) {
-        for(User user : onlineUsers) {
-            if(user.getId() == id) {
-                return user;
-            }
-        }
-        return null;
+        return onlineUsers.get(name);
     }
 
     public User loadOfflineUser(String name) {
         User user = userDataManager.getData(name);
-        onlineUsers.add(user);
+        onlineUsers.put(user.getName(), user);
         return user;
     }
 
     public void setUserOffline(User user) {
         userDataManager.updateData(user);
-        onlineUsers.remove(user);
+        onlineUsers.remove(user.getName());
     }
 
     public void updateUser(User user) {

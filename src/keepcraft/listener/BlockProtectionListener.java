@@ -1,7 +1,5 @@
 package keepcraft.listener;
 
-import java.util.ArrayList;
-
 import keepcraft.services.PlotService;
 import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
@@ -40,7 +38,7 @@ public class BlockProtectionListener implements Listener {
 			event.setBuild(false);
 		}
 
-		Plot plot = ListenerHelper.getIntersectedPlot(block.getLocation(), new ArrayList<>(plotService.getPlots()));
+		Plot plot = plotService.getIntersectedPlot(block.getLocation());
 
 		if (plot == null || plot.getProtection() == null) {
 			return;
@@ -93,7 +91,7 @@ public class BlockProtectionListener implements Listener {
 	}
 
 	private boolean canModify(User user, Block targetBlock) {
-		Plot plot = ListenerHelper.getIntersectedPlot(targetBlock.getLocation(), new ArrayList<>(plotService.getPlots()));
+		Plot plot = plotService.getIntersectedPlot(targetBlock.getLocation());
 		return Privilege.canInteract(user, targetBlock.getLocation(), plot);
 	}
 }

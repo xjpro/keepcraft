@@ -3,31 +3,31 @@ package keepcraft.services;
 import keepcraft.data.FactionSpawnDataManager;
 import keepcraft.data.models.FactionSpawn;
 
-import java.util.Collection;
+import java.util.HashMap;
 
 public class FactionSpawnService {
 
     private FactionSpawnDataManager factionSpawnDataManager = new FactionSpawnDataManager();
-    private Collection<FactionSpawn> factionSpawns;
+    private HashMap<Integer, FactionSpawn> factionSpawns;
 
     FactionSpawnService() {
         refreshCache();
     }
 
     void refreshCache() {
-        factionSpawns = factionSpawnDataManager.getAllData();
+        factionSpawns = new HashMap<>();
+        for(FactionSpawn spawn : factionSpawnDataManager.getAllData()) {
+            factionSpawns.put(spawn.getFactionValue(), spawn);
+        }
     }
 
     public FactionSpawn getFactionSpawn(int faction) {
-        for(FactionSpawn spawn : factionSpawns) {
-            if(spawn.getFactionValue() == faction) return spawn;
-        }
-        return null;
+        return factionSpawns.get(faction);
     }
 
     public FactionSpawn createFactionSpawn(FactionSpawn factionSpawn) {
         factionSpawnDataManager.putData(factionSpawn);
-        factionSpawns.add(factionSpawn);
+        factionSpawns.put(factionSpawn.getFactionValue(), factionSpawn);
         return factionSpawn;
     }
 }

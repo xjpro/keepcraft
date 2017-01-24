@@ -1,6 +1,5 @@
 package keepcraft.listener;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import keepcraft.services.PlotService;
@@ -28,7 +27,7 @@ public class ExplosionListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {
         Location loc = event.getLocation();
-        Plot plot = ListenerHelper.getIntersectedPlot(loc, new ArrayList<>(plotService.getPlots()));
+        Plot plot = plotService.getIntersectedPlot(loc);
 
         // But wait! no block damage for admin plots
         if (plot != null && (plot.isAdminProtected() || plot.isSpawnProtected() || plot.intersectsAdminRadius(loc))) {

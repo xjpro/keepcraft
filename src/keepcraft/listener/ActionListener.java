@@ -1,7 +1,5 @@
 package keepcraft.listener;
 
-import java.util.ArrayList;
-
 import keepcraft.Keepcraft;
 import keepcraft.services.PlotService;
 import keepcraft.services.ServiceCache;
@@ -42,8 +40,7 @@ public class ActionListener implements Listener {
 
         // Code for updating player's current plot
         Plot current = user.getCurrentPlot();
-        Plot candidate = ListenerHelper.getIntersectedPlot(p.getLocation(),
-                new ArrayList<>(plotService.getPlots()));
+        Plot candidate = plotService.getIntersectedPlot(p.getLocation());
 
         if (current != candidate) {
             if (current != null && candidate == null) {
@@ -145,7 +142,7 @@ public class ActionListener implements Listener {
         }
         // End TNT fire hack
 
-        Plot plot = ListenerHelper.getIntersectedPlot(clicked.getLocation(), new ArrayList<>(plotService.getPlots()));
+        Plot plot = plotService.getIntersectedPlot(clicked.getLocation());
         if (plot == null || plot.getProtection() == null) {
             return;
         }
@@ -191,7 +188,7 @@ public class ActionListener implements Listener {
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         Player p = event.getPlayer();
         User user = userService.getOnlineUser(p.getName());
-        Plot plot = ListenerHelper.getIntersectedPlot(event.getBlockClicked().getLocation(), new ArrayList<>(plotService.getPlots()));
+        Plot plot = plotService.getIntersectedPlot(event.getBlockClicked().getLocation());
         if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
             event.setCancelled(true);
         }
@@ -206,7 +203,7 @@ public class ActionListener implements Listener {
 
         Player p = event.getPlayer();
         User user = userService.getOnlineUser(p.getName());
-        Plot plot = ListenerHelper.getIntersectedPlot(event.getBlockClicked().getLocation(), new ArrayList<>(plotService.getPlots()));
+        Plot plot = plotService.getIntersectedPlot(event.getBlockClicked().getLocation());
         if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
             event.setCancelled(true);
         }
