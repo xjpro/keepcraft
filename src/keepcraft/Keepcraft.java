@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import keepcraft.services.*;
 import org.bukkit.Bukkit;
-import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.Plot;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -47,7 +46,6 @@ public class Keepcraft extends JavaPlugin {
     public void onEnable() {
 
         world = WorldLoader.loadLatest();
-        ServerConditions.init(this.getConfig());
         Bukkit.getServer().setSpawnRadius(0);
 
         PluginManager manager = this.getServer().getPluginManager();
@@ -79,9 +77,7 @@ public class Keepcraft extends JavaPlugin {
 
         // Admin commands
         AdminCommandListener adminCommandListener = new AdminCommandListener(userService, plotService);
-        adminCommandListener.setWorld(world);
-        String[] adminCommands = {"promote", "demote", "delete", "reset", "setspawn", "setfaction", "setradius",
-            "plottp", "dawn", "noon", "dusk"};
+        String[] adminCommands = {"promote", "demote", "delete", "reset", "setspawn", "setfaction", "plottp", "dawn", "noon", "dusk"};
         for (String adminCommand : adminCommands) {
             getCommand(adminCommand).setExecutor(adminCommandListener);
         }

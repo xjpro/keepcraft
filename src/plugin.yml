@@ -41,9 +41,6 @@ commands:
     setspawn:
         description: Set a team spawn
         usage: /setspawn <faction #>
-    setradius:
-        description: Set the map's radius
-        usage: /setradius <#>
     faction:
         description: Set faction properties
         usage: /faction <#> etc.

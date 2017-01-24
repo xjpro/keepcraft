@@ -9,14 +9,11 @@ import org.bukkit.entity.Player;
 import keepcraft.Privilege;
 import keepcraft.Keepcraft;
 import keepcraft.data.models.Plot;
-import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.UserPrivilege;
 
 public class AdminCommandListener extends CommandListener {
-
-    private World world = null;
 
     private final UserService userService;
     private final PlotService plotService;
@@ -24,10 +21,6 @@ public class AdminCommandListener extends CommandListener {
     public AdminCommandListener(UserService userService, PlotService plotService) {
         this.userService = userService;
         this.plotService = plotService;
-    }
-
-    public void setWorld(World value) {
-        world = value;
     }
 
     @Override
@@ -76,26 +69,12 @@ public class AdminCommandListener extends CommandListener {
                 return true;
             }
         }
-        // Set map radius
-        else if (commandName.equals("setradius") && args.length == 1) {
+        // Reset command
+        else if (commandName.equals("reset")) {
             if (Privilege.canSetSpawn(sender)) {
-                double radius;
-
-                try {
-                    radius = Double.parseDouble(args[0]);
-                } catch (NumberFormatException e) {
-                    // invalid input
-                    commandSender.sendMessage(ChatService.Failure + "Radius must be a number");
-                    return false;
-                }
-
-                ServerConditions.setMapRadius((int) radius);
-                commandSender.sendMessage(ChatService.Success + "Set map radius to " + radius);
+                Keepcraft.instance().reset();
                 return true;
             }
-        } else if (commandName.equals("reset")) {
-            Keepcraft.instance().reset();
-            return true;
         }
         // Set a spawn
         else if (commandName.equals("setspawn") && args.length == 1) {
@@ -174,8 +153,8 @@ public class AdminCommandListener extends CommandListener {
                 } catch (NumberFormatException e) // not an int, do name
                 {
                     String name = "";
-                    for (int i = 0; i < args.length; i++) {
-                        name += args[i] + " ";
+                    for (String arg : args) {
+                        name += arg + " ";
                     }
                     plot = plotService.getPlot(name.trim());
                 }
@@ -190,33 +169,23 @@ public class AdminCommandListener extends CommandListener {
         } // Make it dawn
         else if (commandName.equals("dawn") && args.length == 0) {
             if (Privilege.canModifyServerConditions(sender)) {
-                if (world != null) {
-                    world.setTime(0);
-                }
+                Keepcraft.getWorld().setTime(0);
             }
             return true;
         } // Make it noon
         else if (commandName.equals("noon") && args.length == 0) {
             if (Privilege.canModifyServerConditions(sender)) {
-                if (world != null) {
-                    world.setTime(5000);
-                }
+                Keepcraft.getWorld().setTime(5000);
             }
             return true;
         } // Make it dusk
         else if (commandName.equals("dusk") && args.length == 0) {
             if (Privilege.canModifyServerConditions(sender)) {
-                if (world != null) {
-                    world.setTime(10000);
-                }
+                Keepcraft.getWorld().setTime(10000);
             }
             return true;
         }
 
-        if (sender.isAdmin()) {
-            return false;
-        } else {
-            return true;
-        }
+        return !sender.isAdmin();
     }
 }

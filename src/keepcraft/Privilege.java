@@ -3,11 +3,12 @@ package keepcraft;
 import org.bukkit.Location;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
-import keepcraft.data.models.ServerConditions;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserPrivilege;
 
 public abstract class Privilege {
+
+    private static final int MAP_RADIUS = 3000;
 
     public static boolean canPromote(User user) {
         return isAdmin(user);
@@ -30,8 +31,8 @@ public abstract class Privilege {
     }
 
     public static boolean canInteract(User user, Location modifyingLocation, Plot plot) {
-        Location center = null;//ServerConditions.getCenterLocation();
-        if (center != null && center.distance(modifyingLocation) > ServerConditions.getMapRadius()) {
+        Location center = new Location(Keepcraft.getWorld(), 0, 64, 0);
+        if (center.distance(modifyingLocation) > MAP_RADIUS) {
             return false; // maximum map size exceeded
         }
 
