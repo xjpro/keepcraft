@@ -82,6 +82,8 @@ public class CombatListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityDeath(EntityDeathEvent event) {
+        event.setDroppedExp(0);
+
         if (event.getEntity() instanceof Player) {
             // Get target
             Player p = (Player) event.getEntity();
@@ -114,15 +116,17 @@ public class CombatListener implements Listener {
 
                 e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection);
             }
-        } else {
-            Entity target = event.getEntity();
-            EntityDamageEvent damageEvent = target.getLastDamageCause();
-            DamageCause cause = (damageEvent == null) ? null : damageEvent.getCause();
-            if (cause == null || !cause.equals(DamageCause.ENTITY_ATTACK)) {
-                event.setDroppedExp(0);
-                event.getDrops().clear();
-            }
         }
+        // This was put in to stop farmable monster spawners:
+//        else {
+//            Entity target = event.getEntity();
+//            EntityDamageEvent damageEvent = target.getLastDamageCause();
+//            DamageCause cause = (damageEvent == null) ? null : damageEvent.getCause();
+//            if (cause == null || !cause.equals(DamageCause.ENTITY_ATTACK)) {
+//                event.setDroppedExp(0);
+//                event.getDrops().clear();
+//            }
+//        }
     }
 
 }
