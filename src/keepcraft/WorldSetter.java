@@ -7,7 +7,6 @@ import keepcraft.data.models.FactionSpawn;
 import keepcraft.data.models.UserFaction;
 import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
-import keepcraft.services.ServiceCache;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 

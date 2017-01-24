@@ -6,7 +6,6 @@ import java.util.List;
 
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
-import keepcraft.services.ServiceCache;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import keepcraft.data.models.Plot;
