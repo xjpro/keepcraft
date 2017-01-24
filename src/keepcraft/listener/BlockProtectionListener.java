@@ -15,87 +15,88 @@ import keepcraft.data.models.User;
 
 public class BlockProtectionListener implements Listener {
 
-	private final UserService userService;
-	private final PlotService plotService;
+    private final UserService userService;
+    private final PlotService plotService;
 
-	public BlockProtectionListener(UserService userService, PlotService plotService) {
-		this.userService = userService;
-		this.plotService = plotService;
-	}
+    public BlockProtectionListener(UserService userService, PlotService plotService) {
+        this.userService = userService;
+        this.plotService = plotService;
+    }
 
-	@EventHandler(priority = EventPriority.LOW)
-	public void onBlockPlace(BlockPlaceEvent event) {
-		if(event.isCancelled()) return; // No need to process further
+    @EventHandler(priority = EventPriority.LOW)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.isCancelled()) return; // No need to process further
 
-		Block block = event.getBlock();
+        Block block = event.getBlock();
 
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
+        Player p = event.getPlayer();
+        User user = userService.getOnlineUser(p.getName());
 
-		if (user.isAdmin()) {
-			return;
-		}
+        if (user.isAdmin()) {
+            return;
+        }
 
-		// Not allowed blocks anywhere
-		if (block.getType() == Material.ENCHANTMENT_TABLE) {
-			event.setCancelled(true);
-			event.setBuild(false);
-		}
+        // Not allowed blocks anywhere
+        if (block.getType() == Material.ENCHANTMENT_TABLE || block.getType() == Material.BREWING_STAND
+                || block.getType() == Material.PISTON_BASE || block.getType() == Material.PISTON_STICKY_BASE) {
+            event.setCancelled(true);
+            event.setBuild(false);
+        }
 
-		Plot plot = plotService.getIntersectedPlot(block.getLocation());
+        Plot plot = plotService.getIntersectedPlot(block.getLocation());
 
-		if (plot == null || plot.getProtection() == null) {
-			return;
-		}
+        if (plot == null || plot.getProtection() == null) {
+            return;
+        }
 
-		switch (event.getBlock().getType()) {
-			case FIRE:
-				if (event.getBlockAgainst().getType() == Material.TNT) {
-					return; // allow fire on TNT
-				}
-				break;
-			case TNT:
-				if (!plot.isAdminProtected() && !plot.isEventProtected()) {
-					return;
-				}
-				break;
-		}
+        switch (event.getBlock().getType()) {
+            case FIRE:
+                if (event.getBlockAgainst().getType() == Material.TNT) {
+                    return; // allow fire on TNT
+                }
+                break;
+            case TNT:
+                if (!plot.isAdminProtected() && !plot.isEventProtected()) {
+                    return;
+                }
+                break;
+        }
 
-		if (!canModify(user, block)) {
-			event.setCancelled(true);
-			event.setBuild(false);
-		}
-	}
+        if (!canModify(user, block)) {
+            event.setCancelled(true);
+            event.setBuild(false);
+        }
+    }
 
-	@EventHandler(priority = EventPriority.LOW)
-	public void onBlockBreak(BlockBreakEvent event) {
-		Player p = event.getPlayer();
-		if (p == null) return;
-		Block block = event.getBlock();
+    @EventHandler(priority = EventPriority.LOW)
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player p = event.getPlayer();
+        if (p == null) return;
+        Block block = event.getBlock();
 
-		switch (block.getType()) {
-			// Put materials here that can be broken no matter what
-			case CROPS:
-			case MELON_BLOCK:
-			case PUMPKIN:
-			case SUGAR_CANE_BLOCK:
-			case TNT:
-			case MELON_STEM:
-			case RED_MUSHROOM:
-			case BROWN_MUSHROOM:
-			case VINE:
-				event.setCancelled(false);
-				return;
-		}
+        switch (block.getType()) {
+            // Put materials here that can be broken no matter what
+            case CROPS:
+            case MELON_BLOCK:
+            case PUMPKIN:
+            case SUGAR_CANE_BLOCK:
+            case TNT:
+            case MELON_STEM:
+            case RED_MUSHROOM:
+            case BROWN_MUSHROOM:
+            case VINE:
+                event.setCancelled(false);
+                return;
+        }
 
-		User user = userService.getOnlineUser(p.getName());
-		if (!canModify(user, block)) {
-			event.setCancelled(true);
-		}
-	}
+        User user = userService.getOnlineUser(p.getName());
+        if (!canModify(user, block)) {
+            event.setCancelled(true);
+        }
+    }
 
-	private boolean canModify(User user, Block targetBlock) {
-		Plot plot = plotService.getIntersectedPlot(targetBlock.getLocation());
-		return Privilege.canInteract(user, targetBlock.getLocation(), plot);
-	}
+    private boolean canModify(User user, Block targetBlock) {
+        Plot plot = plotService.getIntersectedPlot(targetBlock.getLocation());
+        return Privilege.canInteract(user, targetBlock.getLocation(), plot);
+    }
 }
