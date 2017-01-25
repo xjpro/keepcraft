@@ -102,6 +102,11 @@ public class ChatService {
         Bukkit.getPlayer(target.getName()).sendMessage(message);
     }
 
+    public void sendFailureMessage(User target, String text) {
+        String message = String.format(ChatService.AlertFormat, ChatService.Failure, text);
+        Bukkit.getPlayer(target.getName()).sendMessage(message);
+    }
+
     public void sendGlobalAlertMessage(String text) {
         String message = String.format(ChatService.AlertFormat, ChatService.Info, text);
         for (Player receiver : Bukkit.getOnlinePlayers()) {
