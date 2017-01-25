@@ -7,10 +7,11 @@ import java.util.HashMap;
 
 public class FactionSpawnService {
 
-    private FactionSpawnDataManager factionSpawnDataManager = new FactionSpawnDataManager();
+    private final FactionSpawnDataManager factionSpawnDataManager;
     private HashMap<Integer, FactionSpawn> factionSpawns;
 
-    public FactionSpawnService() {
+    public FactionSpawnService(FactionSpawnDataManager factionSpawnDataManager) {
+        this.factionSpawnDataManager = factionSpawnDataManager;
         refreshCache();
     }
 

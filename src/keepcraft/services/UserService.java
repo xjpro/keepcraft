@@ -8,8 +8,12 @@ import java.util.HashMap;
 
 public class UserService {
 
-    private UserDataManager userDataManager = new UserDataManager();
+    private final UserDataManager userDataManager;
     private HashMap<String, User> onlineUsers = new HashMap<>();
+
+    public UserService(UserDataManager userDataManager) {
+        this.userDataManager = userDataManager;
+    }
 
     public void refreshCache() {
         onlineUsers.clear();

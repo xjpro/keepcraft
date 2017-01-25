@@ -8,10 +8,11 @@ import java.util.Collection;
 
 public class PlotService {
 
-    private PlotDataManager plotDataManager = new PlotDataManager();
+    private final PlotDataManager plotDataManager;
     private Collection<Plot> plots;
 
-    public PlotService() {
+    public PlotService(PlotDataManager plotDataManager) {
+        this.plotDataManager = plotDataManager;
         refreshCache();
     }
 

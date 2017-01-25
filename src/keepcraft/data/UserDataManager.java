@@ -16,11 +16,6 @@ public class UserDataManager extends DataManager<User> {
         init();
     }
 
-    public UserDataManager() {
-        super(Keepcraft.getSqlLiteDatabase());
-        init();
-    }
-
     private void init() {
         try {
             PreparedStatement statement

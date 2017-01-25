@@ -40,6 +40,7 @@ public class BlockProtectionListener implements Listener {
                 || block.getType() == Material.PISTON_BASE || block.getType() == Material.PISTON_STICKY_BASE) {
             event.setCancelled(true);
             event.setBuild(false);
+            return;
         }
 
         Plot plot = plotService.getIntersectedPlot(block.getLocation());
@@ -50,7 +51,7 @@ public class BlockProtectionListener implements Listener {
         switch (event.getBlock().getType()) {
             case FIRE:
                 Material blockAgainstType = event.getBlockAgainst().getType();
-                if (blockAgainstType == Material.TNT || blockAgainstType == Material.REDSTONE_BLOCK) {
+                if (blockAgainstType == Material.TNT) {
                     return; // allow fire on TNT
                 }
                 break;
@@ -86,7 +87,6 @@ public class BlockProtectionListener implements Listener {
             case BROWN_MUSHROOM:
             case VINE:
             case POTATO:
-                event.setCancelled(false);
                 return;
         }
 

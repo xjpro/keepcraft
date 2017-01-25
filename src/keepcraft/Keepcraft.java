@@ -30,14 +30,14 @@ public class Keepcraft extends JavaPlugin {
     // Data managers
     private final Database database = new Database("keepcraft.db");
     private final UserDataManager userDataManager = new UserDataManager(database);
-    private final DataManager<Plot> plotDataManager = new PlotDataManager(database);
-    private final DataManager<FactionSpawn> factionSpawnManager = new FactionSpawnDataManager(database);
-    private final DataManager<LootBlock> lootBlockDataManager = new LootBlockDataManager(database);
+    private final PlotDataManager plotDataManager = new PlotDataManager(database);
+    private final FactionSpawnDataManager factionSpawnManager = new FactionSpawnDataManager(database);
+    private final LootBlockDataManager lootBlockDataManager = new LootBlockDataManager(database);
 
     // Services
-    private final UserService userService = new UserService();
-    private final PlotService plotService = new PlotService();
-    private final FactionSpawnService factionSpawnService = new FactionSpawnService();
+    private final UserService userService = new UserService(userDataManager);
+    private final PlotService plotService = new PlotService(plotDataManager);
+    private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
     private final ChatService chatService = new ChatService(userService);
 
     private World world;

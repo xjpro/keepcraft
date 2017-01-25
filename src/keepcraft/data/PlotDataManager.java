@@ -20,11 +20,6 @@ public class PlotDataManager extends DataManager<Plot> {
 		init();
 	}
 
-	public PlotDataManager() {
-	    super(Keepcraft.getSqlLiteDatabase());
-	    init();
-    }
-
 	private void init() {
 		try {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, DateTimeSet)");
