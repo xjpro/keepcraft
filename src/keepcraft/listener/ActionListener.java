@@ -122,7 +122,7 @@ public class ActionListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.hasBlock()) {
-            return; // Air	
+            return; // Air
         }
         Block clicked = event.getClickedBlock();
         Material blockType = clicked.getType();

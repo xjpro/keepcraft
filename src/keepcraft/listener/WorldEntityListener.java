@@ -3,6 +3,7 @@ package keepcraft.listener;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,8 +14,10 @@ public class WorldEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onEndermanPickup(EntityChangeBlockEvent event) {
-        // This is annoying
-        event.setCancelled(true);
+        if(event.getEntityType() == EntityType.ENDERMAN) {
+            // This is annoying
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

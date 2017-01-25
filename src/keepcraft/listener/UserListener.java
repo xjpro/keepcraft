@@ -145,7 +145,7 @@ public class UserListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPortal(PlayerPortalEvent event) {
         event.setCancelled(true);
     }

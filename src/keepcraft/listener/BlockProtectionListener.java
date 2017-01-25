@@ -23,7 +23,7 @@ public class BlockProtectionListener implements Listener {
         this.plotService = plotService;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.isCancelled()) return; // No need to process further
 
@@ -69,7 +69,7 @@ public class BlockProtectionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockBreak(BlockBreakEvent event) {
         Player p = event.getPlayer();
         if (p == null) return;
