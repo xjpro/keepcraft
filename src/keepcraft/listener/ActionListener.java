@@ -90,7 +90,7 @@ public class ActionListener implements Listener {
 
             if (belowBlock.getType() == Material.TNT) {
                 // Replace with a primed TNT entity
-                p.getWorld().spawn(belowBlock.getLocation(), TNTPrimed.class);
+                p.getWorld().spawn(belowBlock.getLocation().add(0.5, 0, 0.5), TNTPrimed.class);
                 belowBlock.setType(Material.AIR);
             }
             // End TNT ignition
@@ -126,25 +126,6 @@ public class ActionListener implements Listener {
         }
         Block clicked = event.getClickedBlock();
         Material blockType = clicked.getType();
-
-        // Notch decided to make right click with flint not set TNT on fire anymore.
-        // This block of code replaces that functionality.
-        if (blockType == Material.TNT
-                && event.getItem().getType() == Material.FLINT_AND_STEEL
-                && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            event.setCancelled(true);
-            // Instead, set block on fire
-            BlockFace[] facesToCheck = {BlockFace.UP, BlockFace.DOWN,
-                    BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
-            for (BlockFace face : facesToCheck) {
-                Block neighbor = clicked.getRelative(face);
-                if (neighbor.getType().equals(Material.AIR)) {
-                    neighbor.setType(Material.FIRE);
-                    return;
-                }
-            }
-        }
-        // End TNT fire hack
 
         Plot plot = plotService.getIntersectedPlot(clicked.getLocation());
         if (plot == null || plot.getProtection() == null) {
