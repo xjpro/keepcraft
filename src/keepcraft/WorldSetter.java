@@ -119,13 +119,37 @@ public class WorldSetter {
         }
     }
 
-    private void prepareSpawnArea(Location location) {
-        World world = location.getWorld();
-        Block center = world.getBlockAt(location);
+    private void prepareSpawnArea(Location spawnLocation) {
+        World world = spawnLocation.getWorld();
+        Block center = world.getBlockAt(spawnLocation);
 
-        for (int x = -2; x <= 2; x++) {
-            for (int z = -2; z <= 2; z++) {
-                center.getRelative(x, 0, z).setType(Material.BEDROCK);
+        int platformBottomY = spawnLocation.getBlockY();
+        int platformTopY = platformBottomY + 3;
+
+        for(int y = 0; y <= platformTopY; y++) {
+
+            if(y < platformBottomY || y == platformTopY) {
+                // Make huge cylinder from bedrock to spawn location
+                for (int x = spawnLocation.getBlockX() - 2; x <= spawnLocation.getBlockX() + 2; x++) {
+                    for (int z = spawnLocation.getBlockZ() - 2; z <= spawnLocation.getBlockZ() + 2; z++) {
+                        world.getBlockAt(x, y, z).setType(Material.BEDROCK);
+                    }
+                }
+            }
+            else {
+                // Build hollow area
+                // North wall
+                world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ()+2).setType(Material.BEDROCK);
+                world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ()+2).setType(Material.BEDROCK);
+                // East wall
+                world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ()+1).setType(Material.BEDROCK);
+                world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ()-1).setType(Material.BEDROCK);
+                // South wall
+                world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ()-2).setType(Material.BEDROCK);
+                world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ()-2).setType(Material.BEDROCK);
+                // West wall
+                world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ()+1).setType(Material.BEDROCK);
+                world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ()-1).setType(Material.BEDROCK);
             }
         }
 
