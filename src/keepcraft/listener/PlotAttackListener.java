@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockFormEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import keepcraft.data.models.Direction;
 import keepcraft.data.models.Plot;
@@ -33,49 +33,47 @@ public class PlotAttackListener implements Listener {
         this.chatService = chatService;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onEntityExplode(EntityExplodeEvent event) {
         if (event.isCancelled()) return;
 
-        Location location = event.getLocation();
-        Plot plot = plotService.getIntersectedPlot(location);
-        if (plot != null) {
-            notifyAllUsersInPlot(location, plot, (user, distance, direction) -> {
+        notifyAllUsersInPlot(event.getLocation(), (user, distance, direction) -> {
+            if (distance > 30) {
+                chatService.sendAlertMessage(user, "The rumble of an explosion echoes from the " + direction);
+            } else if (distance > 12) {
+                chatService.sendAlertMessage(user, "The roar of an explosion thunders from the " + direction);
+            }
+        });
+
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.isCancelled()) return;
+
+        if (event.getBlock().getType() == Material.REDSTONE_BLOCK) {
+            notifyAllUsersInPlot(event.getBlock().getLocation(), (user, distance, direction) -> {
                 if (distance > 10) {
-                    chatService.sendAlertMessage(user, "Invaders are attacking from the " + direction);
+                    chatService.sendAlertMessage(user, "The sizzle of magical construction hums from the " + direction);
                 }
             });
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onBlockForm(BlockFormEvent event) {
-        if (event.isCancelled()) return;
+    private void notifyAllUsersInPlot(Location eventLocation, PlotNotifier notifier) {
+        Plot plot = plotService.getIntersectedPlot(eventLocation);
+        if (plot != null) {
+            Server server = Bukkit.getServer();
+            for (User user : userService.getOnlineUsers()) {
+                if (plot == user.getCurrentPlot() && plot.isFactionProtected(user.getFaction())) {
 
-        if (event.getBlock().getType() == Material.MOSSY_COBBLESTONE) {
-            Location location = event.getBlock().getLocation();
-            Plot plot = plotService.getIntersectedPlot(location);
-            if (plot != null) {
-                notifyAllUsersInPlot(location, plot, (user, distance, direction) -> {
-                    if (distance > 10) {
-                        chatService.sendAlertMessage(user, "Invaders are building to the " + direction);
-                    }
-                });
-            }
-        }
-    }
+                    Player p = server.getPlayer(user.getName());
+                    Location locationTo = Direction.lookAt(p.getLocation(), eventLocation);
+                    String direction = Direction.getCardinalDirection(locationTo);
 
-    private void notifyAllUsersInPlot(Location eventLocation, Plot plot, PlotNotifier notifier) {
-        Server server = Bukkit.getServer();
-        for (User user : userService.getOnlineUsers()) {
-            if (plot == user.getCurrentPlot() && plot.isFactionProtected(user.getFaction())) {
-
-                Player p = server.getPlayer(user.getName());
-                Location locationTo = Direction.lookAt(p.getLocation(), eventLocation);
-                String direction = Direction.getCardinalDirection(locationTo);
-
-                double distance = p.getLocation().distance(eventLocation);
-                notifier.notify(user, distance, direction);
+                    double distance = p.getLocation().distance(eventLocation);
+                    notifier.notify(user, distance, direction);
+                }
             }
         }
     }

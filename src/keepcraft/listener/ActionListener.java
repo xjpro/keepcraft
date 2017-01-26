@@ -14,7 +14,6 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -64,10 +63,10 @@ public class ActionListener implements Listener {
                 && current.getProtection().getPartialRadius() > 0) // we are in a plot with a partial radius
         {
             // if are going to intersects protected but didn't before
-            if (current.intersectsProtectedRadius(to) && !current.intersectsProtectedRadius(from)) {
+            if (current.isInTeamProtectedRadius(to) && !current.isInTeamProtectedRadius(from)) {
                 p.sendMessage(ChatService.Info + "Entering " + candidate.getColoredName() + " (Keep)");
             } // if we are not going to intersects protected but did before
-            else if (!current.intersectsProtectedRadius(to) && current.intersectsProtectedRadius(from)) {
+            else if (!current.isInTeamProtectedRadius(to) && current.isInTeamProtectedRadius(from)) {
                 p.sendMessage(ChatService.Info + "Leaving " + candidate.getColoredName() + " (Keep)");
             }
         }
@@ -149,9 +148,9 @@ public class ActionListener implements Listener {
             case SIGN:
                 if (plot.getProtection().getType() == PlotProtection.EVENT) {
                     // Do nothing, it's allowed
-                } else if (!plot.intersectsProtectedRadius(clicked.getLocation())
-                        && !plot.intersectsAdminRadius(clicked.getLocation())
-                        && plot.intersectsPartialRadius(clicked.getLocation())) {
+                } else if (!plot.isInTeamProtectedRadius(clicked.getLocation())
+                        && !plot.isInAdminProtectedRadius(clicked.getLocation())
+                        && plot.isInPartialRadius(clicked.getLocation())) {
                     // Do nothing, it's allowed
                 } else if (!Privilege.canInteract(user, clicked.getLocation(), plot)) {
                     if (nearDoor(clicked) && !blockType.equals(Material.STONE_PLATE)) {

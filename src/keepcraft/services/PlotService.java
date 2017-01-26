@@ -33,7 +33,7 @@ public class PlotService {
     }
 
     public Plot getIntersectedPlot(Location location) {
-        Plot[] intersectedPlots = plots.stream().filter(plot -> plot.intersectsRadius(location)).toArray(Plot[]::new);
+        Plot[] intersectedPlots = plots.stream().filter(plot -> plot.isInRadius(location)).toArray(Plot[]::new);
 
         if (intersectedPlots.length == 0) {
             return null;

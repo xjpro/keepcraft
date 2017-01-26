@@ -45,7 +45,7 @@ public class SiegeCommandListener extends CommandListener {
             } else if (currentPlot.isFactionProtected(sender.getFaction()) && existingSiege == null) {
                 commandSender.sendMessage(ChatService.Failure + "This area is already secured");
                 return true;
-            } else if (!currentPlot.intersectsTriggerRadius(p.getLocation())) {
+            } else if (!currentPlot.isInTriggerRadius(p.getLocation())) {
                 commandSender.sendMessage(ChatService.Failure + "Move closer to the area's center");
                 return true;
             } else {

@@ -133,7 +133,7 @@ public class BasicCommandListener extends CommandListener {
                 return true;
             } else if (args.length > 0) {
                 Plot currentPlot = sender.getCurrentPlot();
-                if (currentPlot == null || currentPlot.getOrderNumber() == -1 || !currentPlot.intersectsTriggerRadius(p.getLocation())
+                if (currentPlot == null || currentPlot.getOrderNumber() == -1 || !currentPlot.isInTriggerRadius(p.getLocation())
                         || !currentPlot.isFactionProtected(sender.getFaction()) || currentPlot.getProtection().isCaptureInProgress()) {
                     commandSender.sendMessage(ChatService.Failure + "You can only rally from a secured rally point");
                     return true;

@@ -71,45 +71,36 @@ public class Plot {
     }
 
     public boolean intersectsIgnoreY(double pointX, double pointZ, double compareRadius) {
-        if (distanceIgnoreY(pointX, pointZ) < compareRadius) {
-            return true;
-        }
-        return false;
+        return distanceIgnoreY(pointX, pointZ) < compareRadius;
     }
 
-    public boolean intersectsRadius(Location loc) {
+    public boolean isInRadius(Location loc) {
         return intersectsIgnoreY(new WorldPoint(loc), radius);
     }
 
-    public boolean intersectsProtectedRadius(Location loc) {
-        if (protection == null) {
-            return false;
-        }
-        return intersectsIgnoreY(new WorldPoint(loc), protection.getProtectedRadius());
+    public boolean isInTeamProtectedRadius(Location loc) {
+        return protection != null && intersectsIgnoreY(new WorldPoint(loc), protection.getProtectedRadius());
     }
 
-    public boolean intersectsPartialRadius(Location loc) {
-        if (protection == null) {
-            return false;
-        }
-        return intersectsIgnoreY(new WorldPoint(loc), protection.getPartialRadius());
+    public boolean isInPartialRadius(Location loc) {
+        return protection != null && intersectsIgnoreY(new WorldPoint(loc), protection.getPartialRadius());
     }
 
-    public boolean intersectsAdminRadius(Location loc) {
+    public boolean isInAdminProtectedRadius(Location loc) {
+        // No protection
         if (protection == null) {
             return false;
         }
+        // Entire plot has admin protection
         if (protection.getType() == PlotProtection.ADMIN) {
             return true;
         }
+        // Only smaller center of plot has admin protection
         return intersects(new WorldPoint(loc), protection.getAdminRadius());
     }
 
-    public boolean intersectsTriggerRadius(Location loc) {
-        if (protection == null) {
-            return false;
-        }
-        return intersects(new WorldPoint(loc), protection.getTriggerRadius());
+    public boolean isInTriggerRadius(Location loc) {
+        return protection != null && intersects(new WorldPoint(loc), protection.getTriggerRadius());
     }
 
     public int getId() {
@@ -137,31 +128,19 @@ public class Plot {
     }
 
     public boolean isSpawnProtected() {
-        if (protection == null) {
-            return false;
-        }
-        return protection.getType() == PlotProtection.SPAWN;
+        return protection != null && protection.getType() == PlotProtection.SPAWN;
     }
 
     public boolean isEventProtected() {
-        if (protection == null) {
-            return false;
-        }
-        return protection.getType() == PlotProtection.EVENT;
+        return protection != null && protection.getType() == PlotProtection.EVENT;
     }
 
     public boolean isAdminProtected() {
-        if (protection == null) {
-            return false;
-        }
-        return protection.getType() == PlotProtection.ADMIN;
+        return protection != null && protection.getType() == PlotProtection.ADMIN;
     }
 
     public boolean isFactionProtected(int faction) {
-        if (protection == null) {
-            return false;
-        }
-        return protection.getType() == faction;
+        return protection != null && protection.getType() == faction;
     }
 
     public boolean isImmuneToAttack() {

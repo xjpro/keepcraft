@@ -61,13 +61,13 @@ public abstract class Privilege {
                     case PlotProtection.FACTION_B:
                     case PlotProtection.FACTION_C:
                     case PlotProtection.FACTION_E:
-                        if (plot.intersectsAdminRadius(modifyingLocation)) {
+                        if (plot.isInAdminProtectedRadius(modifyingLocation)) {
                             return false;
                         }
-                        if (plot.intersectsProtectedRadius(modifyingLocation)) {
+                        if (plot.isInTeamProtectedRadius(modifyingLocation)) {
                             return user.getFaction() == protectionType;
                         }
-                        if (plot.intersectsPartialRadius(modifyingLocation)) {
+                        if (plot.isInPartialRadius(modifyingLocation)) {
                             return user.getFaction() == protectionType;
                         }
                         return true;
