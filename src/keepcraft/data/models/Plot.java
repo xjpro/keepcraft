@@ -96,7 +96,8 @@ public class Plot {
             return true;
         }
         // Only smaller center of plot has admin protection
-        return intersects(new WorldPoint(loc), protection.getAdminRadius());
+        //return intersects(new WorldPoint(loc), protection.getAdminRadius()); // admin is sphere at center orrr
+        return intersectsIgnoreY(new WorldPoint(loc), protection.getAdminRadius()); // admin is column at center
     }
 
     public boolean isInTriggerRadius(Location loc) {
