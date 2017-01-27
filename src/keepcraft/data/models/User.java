@@ -20,7 +20,6 @@ public class User {
     // Non persistent real time data
     private Plot currentPlot = null;
     private LootBlock targetLootBlock = null;
-    private Location knownLocation = null;
     private boolean receiveGlobalMessages = true;
     private String lastPrivateMessageSender = null;
 
@@ -127,14 +126,6 @@ public class User {
 
     public void setTargetLootBlock(LootBlock value) {
         targetLootBlock = value;
-    }
-
-    public Location getLastLocation() {
-        return knownLocation;
-    }
-
-    public void setLastLocation(Location value) {
-        knownLocation = value;
     }
 
     public boolean getReceiveGlobalMessages() {

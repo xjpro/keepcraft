@@ -10,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,80 +41,60 @@ public class ActionListener implements Listener {
         User user = userService.getOnlineUser(p.getName());
 
         // Code for updating player's current plot
-        Plot current = user.getCurrentPlot();
-        Plot candidate = plotService.getIntersectedPlot(p.getLocation());
+        Plot currentPlot = user.getCurrentPlot();
+        Plot candidatePlot = plotService.getIntersectedPlot(p.getLocation());
 
-        if (current != candidate) {
-            if (current != null && candidate == null) {
-                if (!current.isSpawnProtected()) {
-                    p.sendMessage(ChatService.Info + "Leaving " + current.getColoredName());
+        if (currentPlot != candidatePlot) {
+            if (currentPlot != null && candidatePlot == null) {
+                if (!currentPlot.isSpawnProtected()) {
+                    p.sendMessage(ChatService.Info + "Leaving " + currentPlot.getColoredName());
                 }
                 user.setCurrentPlot(null);
             }
 
-            if (candidate != null) {
-                if (!candidate.isSpawnProtected() && (current == null || !current.isSpawnProtected())) {
-                    p.sendMessage(ChatService.Info + "Entering " + candidate.getColoredName());
+            if (candidatePlot != null) {
+                if (!candidatePlot.isSpawnProtected() && (currentPlot == null || !currentPlot.isSpawnProtected())) {
+                    p.sendMessage(ChatService.Info + "Entering " + candidatePlot.getColoredName());
                 }
-                user.setCurrentPlot(candidate);
+                user.setCurrentPlot(candidatePlot);
             }
-        } else if (current != null && !current.isAdminProtected() && !current.isEventProtected()
-                && current.getProtection().getPartialRadius() > 0) // we are in a plot with a partial radius
+        } else if (currentPlot != null && !currentPlot.isAdminProtected() && !currentPlot.isEventProtected()
+                && currentPlot.getProtection().getPartialRadius() > 0) // we are in a plot with a partial radius
         {
             // if are going to intersects protected but didn't before
-            if (current.isInTeamProtectedRadius(to) && !current.isInTeamProtectedRadius(from)) {
-                p.sendMessage(ChatService.Info + "Entering " + candidate.getColoredName() + " (Keep)");
+            if (currentPlot.isInTeamProtectedRadius(to) && !currentPlot.isInTeamProtectedRadius(from)) {
+                p.sendMessage(ChatService.Info + "Entering " + candidatePlot.getColoredName() + " (Keep)");
             } // if we are not going to intersects protected but did before
-            else if (!current.isInTeamProtectedRadius(to) && current.isInTeamProtectedRadius(from)) {
-                p.sendMessage(ChatService.Info + "Leaving " + candidate.getColoredName() + " (Keep)");
+            else if (!currentPlot.isInTeamProtectedRadius(to) && currentPlot.isInTeamProtectedRadius(from)) {
+                p.sendMessage(ChatService.Info + "Leaving " + candidatePlot.getColoredName() + " (Keep)");
             }
         }
         // End plot update code
 
-        current = user.getCurrentPlot();
+        currentPlot = user.getCurrentPlot();
 
-        if ((current != null && current.isFactionProtected(user.getFaction()))
+        if ((currentPlot != null && currentPlot.isFactionProtected(user.getFaction()))
                 || p.getGameMode() == GameMode.CREATIVE
                 || event.getEventName().equals("PLAYER_TELEPORT")) {
-            // Break out early conditions
-        } else {
-            Location lastLocation = user.getLastLocation();
-            if (lastLocation == null) {
-                lastLocation = from;
-            }
-
-            // Begin TNT ignition code
-            Block belowBlock = p.getWorld().getBlockAt(lastLocation.getBlockX(), lastLocation.getBlockY() - 1, lastLocation.getBlockZ());
-
-            if (belowBlock.getType() == Material.TNT) {
-                // Replace with a primed TNT entity
-                p.getWorld().spawn(belowBlock.getLocation().add(0.5, 0, 0.5), TNTPrimed.class);
-                belowBlock.setType(Material.AIR);
-            }
-            // End TNT ignition
-
-            // Begin teleportation and block jump prevention
-            if ((lastLocation.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
-                    && (p.getFallDistance() == 0.0F && p.getVelocity().getY() <= -0.6D)
-                    && (p.getLocation().getY() > 0.0D)) {
-                Keepcraft.log(String.format("A float by %s was prevented", user.getName()));
-
-                // Find the ground
-                Location blockLocation = lastLocation;
-                while (blockLocation.getBlock().getType() == Material.AIR
-                        && (blockLocation.getY() > 0.0D)) {
-                    blockLocation.setY(blockLocation.getY() - 1.0D);
-                }
-                blockLocation.setY(blockLocation.getY() + 1.0D); // Block location now is ground
-
-                p.teleport(blockLocation);
-                user.setLastLocation(blockLocation);
-                return;
-            }
-            // End tp and block jump prevention
+            // Considers which are not subject to float prevention
+            return;
         }
 
-        user.setLastLocation(to);
+        // Begin invalid teleportation and float prevention
+        if ((from.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
+                && (p.getFallDistance() == 0.0F && p.getVelocity().getY() <= -0.6D)
+                && (p.getLocation().getY() > 0.0D)) {
+            Keepcraft.log(String.format("A float by %s was prevented", user.getName()));
+
+            // Find the ground
+            Location groundLocation = from.clone();
+            while (groundLocation.getBlock().getType() == Material.AIR && groundLocation.getY() > 0) {
+                groundLocation.add(0, -1, 0);
+            }
+            groundLocation.add(0, 1, 0); // Ground located
+            p.teleport(groundLocation);
+        }
+        // End invalid teleportation and float prevention
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -170,9 +149,9 @@ public class ActionListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
-        Player p = event.getPlayer();
-        User user = userService.getOnlineUser(p.getName());
+        User user = userService.getOnlineUser(event.getPlayer().getName());
         Plot plot = plotService.getIntersectedPlot(event.getBlockClicked().getLocation());
+
         if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
             event.setCancelled(true);
         }
