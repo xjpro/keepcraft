@@ -108,7 +108,7 @@ public class Keepcraft extends JavaPlugin {
 			getCommand(siegeCommand).setExecutor(siegeCommandListener);
 		}
 
-		log("Keepcraft enabled");
+		log(String.format("Keepcraft enabled on world %s", world.getName()));
 	}
 
 	@Override
