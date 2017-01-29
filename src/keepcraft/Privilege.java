@@ -43,7 +43,6 @@ public abstract class Privilege {
         // match with our user wrapper players
         switch (user.getPrivilege()) {
             case UserPrivilege.ADMIN:
-            case UserPrivilege.MODERATOR:
                 return true;
             case UserPrivilege.SUPER:
             case UserPrivilege.MEMBER:
@@ -92,7 +91,7 @@ public abstract class Privilege {
         return false;
     }
 
-    private static boolean isAdmin(User user) {
+    public static boolean isAdmin(User user) {
         return user.getPrivilege() == UserPrivilege.ADMIN;
     }
 

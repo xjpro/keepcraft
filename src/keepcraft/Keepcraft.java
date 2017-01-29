@@ -130,7 +130,8 @@ public class Keepcraft extends JavaPlugin {
 
 		// Turn on white listing and remove everyone so nobody can join while reset is in progress
 		server.setWhitelist(true);
-		server.getWhitelistedPlayers().forEach(player -> {
+		Set<OfflinePlayer> whitelistedPlayers = server.getWhitelistedPlayers();
+		whitelistedPlayers.forEach(player -> {
 			player.setWhitelisted(false);
 		});
 
@@ -142,7 +143,7 @@ public class Keepcraft extends JavaPlugin {
 
 		// Kick everyone
 		server.getOnlinePlayers().forEach(player -> {
-			player.kickPlayer("Keepcraft is resetting, please rejoin in 15 seconds...");
+			player.kickPlayer("Keepcraft is resetting, please rejoin in 20 seconds...");
 		});
 
 		// Clean database
@@ -163,9 +164,10 @@ public class Keepcraft extends JavaPlugin {
 		operators.forEach(player -> {
 			player.setOp(true);
 		});
-
+		whitelistedPlayers.forEach(player -> {
+			player.setWhitelisted(true);
+		});
 		server.setWhitelist(originallyWhiteListed);
-		server.reloadWhitelist();
 	}
 
 	public static void log(String text) {

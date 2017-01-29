@@ -14,7 +14,7 @@ public class WorldSetter {
 
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
-	private final int TEAM_PLOT_RADIUS = 75;
+	private final int TEAM_PLOT_RADIUS = 80;
 
 	public WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService) {
 		this.plotService = plotService;
@@ -100,6 +100,7 @@ public class WorldSetter {
 				// Make huge cylinder from bedrock to spawn location
 				world.getBlockAt(x, y, z).setType(Material.BEDROCK);
 			} else {
+				world.getBlockAt(x, y, z).setType(Material.AIR); // set things to air by default
 				// Build hollow area
 				// North wall
 				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() + 2).setType(Material.BEDROCK);
@@ -113,6 +114,13 @@ public class WorldSetter {
 				// West wall
 				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 1).setType(Material.BEDROCK);
 				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 1).setType(Material.BEDROCK);
+
+//				if(y == platformBottomY) {
+//					world.getBlockAt(spawnLocation.getBlockX(), y, spawnLocation.getBlockZ() + 2).setType(Material.WOODEN_DOOR);
+//					world.getBlockAt(spawnLocation.getBlockX(), y, spawnLocation.getBlockZ() - 2).setType(Material.WOODEN_DOOR);
+//					world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ()).setType(Material.WOODEN_DOOR);
+//					world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ()).setType(Material.WOODEN_DOOR);
+//				}
 			}
 		});
 
