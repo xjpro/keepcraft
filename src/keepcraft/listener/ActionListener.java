@@ -57,7 +57,7 @@ public class ActionListener implements Listener {
                 user.setCurrentPlot(candidatePlot);
             }
         } else if (currentPlot != null && !currentPlot.isAdminProtected() && !currentPlot.isEventProtected()
-                && currentPlot.getProtection().getKeepRadius() > 0) // we are in a plot with a partial radius
+                && currentPlot.getProtection().getKeepRadius() > 0) // we are in a plot with a keep radius
         {
             // if are going to intersects protected but didn't before
             if (currentPlot.isInTeamProtectedRadius(to) && !currentPlot.isInTeamProtectedRadius(from)) {
@@ -127,7 +127,7 @@ public class ActionListener implements Listener {
                     // Do nothing, it's allowed
                 } else if (!plot.isInTeamProtectedRadius(clicked.getLocation())
                         && !plot.isInAdminProtectedRadius(clicked.getLocation())
-                        && plot.isInPartialRadius(clicked.getLocation())) {
+                        && !plot.isInKeepRadius(clicked.getLocation())) {
                     // Do nothing, it's allowed
                 } else if (!Privilege.canInteract(user, clicked.getLocation(), plot)) {
                     if (nearDoor(clicked) && !blockType.equals(Material.STONE_PLATE)) {

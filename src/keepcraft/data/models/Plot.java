@@ -82,7 +82,7 @@ public class Plot {
         return protection != null && intersectsIgnoreY(new WorldPoint(loc), protection.getProtectedRadius());
     }
 
-    public boolean isInPartialRadius(Location loc) {
+    public boolean isInKeepRadius(Location loc) {
         return protection != null && intersectsIgnoreY(new WorldPoint(loc), protection.getKeepRadius());
     }
 
@@ -203,7 +203,7 @@ public class Plot {
         String info = name + ChatService.RequestedInfo + " (Protection: " + protection.asString() + ChatService.RequestedInfo + ")\n";
         info += "Radius: " + radius + "\n";
         info += "Protected Radius: " + protection.getProtectedRadius() + "\n";
-        info += "Partial protection radius: " + protection.getKeepRadius() + "\n";
+        info += "Keep protected radius: " + protection.getKeepRadius() + "\n";
         info += "Admin Radius: " + protection.getAdminRadius() + "\n";
         info += "Trigger Radius: " + protection.getTriggerRadius() + "\n";
         info += "Capturable: " + protection.getCapturable() + "\n";

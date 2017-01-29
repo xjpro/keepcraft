@@ -103,13 +103,13 @@ public class PlotCommandListener extends CommandListener {
                         commandSender.sendMessage(ChatService.Success + "Plot protected radius set to " + currentPlot.getProtection().getProtectedRadius());
                         return true;
                     }
-                } else if (args[1].equalsIgnoreCase("partial") && args.length == 3) {
+                } else if (args[1].equalsIgnoreCase("keep") && args.length == 3) {
                     if (privilege == UserPrivilege.ADMIN) {
                         int radius;
                         try {
                             radius = Integer.parseInt(args[2]);
                         } catch (Exception e) {
-                            Keepcraft.log("Error while changing partial: " + e.getMessage());
+                            Keepcraft.log("Error while changing keep radius: " + e.getMessage());
                             return false;
                         }
                         currentPlot.getProtection().setKeepRadius(radius);

@@ -42,7 +42,7 @@ public abstract class Privilege {
                         if (plot.isInAdminProtectedRadius(modifyingLocation)) {
                             return false;
                         }
-                        if (plot.isInPartialRadius(modifyingLocation)) {
+                        if (plot.isInKeepRadius(modifyingLocation)) {
                             // TODO this would be used for an inner area for higher level faction members
                             return user.getFaction() == protectionType;
                         }
