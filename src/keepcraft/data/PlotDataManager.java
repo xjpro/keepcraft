@@ -212,9 +212,12 @@ public class PlotDataManager extends DataManager<Plot> {
 
 	@Override
 	public void truncate() {
-		Keepcraft.log("Truncating plots table");
+		Keepcraft.log("Truncating plots & plotProtections tables");
 		try {
 			PreparedStatement statement = database.createStatement("DELETE FROM plots");
+			statement.execute();
+
+			statement = database.createStatement("DELETE FROM plotProtections");
 			statement.execute();
 		} catch (Exception e) {
 			logger.log(Level.INFO, String.format("(KC) Error truncating plot: %s", e.getMessage()));
