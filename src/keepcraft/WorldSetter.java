@@ -73,8 +73,8 @@ public class WorldSetter {
 			Block block = center.getWorld().getBlockAt(x, y, z);
 			Material type = block.getType();
 
-			// Flatten above 75
-			if (y > 75) {
+			// Flatten above 90
+			if (y > 90) {
 				block.setType(Material.AIR);
 			}
 			// Remove water at 62
