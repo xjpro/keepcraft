@@ -65,19 +65,14 @@ public class BlockProtectionListener implements Listener {
 				chatService.sendFailureMessage(user, "Plot can only be attacked from 8-midnight CST");
 				event.setCancelled(true);
 				event.setBuild(false);
-				return;
 			}
-
 			// Cannot be admin protected
-			if (plot.isAdminProtected() || plot.isEventProtected()) {
+			else if (plot.isAdminProtected() || plot.isInAdminProtectedRadius(block.getLocation()) || plot.isEventProtected()) {
 				chatService.sendFailureMessage(user, "This area is protected");
 				event.setCancelled(true);
 				event.setBuild(false);
-				return;
 			}
-		}
-
-		if (!canModify(user, block)) {
+		} else if (!canModify(user, block)) {
 			event.setCancelled(true);
 			event.setBuild(false);
 		}

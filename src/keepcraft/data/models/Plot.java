@@ -154,7 +154,7 @@ public class Plot {
             return false;
         }
 
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("CST"));
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Chicago"));
         int hour = now.getHour();
 
         // Immune if before 8:00pm (hour values 19 and below), resets to 0 at midnight so we don't have to check upper bound

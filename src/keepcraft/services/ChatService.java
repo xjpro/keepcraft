@@ -24,7 +24,7 @@ public class ChatService {
 
     public final static ChatColor Success = ChatColor.GREEN;
     public final static ChatColor Failure = ChatColor.DARK_RED;
-    public final static ChatColor RequestedInfo = ChatColor.AQUA;
+    public final static ChatColor RequestedInfo = ChatColor.WHITE;
     public final static ChatColor Info = ChatColor.DARK_GRAY;
     public final static ChatColor Change = ChatColor.DARK_PURPLE;
 
@@ -70,7 +70,7 @@ public class ChatService {
             return;
         }
 
-        String message = String.format(ChatService.ChatFormat, sender.getChatTag(faction), ChatService.FactionMessage, "Faction", text);
+        String message = String.format(ChatService.ChatFormat, sender.getChatTag(faction), ChatService.FactionMessage, "Team", text);
 
         for (User receiver : connectedUsers) {
             if (receiver.getPrivilege() == UserPrivilege.ADMIN || receiver.getFaction() == faction) {
