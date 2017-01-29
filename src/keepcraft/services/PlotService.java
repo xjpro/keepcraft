@@ -95,9 +95,9 @@ public class PlotService {
         return plot;
     }
 
-    private Plot createPlot(User setter, Location loc, String name, int radius) {
+    private Plot createPlot(User setter, Location location, String name, int radius) {
         Plot plot = new Plot();
-        plot.setWorldPoint(new WorldPoint(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+        plot.setWorldPoint(new WorldPoint(location));
         plot.setRadius(radius);
         plot.setName(name.trim());
         //plot.setSetterId(setter.getId()); todo use this

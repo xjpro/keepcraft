@@ -123,21 +123,18 @@ public class ActionListener implements Listener {
             case REDSTONE_TORCH_OFF:
             case PAINTING:
             case SIGN:
-                if (plot.getProtection().getType() == PlotProtection.EVENT) {
-                    // Do nothing, it's allowed
-                } else if (!plot.isInTeamProtectedRadius(clicked.getLocation())
-                        && !plot.isInAdminProtectedRadius(clicked.getLocation())
-                        && !plot.isInKeepRadius(clicked.getLocation())) {
-                    // Do nothing, it's allowed
-                } else if (!Privilege.canInteract(user, clicked.getLocation(), plot)) {
+                if (!Privilege.canInteract(user, clicked.getLocation(), plot)) {
+                    event.setCancelled(true);
+
+                    // However, if it's a switch near a door, destroy it so TNT can be placed
                     if (nearDoor(clicked) && !blockType.equals(Material.STONE_PLATE)) {
                         // Get rid of it, it's blocking TNT placement near a door
                         clicked.setType(Material.AIR);
                     }
-                    event.setCancelled(true);
                 }
                 break;
             case DISPENSER:
+                // Protect dispenser in event plots
                 if (plot.getProtection().getType() == PlotProtection.EVENT && !user.isAdmin()) {
                     event.setCancelled(true);
                 }

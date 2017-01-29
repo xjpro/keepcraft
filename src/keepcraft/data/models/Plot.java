@@ -84,16 +84,7 @@ public class Plot {
     }
 
     public boolean isInAdminProtectedRadius(Location loc) {
-        // No protection
-        if (protection == null) {
-            return false;
-        }
-        // Entire plot has admin protection
-        if (protection.getType() == PlotProtection.ADMIN) {
-            return true;
-        }
-        // Only smaller center of plot has admin protection
-        return intersects(new WorldPoint(loc), protection.getAdminRadius()); // admin is sphere at center
+        return protection != null && (protection.getType() == PlotProtection.ADMIN || intersects(new WorldPoint(loc), protection.getAdminRadius()));
     }
 
     public boolean isInTriggerRadius(Location loc) {
