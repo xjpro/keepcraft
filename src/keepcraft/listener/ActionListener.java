@@ -46,20 +46,18 @@ public class ActionListener implements Listener {
 
         if (currentPlot != candidatePlot) {
             if (currentPlot != null && candidatePlot == null) {
-                if (!currentPlot.isSpawnProtected()) {
-                    p.sendMessage(ChatService.Info + "Leaving " + currentPlot.getColoredName());
-                }
+                p.sendMessage(ChatService.Info + "Leaving " + currentPlot.getColoredName());
                 user.setCurrentPlot(null);
             }
 
             if (candidatePlot != null) {
-                if (!candidatePlot.isSpawnProtected() && (currentPlot == null || !currentPlot.isSpawnProtected())) {
+                if (currentPlot == null) {
                     p.sendMessage(ChatService.Info + "Entering " + candidatePlot.getColoredName());
                 }
                 user.setCurrentPlot(candidatePlot);
             }
         } else if (currentPlot != null && !currentPlot.isAdminProtected() && !currentPlot.isEventProtected()
-                && currentPlot.getProtection().getPartialRadius() > 0) // we are in a plot with a partial radius
+                && currentPlot.getProtection().getKeepRadius() > 0) // we are in a plot with a partial radius
         {
             // if are going to intersects protected but didn't before
             if (currentPlot.isInTeamProtectedRadius(to) && !currentPlot.isInTeamProtectedRadius(from)) {

@@ -44,7 +44,7 @@ public class PlotService {
             for (int i = 1; i < intersectedPlots.length; i++) {
                 Plot plot = intersectedPlots[i];
                 // When we have multiple plots intersected, prioritize admin/spawn plots
-                if (plot.isSpawnProtected() || plot.isAdminProtected()) {
+                if (plot.isAdminProtected()) {
                     return plot;
                 }
             }

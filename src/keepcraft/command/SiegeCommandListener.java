@@ -39,7 +39,7 @@ public class SiegeCommandListener extends CommandListener {
             Siege existingSiege = currentPlot.getSiege();
 
             if (!currentPlot.getProtection().isCapturable() || currentPlot.getProtection().getTriggerRadius() == 0
-                    || currentPlot.isAdminProtected() || currentPlot.isSpawnProtected()) {
+                    || currentPlot.isAdminProtected()) {
                 commandSender.sendMessage(ChatService.Failure + "This area is not capturable");
                 return true;
             } else if (currentPlot.isFactionProtected(sender.getFaction()) && existingSiege == null) {

@@ -83,7 +83,7 @@ public class Plot {
     }
 
     public boolean isInPartialRadius(Location loc) {
-        return protection != null && intersectsIgnoreY(new WorldPoint(loc), protection.getPartialRadius());
+        return protection != null && intersectsIgnoreY(new WorldPoint(loc), protection.getKeepRadius());
     }
 
     public boolean isInAdminProtectedRadius(Location loc) {
@@ -128,10 +128,6 @@ public class Plot {
         return protection;
     }
 
-    public boolean isSpawnProtected() {
-        return protection != null && protection.getType() == PlotProtection.SPAWN;
-    }
-
     public boolean isEventProtected() {
         return protection != null && protection.getType() == PlotProtection.EVENT;
     }
@@ -145,7 +141,7 @@ public class Plot {
     }
 
     public boolean isImmuneToAttack() {
-        if (isAdminProtected() || isSpawnProtected()) {
+        if (isAdminProtected()) {
             // Admin and spawn plots always immune
             return true;
         }
@@ -207,7 +203,7 @@ public class Plot {
         String info = name + ChatService.RequestedInfo + " (Protection: " + protection.asString() + ChatService.RequestedInfo + ")\n";
         info += "Radius: " + radius + "\n";
         info += "Protected Radius: " + protection.getProtectedRadius() + "\n";
-        info += "Partial protection radius: " + protection.getPartialRadius() + "\n";
+        info += "Partial protection radius: " + protection.getKeepRadius() + "\n";
         info += "Admin Radius: " + protection.getAdminRadius() + "\n";
         info += "Trigger Radius: " + protection.getTriggerRadius() + "\n";
         info += "Capturable: " + protection.getCapturable() + "\n";

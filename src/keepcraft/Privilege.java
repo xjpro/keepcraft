@@ -30,7 +30,6 @@ public abstract class Privilege {
                 int protectionType = plot.getProtection().getType();
                 switch (protectionType) {
                     case PlotProtection.ADMIN:
-                    case PlotProtection.SPAWN:
                         return false;
                     case PlotProtection.PROTECTED:
                     case PlotProtection.PRIVATE:
@@ -43,10 +42,11 @@ public abstract class Privilege {
                         if (plot.isInAdminProtectedRadius(modifyingLocation)) {
                             return false;
                         }
-                        if (plot.isInTeamProtectedRadius(modifyingLocation)) {
+                        if (plot.isInPartialRadius(modifyingLocation)) {
+                            // TODO this would be used for an inner area for higher level faction members
                             return user.getFaction() == protectionType;
                         }
-                        if (plot.isInPartialRadius(modifyingLocation)) {
+                        if (plot.isInTeamProtectedRadius(modifyingLocation)) {
                             return user.getFaction() == protectionType;
                         }
                         return true;

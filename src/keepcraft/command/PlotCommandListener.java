@@ -112,10 +112,10 @@ public class PlotCommandListener extends CommandListener {
                             Keepcraft.log("Error while changing partial: " + e.getMessage());
                             return false;
                         }
-                        currentPlot.getProtection().setPartialRadius(radius);
+                        currentPlot.getProtection().setKeepRadius(radius);
                         plotService.updatePlot(currentPlot);
 
-                        commandSender.sendMessage(ChatService.Success + "Plot partial radius set to " + currentPlot.getProtection().getPartialRadius());
+                        commandSender.sendMessage(ChatService.Success + "Plot keep radius set to " + currentPlot.getProtection().getKeepRadius());
                         return true;
                     }
                 } else if (args[1].equalsIgnoreCase("admin") && args.length == 3) {
@@ -214,7 +214,7 @@ public class PlotCommandListener extends CommandListener {
                         commandSender.sendMessage(ChatService.Success + "Plot protection set to admin");
                         return true;
                     }
-                } // Set it as protection admin
+                } // Set it as protection event
                 else if (args[1].equals("event") && args.length == 2) {
                     if (privilege == UserPrivilege.ADMIN) {
                         currentPlot.getProtection().setType(PlotProtection.EVENT);
@@ -223,16 +223,7 @@ public class PlotCommandListener extends CommandListener {
                         commandSender.sendMessage(ChatService.Success + "Plot protection set to event");
                         return true;
                     }
-                } // Set it as protection spawn
-                else if (args[1].equals("spawn") && args.length == 2) {
-                    if (privilege == UserPrivilege.ADMIN) {
-                        currentPlot.getProtection().setType(PlotProtection.SPAWN);
-                        plotService.updatePlot(currentPlot);
-
-                        commandSender.sendMessage(ChatService.Success + "Plot protection set to spawn");
-                        return true;
-                    }
-                } // Set it as protection admin
+                } // Set it as protection public
                 else if (args[1].equals("public") && args.length == 2) {
                     if (Privilege.canModifyPlotData(sender, currentPlot)) {
                         currentPlot.getProtection().setType(PlotProtection.PUBLIC);

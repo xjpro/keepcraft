@@ -5,7 +5,6 @@ import keepcraft.services.ChatService;
 public class PlotProtection {
 
     public final static int ADMIN = 900;
-    public final static int SPAWN = 800;
     public final static int EVENT = 700;
     public final static int PRIVATE = 500;
     public final static int PROTECTED = 400;
@@ -17,14 +16,22 @@ public class PlotProtection {
 
     private final int plotId;
     private int type;
+
+    // A plot has a radius but protection within that radius can vary:
+    // Radius of plot which is "protected", in the usual case this means only team member modifications
     private double protectedRadius;
-    private double partialRadius;
+    // Radius of plot which is the "keep", unused currently this would allow an inner area that only higher level team members can modify
+    private double keepRadius;
+    // Radius of plot which only admins can modify, in the usual case this is a small area at the center that protects the spawn point
     private double adminRadius;
+    // Radius of plot in which a player must be to begin capturing the plot, if captures are allowed
     private double captureRadius;
+
+    // Bool that marks if plot can be captured
     private boolean capturable;
+    // How long in seconds is takes to capture the plot
     private int captureSeconds;
     private int captureEffect;
-    private WorldPoint spawnLocation;
 
     private boolean captureInProgress = false;
 
@@ -44,10 +51,6 @@ public class PlotProtection {
         type = value;
     }
 
-    public boolean isSpawn() {
-        return type == PlotProtection.SPAWN;
-    }
-
     public double getProtectedRadius() {
         return protectedRadius;
     }
@@ -56,12 +59,12 @@ public class PlotProtection {
         protectedRadius = value;
     }
 
-    public double getPartialRadius() {
-        return partialRadius;
+    public double getKeepRadius() {
+        return keepRadius;
     }
 
-    public void setPartialRadius(double value) {
-        partialRadius = value;
+    public void setKeepRadius(double value) {
+        keepRadius = value;
     }
 
     public double getAdminRadius() {
@@ -116,8 +119,6 @@ public class PlotProtection {
         switch (protection) {
             case ADMIN:
                 return ChatService.NameAdmin + "Admin";
-            case SPAWN:
-                return ChatService.NameOther + "Spawn";
             case EVENT:
                 return ChatService.NameAdmin + "Event";
             case PRIVATE:

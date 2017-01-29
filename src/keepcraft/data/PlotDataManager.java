@@ -56,7 +56,7 @@ public class PlotDataManager extends DataManager<Plot> {
 				statement = database.createStatement("UPDATE plotProtections SET Type = ?, ProtectedRadius = ?, PartialRadius = ?, AdminRadius = ?, TriggerRadius = ?, Capturable = ?, CaptureTime = ?, CaptureEffect = ?, SpawnId = ? WHERE PlotId = ?");
 				statement.setInt(1, protection.getType());
 				statement.setDouble(2, protection.getProtectedRadius());
-				statement.setDouble(3, protection.getPartialRadius());
+				statement.setDouble(3, protection.getKeepRadius());
 				statement.setDouble(4, protection.getAdminRadius());
 				statement.setDouble(5, protection.getTriggerRadius());
 				statement.setBoolean(6, protection.getCapturable());
@@ -132,7 +132,7 @@ public class PlotDataManager extends DataManager<Plot> {
 				PlotProtection protection = new PlotProtection(plotId);
 				protection.setType(type);
 				protection.setProtectedRadius(protectedRadius);
-				protection.setPartialRadius(partialRadius);
+				protection.setKeepRadius(partialRadius);
 				protection.setAdminRadius(adminRadius);
 				protection.setTriggerRadius(triggerRadius);
 				protection.setCapturable(capturable);
@@ -177,7 +177,7 @@ public class PlotDataManager extends DataManager<Plot> {
 			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, ProtectedRadius, PartialRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(last_insert_rowid(), ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, protection.getType());
 			statement.setDouble(2, protection.getProtectedRadius());
-			statement.setDouble(3, protection.getPartialRadius());
+			statement.setDouble(3, protection.getKeepRadius());
 			statement.setDouble(4, protection.getAdminRadius());
 			statement.setDouble(5, protection.getTriggerRadius());
 			statement.setBoolean(6, protection.getCapturable());
