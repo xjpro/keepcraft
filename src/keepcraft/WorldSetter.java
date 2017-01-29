@@ -35,8 +35,8 @@ public class WorldSetter {
 		World newWorld = server.createWorld(creator);
 
 		// Setup new world with plots
-		setBase(UserFaction.FactionRed, new Location(newWorld, 150.5, 64, 150.5));
-		setBase(UserFaction.FactionBlue, new Location(newWorld, -150.5, 64, -150.5));
+		setBase(UserFaction.FactionRed, new Location(newWorld, 175.5, 64, 175.5));
+		setBase(UserFaction.FactionBlue, new Location(newWorld, -175.5, 64, -175.5));
 
 		newWorld.save();
 

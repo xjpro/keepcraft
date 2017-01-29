@@ -62,7 +62,7 @@ public class BlockProtectionListener implements Listener {
 		if (blockType == Material.TNT || blockType == Material.REDSTONE_BLOCK) {
 			// Cannot be immune to attack (send special message if this is met)
 			if (plot.isImmuneToAttack()) {
-				chatService.sendFailureMessage(user, "Plot can only be attacked from 8-midnight CST");
+				chatService.sendFailureMessage(user, "Area can only be attacked from 8pm to midnight CST");
 				event.setCancelled(true);
 				event.setBuild(false);
 			}

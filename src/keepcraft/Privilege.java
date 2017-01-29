@@ -11,23 +11,23 @@ public abstract class Privilege {
     private static final int MAP_RADIUS = 3000;
 
     public static boolean canPromote(User user) {
-        return isAdmin(user);
+        return user != null && isAdmin(user);
     }
 
     public static boolean canDemote(User user) {
-        return isAdmin(user);
+		return user != null && isAdmin(user);
     }
 
     public static boolean canSetSpawn(User user) {
-        return isAdmin(user);
+		return user != null && isAdmin(user);
     }
 
     public static boolean canModifyUserData(User user) {
-        return isAdmin(user);
+		return user != null && isAdmin(user);
     }
 
     public static boolean canModifyServerConditions(User user) {
-        return isAdmin(user);
+		return user != null && isAdmin(user);
     }
 
     public static boolean canInteract(User user, Location modifyingLocation, Plot plot) {
