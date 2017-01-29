@@ -42,9 +42,13 @@ public class Keepcraft extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		Bukkit.getServer().setSpawnRadius(0);
 
 		world = WorldLoader.loadLatest();
-		Bukkit.getServer().setSpawnRadius(0);
+		if (plotService.getPlots().size() == 0) {
+			// Nothing has been set up
+			reset();
+		}
 
 		PluginManager manager = this.getServer().getPluginManager();
 

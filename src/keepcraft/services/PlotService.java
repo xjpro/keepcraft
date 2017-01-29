@@ -66,7 +66,7 @@ public class PlotService {
 
         PlotProtection protection = new PlotProtection(-1);
         protection.setType(userFaction);
-        protection.setAdminRadius(5);
+        protection.setAdminRadius(3);
         protection.setProtectedRadius(radius);
         protection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
         protection.setCapturable(false);
