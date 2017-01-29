@@ -101,7 +101,6 @@ public class ActionListener implements Listener {
             return; // Air
         }
         Block clicked = event.getClickedBlock();
-        Material blockType = clicked.getType();
 
         Plot plot = plotService.getIntersectedPlot(clicked.getLocation());
         if (plot == null || plot.getProtection() == null) {
@@ -110,6 +109,7 @@ public class ActionListener implements Listener {
 
         Player p = event.getPlayer();
         User user = userService.getOnlineUser(p.getName());
+        Material blockType = clicked.getType();
 
         switch (blockType) {
             // Put the things we need to check against in here. Which are switches. Don't need

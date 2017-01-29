@@ -39,38 +39,35 @@ public class Plot {
         worldPoint = value;
     }
 
-    public double distance(Location loc) {
+    private double distance(Location loc) {
         return distance(new WorldPoint(loc));
     }
 
-    public double distance(WorldPoint loc) {
+    private double distance(WorldPoint loc) {
         return distance(loc.x, loc.y, loc.z);
     }
 
-    public double distance(double locX, double locY, double locZ) {
+    private double distance(double locX, double locY, double locZ) {
         return Math.sqrt(Math.pow(worldPoint.x - locX, 2) + Math.pow(worldPoint.y - locY, 2) + Math.pow(worldPoint.z - locZ, 2));
     }
 
-    public double distanceIgnoreY(double locX, double locZ) {
+    private double distanceIgnoreY(double locX, double locZ) {
         return Math.sqrt(Math.pow(worldPoint.x - locX, 2) + Math.pow(worldPoint.z - locZ, 2));
     }
 
-    public boolean intersects(WorldPoint point, double compareRadius) {
+    private boolean intersects(WorldPoint point, double compareRadius) {
         return intersects(point.x, point.y, point.z, compareRadius);
     }
 
-    public boolean intersects(double pointX, double pointY, double pointZ, double compareRadius) {
-        if (distance(pointX, pointY, pointZ) < compareRadius) {
-            return true;
-        }
-        return false;
+    private boolean intersects(double pointX, double pointY, double pointZ, double compareRadius) {
+        return distance(pointX, pointY, pointZ) < compareRadius;
     }
 
-    public boolean intersectsIgnoreY(WorldPoint point, double compareRadius) {
+    private boolean intersectsIgnoreY(WorldPoint point, double compareRadius) {
         return intersectsIgnoreY(point.x, point.z, compareRadius);
     }
 
-    public boolean intersectsIgnoreY(double pointX, double pointZ, double compareRadius) {
+    private boolean intersectsIgnoreY(double pointX, double pointZ, double compareRadius) {
         return distanceIgnoreY(pointX, pointZ) < compareRadius;
     }
 
@@ -96,8 +93,7 @@ public class Plot {
             return true;
         }
         // Only smaller center of plot has admin protection
-        return intersects(new WorldPoint(loc), protection.getAdminRadius()); // admin is sphere at center orrr
-        //return intersectsIgnoreY(new WorldPoint(loc), protection.getAdminRadius()); // admin is column at center
+        return intersects(new WorldPoint(loc), protection.getAdminRadius()); // admin is sphere at center
     }
 
     public boolean isInTriggerRadius(Location loc) {
@@ -142,7 +138,7 @@ public class Plot {
 
     public boolean isImmuneToAttack() {
         if (isAdminProtected()) {
-            // Admin and spawn plots always immune
+            // Admin plots always immune
             return true;
         }
         if (protection.isCapturable()) {
@@ -203,7 +199,9 @@ public class Plot {
         String info = name + ChatService.RequestedInfo + " (Protection: " + protection.asString() + ChatService.RequestedInfo + ")\n";
         info += "Radius: " + radius + "\n";
         info += "Protected Radius: " + protection.getProtectedRadius() + "\n";
-        info += "Keep protected radius: " + protection.getKeepRadius() + "\n";
+        if (protection.getKeepRadius() > 0) {
+            info += "Keep protected radius: " + protection.getKeepRadius() + "\n";
+        }
         info += "Admin Radius: " + protection.getAdminRadius() + "\n";
         info += "Trigger Radius: " + protection.getTriggerRadius() + "\n";
         info += "Capturable: " + protection.getCapturable() + "\n";
