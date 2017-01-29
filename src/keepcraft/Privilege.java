@@ -17,7 +17,7 @@ public abstract class Privilege {
         }
 
         if (plot == null || plot.getProtection() == null) {
-            return true;
+            return true; // Not in a plot
         }
 
         // match with our user wrapper players
@@ -31,25 +31,26 @@ public abstract class Privilege {
                 switch (protectionType) {
                     case PlotProtection.ADMIN:
                         return false;
-                    case PlotProtection.PROTECTED:
                     case PlotProtection.PRIVATE:
-                        // TODO: will need to search all permissions...
+                        // TODO implement private plots, search for permissions
                         return false;
                     case PlotProtection.FACTION_A:
                     case PlotProtection.FACTION_B:
                     case PlotProtection.FACTION_C:
                     case PlotProtection.FACTION_E:
+                        // In a team protected plot
+
                         if (plot.isInAdminProtectedRadius(modifyingLocation)) {
-                            return false;
+                            return false; // Only admin can modify admin protected radius
                         }
                         if (plot.isInKeepRadius(modifyingLocation)) {
-                            // TODO this would be used for an inner area for higher level faction members
+                            // TODO this would be used for an inner area for higher level faction members, same as team protection for now
                             return user.getFaction() == protectionType;
                         }
                         if (plot.isInTeamProtectedRadius(modifyingLocation)) {
                             return user.getFaction() == protectionType;
                         }
-                        return true;
+                        return true; // In plot but not in any protected radius
                     case PlotProtection.PUBLIC:
                         return true;
                 }

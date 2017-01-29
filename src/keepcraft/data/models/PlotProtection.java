@@ -7,7 +7,6 @@ public class PlotProtection {
     public final static int ADMIN = 900;
     public final static int EVENT = 700;
     public final static int PRIVATE = 500;
-    public final static int PROTECTED = 400;
     public final static int FACTION_B = UserFaction.FactionBlue;
     public final static int FACTION_A = UserFaction.FactionRed;
     public final static int FACTION_C = UserFaction.FactionGreen;
@@ -123,8 +122,6 @@ public class PlotProtection {
                 return ChatService.NameAdmin + "Event";
             case PRIVATE:
                 return "Private";
-            case PROTECTED:
-                return "Protected";
             case FACTION_B:
                 return ChatService.NameBlue + UserFaction.asString(FACTION_B);
             case FACTION_A:
