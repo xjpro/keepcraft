@@ -1,5 +1,6 @@
 package keepcraft.listener;
 
+import keepcraft.Keepcraft;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
 import org.bukkit.entity.Arrow;
@@ -88,8 +89,12 @@ public class CombatListener implements Listener {
             // Get target
             Player p = (Player) event.getEntity();
             User target = userService.getOnlineUser(p.getName());
+            if(target == null) {
+                Keepcraft.error("Unknown player died");
+                return;
+            }
 
-            if (target != null && target.isAdmin()) {
+            if (target.isAdmin()) {
                 event.getDrops().clear();
             }
 

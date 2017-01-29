@@ -38,15 +38,15 @@ public class FactionCommandListener extends CommandListener {
                 }
 
                 if (args.length == 1) {
-                    // stats
+                    // todo faction stats
                 }
             }
         } // Red team chat
         else if (commandName.equals("1") && sender.isAdmin()) {
             Collection<User> connectedUsers = userService.getOnlineUsers();
             String message = "";
-            for (int i = 0; i < args.length; i++) {
-                message += args[i] + " ";
+            for (String arg : args) {
+                message += arg + " ";
             }
             chatService.sendFactionMessage(sender, connectedUsers, UserFaction.FactionRed, message);
             return true;
@@ -54,8 +54,8 @@ public class FactionCommandListener extends CommandListener {
         else if (commandName.equals("2") && sender.isAdmin()) {
             Collection<User> connectedUsers = userService.getOnlineUsers();
             String message = "";
-            for (int i = 0; i < args.length; i++) {
-                message += args[i] + " ";
+            for (String arg : args) {
+                message += arg + " ";
             }
             chatService.sendFactionMessage(sender, connectedUsers, UserFaction.FactionBlue, message);
             return true;
@@ -63,8 +63,8 @@ public class FactionCommandListener extends CommandListener {
         else if (commandName.equals("3") && sender.isAdmin()) {
             Collection<User> connectedUsers = userService.getOnlineUsers();
             String message = "";
-            for (int i = 0; i < args.length; i++) {
-                message += args[i] + " ";
+            for (String arg : args) {
+                message += arg + " ";
             }
             chatService.sendFactionMessage(sender, connectedUsers, UserFaction.FactionGreen, message);
             return true;

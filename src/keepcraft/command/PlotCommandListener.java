@@ -55,8 +55,8 @@ public class PlotCommandListener extends CommandListener {
             } // Get info
             else if (args.length == 0) {
                 String[] messages = currentPlot.getInfo().split("\n");
-                for (int i = 0; i < messages.length; i++) {
-                    commandSender.sendMessage(ChatService.RequestedInfo + messages[i]);
+                for (String message : messages) {
+                    commandSender.sendMessage(ChatService.RequestedInfo + message);
                 }
                 return true;
             } // Reset center

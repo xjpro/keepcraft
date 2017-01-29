@@ -21,7 +21,7 @@ public class Direction {
             } else {
                 loc.setYaw((float) (0.5 * Math.PI));
             }
-            loc.setYaw((float) loc.getYaw() - (float) Math.atan(dz / dx));
+            loc.setYaw(loc.getYaw() - (float) Math.atan(dz / dx));
         } else if (dz < 0) {
             loc.setYaw((float) Math.PI);
         }
@@ -40,10 +40,7 @@ public class Direction {
     }
 
     /**
-     * Get the cardinal compass direction of a player.
-     *
-     * @param player
-     * @return
+     * Get the cardinal compass direction of a location.
      */
     public static String getCardinalDirection(Location location) {
         double rot = (location.getYaw() - 90) % 360;
@@ -55,9 +52,6 @@ public class Direction {
 
     /**
      * Converts a rotation to a cardinal direction name.
-     *
-     * @param rot
-     * @return
      */
     private static String getDirection(double rot) {
         if (0 <= rot && rot < 22.5) {

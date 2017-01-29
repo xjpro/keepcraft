@@ -2,7 +2,6 @@ package keepcraft.data.models;
 
 import keepcraft.services.ChatService;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 
 /**
  * Data for a player.

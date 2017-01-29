@@ -6,13 +6,9 @@ package keepcraft.data.models;
 
 import org.bukkit.inventory.ItemStack;
 
-/**
- *
- * @author Me
- */
 public class Armor {
 
-    private static class ArmorValues {
+    private static class ArmorValue {
 
         public static short LeatherHelm = 1;
         public static short ChainHelm = 2;
@@ -45,64 +41,64 @@ public class Armor {
         for (ItemStack item : inventory) {
             switch (item.getType()) {
                 case LEATHER_HELMET:
-                    totalArmor += ArmorValues.LeatherHelm;
+                    totalArmor += ArmorValue.LeatherHelm;
                     break;
                 case CHAINMAIL_HELMET:
-                    totalArmor += ArmorValues.ChainHelm;
+                    totalArmor += ArmorValue.ChainHelm;
                     break;
                 case IRON_HELMET:
-                    totalArmor += ArmorValues.IronHelm;
+                    totalArmor += ArmorValue.IronHelm;
                     break;
                 case GOLD_HELMET:
-                    totalArmor += ArmorValues.GoldHelm;
+                    totalArmor += ArmorValue.GoldHelm;
                     break;
                 case DIAMOND_HELMET:
-                    totalArmor += ArmorValues.DiamondHelm;
+                    totalArmor += ArmorValue.DiamondHelm;
                     break;
                 case LEATHER_CHESTPLATE:
-                    totalArmor += ArmorValues.LeatherChest;
+                    totalArmor += ArmorValue.LeatherChest;
                     break;
                 case CHAINMAIL_CHESTPLATE:
-                    totalArmor += ArmorValues.ChainChest;
+                    totalArmor += ArmorValue.ChainChest;
                     break;
                 case IRON_CHESTPLATE:
-                    totalArmor += ArmorValues.IronChest;
+                    totalArmor += ArmorValue.IronChest;
                     break;
                 case GOLD_CHESTPLATE:
-                    totalArmor += ArmorValues.GoldChest;
+                    totalArmor += ArmorValue.GoldChest;
                     break;
                 case DIAMOND_CHESTPLATE:
-                    totalArmor += ArmorValues.DiamondChest;
+                    totalArmor += ArmorValue.DiamondChest;
                     break;
                 case LEATHER_LEGGINGS:
-                    totalArmor += ArmorValues.LeatherLegs;
+                    totalArmor += ArmorValue.LeatherLegs;
                     break;
                 case CHAINMAIL_LEGGINGS:
-                    totalArmor += ArmorValues.ChainLegs;
+                    totalArmor += ArmorValue.ChainLegs;
                     break;
                 case IRON_LEGGINGS:
-                    totalArmor += ArmorValues.IronLegs;
+                    totalArmor += ArmorValue.IronLegs;
                     break;
                 case GOLD_LEGGINGS:
-                    totalArmor += ArmorValues.GoldLegs;
+                    totalArmor += ArmorValue.GoldLegs;
                     break;
                 case DIAMOND_LEGGINGS:
-                    totalArmor += ArmorValues.DiamondLegs;
+                    totalArmor += ArmorValue.DiamondLegs;
                     break;
                 case LEATHER_BOOTS:
-                    totalArmor += ArmorValues.LeatherBoots;
+                    totalArmor += ArmorValue.LeatherBoots;
                     break;
                 case CHAINMAIL_BOOTS:
-                    totalArmor += ArmorValues.ChainBoots;
+                    totalArmor += ArmorValue.ChainBoots;
                     break;
                 case IRON_BOOTS:
-                    totalArmor += ArmorValues.IronBoots;
+                    totalArmor += ArmorValue.IronBoots;
                     break;
                 case GOLD_BOOTS:
-                    totalArmor += ArmorValues.GoldBoots;
+                    totalArmor += ArmorValue.GoldBoots;
                     break;
                 case DIAMOND_BOOTS:
-                    totalArmor += ArmorValues.DiamondBoots;
+                    totalArmor += ArmorValue.DiamondBoots;
                     break;
             }
         }

@@ -50,8 +50,8 @@ public class ChatCommandListener extends CommandListener {
             }
 
             String message = "";
-            for (int i = 0; i < args.length; i++) {
-                message += args[i] + " ";
+            for (String arg : args) {
+                message += arg + " ";
             }
 
             chatService.sendPrivateMessage(sender, lastMessageSender, message);
@@ -59,8 +59,8 @@ public class ChatCommandListener extends CommandListener {
         } // Global
         else if (commandName.equals("g") && args.length > 0) {
             String message = "";
-            for (int i = 0; i < args.length; i++) {
-                message += args[i] + " ";
+            for (String arg : args) {
+                message += arg + " ";
             }
             chatService.sendGlobalMessage(sender, message);
             return true;

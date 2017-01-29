@@ -10,26 +10,6 @@ public abstract class Privilege {
 
     private static final int MAP_RADIUS = 3000;
 
-    public static boolean canPromote(User user) {
-        return user != null && isAdmin(user);
-    }
-
-    public static boolean canDemote(User user) {
-		return user != null && isAdmin(user);
-    }
-
-    public static boolean canSetSpawn(User user) {
-		return user != null && isAdmin(user);
-    }
-
-    public static boolean canModifyUserData(User user) {
-		return user != null && isAdmin(user);
-    }
-
-    public static boolean canModifyServerConditions(User user) {
-		return user != null && isAdmin(user);
-    }
-
     public static boolean canInteract(User user, Location modifyingLocation, Plot plot) {
         Location center = new Location(Keepcraft.getWorld(), 0, 64, 0);
         if (center.distance(modifyingLocation) > MAP_RADIUS) {
@@ -81,14 +61,7 @@ public abstract class Privilege {
     }
 
     public static boolean canModifyPlotData(User user, Plot plot) {
-        if (user.getPrivilege() == UserPrivilege.ADMIN) {
-            return true;
-        }
-        if (user.getId() == plot.getSetterId()) {
-            return true;
-        }
-
-        return false;
+        return user.getPrivilege() == UserPrivilege.ADMIN || user.getId() == plot.getSetterId();
     }
 
     public static boolean isAdmin(User user) {
