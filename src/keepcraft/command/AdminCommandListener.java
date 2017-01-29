@@ -14,177 +14,190 @@ import keepcraft.data.models.UserPrivilege;
 
 public class AdminCommandListener extends CommandListener {
 
-    private final UserService userService;
-    private final PlotService plotService;
+	private final UserService userService;
+	private final PlotService plotService;
 
-    public AdminCommandListener(UserService userService, PlotService plotService) {
-        this.userService = userService;
-        this.plotService = plotService;
-    }
+	public AdminCommandListener(UserService userService, PlotService plotService) {
+		this.userService = userService;
+		this.plotService = plotService;
+	}
 
-    @Override
-    protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
-        Player p = (Player) commandSender;
-        User sender = userService.getOnlineUser(commandSender.getName());
+	@Override
+	protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
+		Player p = (Player) commandSender;
+		User sender = userService.getOnlineUser(commandSender.getName());
 
-        // Promote
-        if (commandName.equals("promote") && args.length == 1) {
-            if (commandSender.isOp() || Privilege.canPromote(sender)) {
-                String targetName = args[0];
-                User target = userService.getOnlineUser(targetName);
+		// Promote
+		if (commandName.equals("promote")) {
+			if (commandSender.isOp() || Privilege.canPromote(sender)) {
 
-                if (target == null) {
-                    commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
-                    return true;
-                }
+				User target;
+				if (args.length > 0) {
+					String targetName = args[0];
+					target = userService.getOnlineUser(targetName);
+					if (target == null) {
+						commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
+						return true;
+					}
+				} else {
+					target = sender;
+				}
 
-                int newPrivilege = target.getPrivilege() + 100;
-                target.setPrivilege(newPrivilege);
-                userService.updateUser(target);
+				int newPrivilege;
+				if (target.getPrivilege() < UserPrivilege.INIT || target.getPrivilege() > UserPrivilege.ADMIN) {
+					newPrivilege = 100;
+				} else {
+					newPrivilege = target.getPrivilege() + 100;
+				}
 
-                commandSender.sendMessage(ChatService.Success + "Promoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
-                commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "You were promoted to "
-                        + UserPrivilege.asString(newPrivilege) + " status");
-                return true;
-            }
-        } // Demote
-        else if (commandName.equals("demote") && args.length == 1) {
-            if (commandSender.isOp() || Privilege.canDemote(sender)) {
-                String targetName = args[0];
-                User target = userService.getOnlineUser(targetName);
+				target.setPrivilege(newPrivilege);
+				userService.updateUser(target);
 
-                if (target == null) {
-                    commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
-                    return true;
-                }
+				commandSender.sendMessage(ChatService.Success + "Promoted " + target.getName() + " to " + UserPrivilege.asString(newPrivilege));
+				if (target != sender) {
+					commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were promoted to "
+							+ UserPrivilege.asString(newPrivilege) + " status");
+				}
+				return true;
+			}
+		} // Demote
+		else if (commandName.equals("demote") && args.length == 1) {
+			if (commandSender.isOp() || Privilege.canDemote(sender)) {
+				String targetName = args[0];
+				User target = userService.getOnlineUser(targetName);
 
-                int newPrivilege = target.getPrivilege() - 100;
-                target.setPrivilege(newPrivilege);
-                userService.updateUser(target);
+				if (target == null) {
+					commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
+					return true;
+				}
 
-                commandSender.sendMessage(ChatService.Success + "Demoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
-                commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "You were demoted to "
-                        + UserPrivilege.asString(newPrivilege) + " status");
-                return true;
-            }
-        }
-        // Reset command
-        else if (commandName.equals("reset")) {
-            if (Privilege.canSetSpawn(sender)) {
-                Keepcraft.instance().reset();
-                return true;
-            }
-        }
-        // Set a spawn
-        else if (commandName.equals("setspawn") && args.length == 1) {
-            if (Privilege.canSetSpawn(sender)) {
-                int faction;
+				int newPrivilege = target.getPrivilege() - 100;
+				target.setPrivilege(newPrivilege);
+				userService.updateUser(target);
 
-                try {
-                    faction = Integer.parseInt(args[0]);
-                } catch (NumberFormatException e) {
-                    // invalid input
-                    commandSender.sendMessage(ChatService.Failure + "Faction must be an integer");
-                    return false;
-                }
+				commandSender.sendMessage(ChatService.Success + "Demoted " + targetName + " to " + UserPrivilege.asString(newPrivilege));
+				commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "You were demoted to "
+						+ UserPrivilege.asString(newPrivilege) + " status");
+				return true;
+			}
+		}
+		// Reset command
+		else if (commandName.equals("reset")) {
+			if (Privilege.canSetSpawn(sender)) {
+				Keepcraft.instance().reset();
+				return true;
+			}
+		}
+		// Set a spawn
+		else if (commandName.equals("setspawn") && args.length == 1) {
+			if (Privilege.canSetSpawn(sender)) {
+				int faction;
 
-                //ServerConditions.setSpawn(faction, p.getLocation());
-                //commandSender.sendMessage(ChatService.Success + "Set faction " + faction + "'s spawn to " + p.getLocation());
-                commandSender.sendMessage(ChatService.Failure + "Command disabled in favor of resetting the map");
-                return true;
-            }
-        } // Set team
-        else if (commandName.equals("setfaction") && args.length == 2) {
-            if (Privilege.canModifyUserData(sender)) {
-                String targetName = args[0];
-                User target = userService.getOnlineUser(targetName);
+				try {
+					faction = Integer.parseInt(args[0]);
+				} catch (NumberFormatException e) {
+					// invalid input
+					commandSender.sendMessage(ChatService.Failure + "Faction must be an integer");
+					return false;
+				}
 
-                if (target == null) {
-                    commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
-                    return true;
-                }
+				//ServerConditions.setSpawn(faction, p.getLocation());
+				//commandSender.sendMessage(ChatService.Success + "Set faction " + faction + "'s spawn to " + p.getLocation());
+				commandSender.sendMessage(ChatService.Failure + "Command disabled in favor of resetting the map");
+				return true;
+			}
+		} // Set team
+		else if (commandName.equals("setfaction") && args.length == 2) {
+			if (Privilege.canModifyUserData(sender)) {
+				String targetName = args[0];
+				User target = userService.getOnlineUser(targetName);
 
-                int faction;
-                try {
-                    faction = Integer.parseInt(args[1]);
-                } catch (NumberFormatException e) {
-                    // invalid input
-                    commandSender.sendMessage(ChatService.Failure + "Options for factions are 100 or 200");
-                    return false;
-                }
+				if (target == null) {
+					commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
+					return true;
+				}
 
-                target.setFaction(faction);
-                userService.updateUser(target);
+				int faction;
+				try {
+					faction = Integer.parseInt(args[1]);
+				} catch (NumberFormatException e) {
+					// invalid input
+					commandSender.sendMessage(ChatService.Failure + "Options for factions are 100 or 200");
+					return false;
+				}
 
-                commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserFaction.asString(faction));
-                commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserFaction.asString(faction));
-                return true;
-            }
-        } // Delete a user's record
-        else if (commandName.equals("delete") && args.length == 1) {
-            if (Privilege.canModifyUserData(sender)) {
-                String targetName = args[0];
+				target.setFaction(faction);
+				userService.updateUser(target);
 
-                User deleted = new User(0);
-                deleted.setName(targetName.trim());
-                boolean success = userService.removeUser(deleted);
+				commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserFaction.asString(faction));
+				commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserFaction.asString(faction));
+				return true;
+			}
+		} // Delete a user's record
+		else if (commandName.equals("delete") && args.length == 1) {
+			if (Privilege.canModifyUserData(sender)) {
+				String targetName = args[0];
 
-                if (success) {
-                    commandSender.sendMessage(ChatService.Success + "Deleted " + targetName);
-                } else {
-                    commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist (case matters)");
-                }
+				User deleted = new User(0);
+				deleted.setName(targetName.trim());
+				boolean success = userService.removeUser(deleted);
 
-                return true;
-            }
-        } // teleport to a plot
-        else if (commandName.equals("plottp") && args.length > 0) {
-            if (Privilege.canModifyServerConditions(sender)) {
-                Plot plot = null;
-                try {
-                    int orderNumber = Integer.parseInt(args[0]);
-                    for (Plot possiblePlot : plotService.getPlots()) {
-                        if (possiblePlot.getOrderNumber() == orderNumber) {// match
-                            plot = possiblePlot;
-                            break;
-                        }
-                    }
-                } catch (NumberFormatException e) // not an int, do name
-                {
-                    String name = "";
-                    for (String arg : args) {
-                        name += arg + " ";
-                    }
-                    plot = plotService.getPlot(name.trim());
-                }
+				if (success) {
+					commandSender.sendMessage(ChatService.Success + "Deleted " + targetName);
+				} else {
+					commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist (case matters)");
+				}
 
-                if (plot == null) {
-                    commandSender.sendMessage(ChatService.Failure + "Plot not found");
-                } else {
-                    p.teleport(plot.getLocation());
-                }
-            }
-            return true;
-        } // Make it dawn
-        else if (commandName.equals("dawn") && args.length == 0) {
-            if (Privilege.canModifyServerConditions(sender)) {
-                Keepcraft.getWorld().setTime(0);
-            }
-            return true;
-        } // Make it noon
-        else if (commandName.equals("noon") && args.length == 0) {
-            if (Privilege.canModifyServerConditions(sender)) {
-                Keepcraft.getWorld().setTime(5000);
-            }
-            return true;
-        } // Make it dusk
-        else if (commandName.equals("dusk") && args.length == 0) {
-            if (Privilege.canModifyServerConditions(sender)) {
-                Keepcraft.getWorld().setTime(10000);
-            }
-            return true;
-        }
+				return true;
+			}
+		} // teleport to a plot
+		else if (commandName.equals("plottp") && args.length > 0) {
+			if (Privilege.canModifyServerConditions(sender)) {
+				Plot plot = null;
+				try {
+					int orderNumber = Integer.parseInt(args[0]);
+					for (Plot possiblePlot : plotService.getPlots()) {
+						if (possiblePlot.getOrderNumber() == orderNumber) {// match
+							plot = possiblePlot;
+							break;
+						}
+					}
+				} catch (NumberFormatException e) // not an int, do name
+				{
+					String name = "";
+					for (String arg : args) {
+						name += arg + " ";
+					}
+					plot = plotService.getPlot(name.trim());
+				}
 
-        return !sender.isAdmin();
-    }
+				if (plot == null) {
+					commandSender.sendMessage(ChatService.Failure + "Plot not found");
+				} else {
+					p.teleport(plot.getLocation());
+				}
+			}
+			return true;
+		} // Make it dawn
+		else if (commandName.equals("dawn") && args.length == 0) {
+			if (Privilege.canModifyServerConditions(sender)) {
+				Keepcraft.getWorld().setTime(0);
+			}
+			return true;
+		} // Make it noon
+		else if (commandName.equals("noon") && args.length == 0) {
+			if (Privilege.canModifyServerConditions(sender)) {
+				Keepcraft.getWorld().setTime(5000);
+			}
+			return true;
+		} // Make it dusk
+		else if (commandName.equals("dusk") && args.length == 0) {
+			if (Privilege.canModifyServerConditions(sender)) {
+				Keepcraft.getWorld().setTime(10000);
+			}
+			return true;
+		}
+
+		return !sender.isAdmin();
+	}
 }

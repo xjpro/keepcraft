@@ -5,6 +5,7 @@ import keepcraft.services.ChatService;
 import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,6 +30,10 @@ public class UserListener implements Listener {
         this.userService = userService;
         this.plotService = plotService;
         this.factionSpawnService = factionSpawnService;
+
+        Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+            onPlayerJoin(new PlayerJoinEvent(player, null));
+        });
     }
 
     private static class StartingValueSetter implements Runnable {
