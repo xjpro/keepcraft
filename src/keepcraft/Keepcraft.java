@@ -1,6 +1,7 @@
 package keepcraft;
 
 import keepcraft.data.*;
+import keepcraft.data.models.User;
 import keepcraft.listener.*;
 import keepcraft.command.BasicCommandListener;
 import keepcraft.command.AdminCommandListener;
@@ -49,6 +50,11 @@ public class Keepcraft extends JavaPlugin {
 			// Nothing has been set up
 			reset();
 		}
+
+		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+			// Ensure user is loaded in cache
+			userService.loadOfflineUser(player.getName());
+		});
 
 		PluginManager manager = this.getServer().getPluginManager();
 
@@ -117,6 +123,13 @@ public class Keepcraft extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		// Save everybody's user data
+		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
+			User user = userService.getOnlineUser(player.getName());
+			if (user != null) {
+				userDataManager.updateData(user);
+			}
+		});
 	}
 
 	public static Keepcraft instance() {
@@ -147,7 +160,7 @@ public class Keepcraft extends JavaPlugin {
 
 		// Kick everyone
 		server.getOnlinePlayers().forEach(player -> {
-			player.kickPlayer("Keepcraft is resetting, please rejoin in 20 seconds...");
+			player.kickPlayer("Keepcraft is resetting, please rejoin in 30 seconds...");
 		});
 
 		// Clean database

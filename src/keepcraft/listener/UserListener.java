@@ -30,10 +30,6 @@ public class UserListener implements Listener {
 		this.userService = userService;
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
-
-		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
-			onPlayerJoin(new PlayerJoinEvent(player, null));
-		});
 	}
 
 	private static class StartingValueSetter implements Runnable {
