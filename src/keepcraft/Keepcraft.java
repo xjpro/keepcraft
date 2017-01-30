@@ -172,7 +172,7 @@ public class Keepcraft extends JavaPlugin {
 			player.setWhitelisted(true);
 		});
 		server.setWhitelist(originallyWhiteListed);
-		log("Successfully reset map on world "+ world.getName());
+		log("Successfully reset map on world " + world.getName());
 	}
 
 	public static void log(String text) {

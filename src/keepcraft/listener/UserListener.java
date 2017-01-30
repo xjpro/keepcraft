@@ -58,29 +58,44 @@ public class UserListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
 
-		Player p = event.getPlayer();
+		Player player = event.getPlayer();
 
-		boolean firstTimeUser = !userService.userIsRegistered(p.getName());
-		User user = userService.loadOfflineUser(p.getName());
+		boolean firstTimeUser = !userService.userIsRegistered(player.getName());
+		User user = userService.loadOfflineUser(player.getName());
 
 		if (firstTimeUser || user.getPrivilege() == UserPrivilege.INIT) {
 			user.setPrivilege(UserPrivilege.MEMBER);
 			userService.updateUser(user);
 
-			setBasicEquipment(p);
-			teleportHome(p, user);
-		} else if (p.getLocation().getWorld() != Keepcraft.getWorld()) {
-			Keepcraft.log("Player " + p.getName() + " was on the wrong world, moving to " + Keepcraft.getWorld().getName());
-			teleportHome(p, user);
+			// Clear everything (do this because /reset doesn't)
+			// Unnecessary should resets ever happen via deleting /world folder
+			player.getInventory().clear();
+			player.setHealth(20);
+			player.setFoodLevel(20);
+			player.setSaturation(0);
+			player.setExp(0);
+			player.setLevel(0);
+			player.setTotalExperience(0);
+			player.setExhaustion(0);
+			player.setFireTicks(0);
+			player.setFallDistance(0);
+			player.setSneaking(false);
+			player.setSprinting(false);
+
+			setBasicEquipment(player);
+			teleportHome(player, user);
+		} else if (player.getLocation().getWorld() != Keepcraft.getWorld()) {
+			Keepcraft.log("Player " + player.getName() + " was on the wrong world, moving to " + Keepcraft.getWorld().getName());
+			teleportHome(player, user);
 		}
 
 		Plot lastPlot = plotService.getPlot(user.getLastPlotId());
 		if (lastPlot != null && !lastPlot.isFactionProtected(user.getFaction())) {
 			// Last plot id only stored when we logged off in an owned plot.
 			// This plot is now longer secured so teleport home.
-			Keepcraft.log(String.format("Player %s logged into a formerly secured area, teleporting home", p.getName()));
-			teleportHome(p, user);
-			p.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returning home");
+			Keepcraft.log(String.format("Player %s logged into a formerly secured area, teleporting home", player.getName()));
+			teleportHome(player, user);
+			player.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returning home");
 		}
 	}
 
