@@ -51,10 +51,10 @@ public class PlotAttackListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.isCancelled()) return;
 
-        if (event.getBlock().getType() == Material.REDSTONE_BLOCK) {
+        if (event.getBlock().getType() == Material.MAGMA) {
             notifyAllUsersInPlot(event.getBlock().getLocation(), (user, distance, direction) -> {
                 if (distance > 10) {
-                    chatService.sendAlertMessage(user, "The sizzle of magical construction hums from the " + direction);
+                    chatService.sendAlertMessage(user, "The sound of enemy construction sizzles from the " + direction);
                 }
             });
         }

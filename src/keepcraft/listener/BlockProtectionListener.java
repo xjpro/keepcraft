@@ -59,7 +59,7 @@ public class BlockProtectionListener implements Listener {
 		}
 
 		// Allow TNT & Redstone Blocks under certain conditions...
-		if (blockType == Material.TNT || blockType == Material.REDSTONE_BLOCK) {
+		if (blockType == Material.TNT || blockType == Material.MAGMA) {
 			// Placement in own plot...
 			if (blockType == Material.TNT && plot.isFactionProtected(user.getFaction())) {
 				chatService.sendFailureMessage(user, "Cannot place TNT in your own team's base");
