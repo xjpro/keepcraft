@@ -3,7 +3,7 @@ package keepcraft;
 public class WorldHelper {
 
     public interface BlockModifier {
-        public abstract void modify(int x, int y, int z);
+        void modify(int x, int y, int z);
     }
 
     public static void inCircle(int centerX, int centerZ, int startY, int endY, int radius, BlockModifier modifier) {

@@ -98,11 +98,6 @@ public class AdminCommandListener extends CommandListener {
 			}
 			return true;
 		}
-		// Reset command
-		else if (commandName.equals("reset")) {
-			Keepcraft.instance().reset();
-			return true;
-		}
 		// Set a spawn
 		else if (commandName.equals("setspawn") && args.length == 1) {
 			int faction;

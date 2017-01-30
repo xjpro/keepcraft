@@ -1,7 +1,5 @@
 package keepcraft;
 
-import java.util.*;
-
 import keepcraft.data.models.FactionSpawn;
 import keepcraft.data.models.UserFaction;
 import keepcraft.services.FactionSpawnService;
@@ -14,37 +12,17 @@ public class WorldSetter {
 
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
-	private final int TEAM_PLOT_RADIUS = 80;
+	private final int TEAM_PLOT_RADIUS = 75;
 
 	public WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService) {
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
 	}
 
-	public World reset(World currentWorld) {
-		Server server = Bukkit.getServer();
-
-		String currentWorldNameNumber = currentWorld.getName().replace("world", "");
-		int currentWorldNumber = currentWorldNameNumber.length() == 0 ? 0 : Integer.parseInt(currentWorldNameNumber);
-
-		// Create new world
-		// Seed with floating island near 175, 175: 794682861
-		WorldCreator creator = (new WorldCreator("world" + (currentWorldNumber + 1)))
-				.seed(new Random().nextInt())
-				.type(WorldType.NORMAL)
-				.environment(World.Environment.NORMAL);
-		World newWorld = server.createWorld(creator);
-
-		// Setup new world with plots
-		setBase(UserFaction.FactionRed, new Location(newWorld, 175.5, 64, 175.5));
-		setBase(UserFaction.FactionBlue, new Location(newWorld, -175.5, 64, -175.5));
-
-		newWorld.save();
-
-		// Unload old world
-		server.unloadWorld(currentWorld, true); // save & unload old world
-
-		return newWorld;
+	public World setupWorld(World world) {
+		setBase(UserFaction.FactionRed, new Location(world, 175.5, 64, 175.5));
+		setBase(UserFaction.FactionBlue, new Location(world, -175.5, 64, -175.5));
+		return world;
 	}
 
 	private void setBase(int faction, Location location) {

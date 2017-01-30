@@ -11,13 +11,10 @@ import keepcraft.command.PlotCommandListener;
 import keepcraft.command.ChatCommandListener;
 import keepcraft.command.CommandListener;
 
-import java.util.Set;
 import java.util.logging.Logger;
 
 import keepcraft.services.*;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,7 +28,7 @@ public class Keepcraft extends JavaPlugin {
 	private final UserDataManager userDataManager = new UserDataManager(database);
 	private final PlotDataManager plotDataManager = new PlotDataManager(database);
 	private final FactionSpawnDataManager factionSpawnManager = new FactionSpawnDataManager(database);
-	private final LootBlockDataManager lootBlockDataManager = new LootBlockDataManager(database);
+	//private final LootBlockDataManager lootBlockDataManager = new LootBlockDataManager(database);
 
 	// Services
 	private final UserService userService = new UserService(userDataManager);
@@ -39,16 +36,13 @@ public class Keepcraft extends JavaPlugin {
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
 	private final ChatService chatService = new ChatService(userService);
 
-	private World world;
-
 	@Override
 	public void onEnable() {
 		Bukkit.getServer().setSpawnRadius(0);
 
-		world = WorldLoader.loadLatest();
 		if (plotService.getPlots().size() == 0) {
 			// Nothing has been set up
-			reset();
+			setup();
 		}
 
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
@@ -86,7 +80,7 @@ public class Keepcraft extends JavaPlugin {
 
 		// Admin commands
 		AdminCommandListener adminCommandListener = new AdminCommandListener(userService, plotService);
-		String[] adminCommands = {"promote", "demote", "delete", "reset", "setspawn", "setfaction", "plottp", "dawn", "noon", "dusk"};
+		String[] adminCommands = {"promote", "demote", "delete", "setspawn", "setfaction", "plottp", "dawn", "noon", "dusk"};
 		for (String adminCommand : adminCommands) {
 			getCommand(adminCommand).setExecutor(adminCommandListener);
 		}
@@ -118,7 +112,7 @@ public class Keepcraft extends JavaPlugin {
 			getCommand(siegeCommand).setExecutor(siegeCommandListener);
 		}
 
-		log(String.format("Keepcraft enabled on world %s", world.getName()));
+		log(String.format("Keepcraft enabled on world '%s'", getWorld().getName()));
 	}
 
 	@Override
@@ -137,55 +131,16 @@ public class Keepcraft extends JavaPlugin {
 	}
 
 	public static World getWorld() {
-		return instance().world;
+		return Bukkit.getWorld("world");
 	}
 
-	public void reset() {
-		Server server = Bukkit.getServer();
-
-		boolean originallyWhiteListed = server.hasWhitelist();
-
-		// Turn on white listing and remove everyone so nobody can join while reset is in progress
-		server.setWhitelist(true);
-		Set<OfflinePlayer> whitelistedPlayers = server.getWhitelistedPlayers();
-		whitelistedPlayers.forEach(player -> {
-			player.setWhitelisted(false);
-		});
-
-		// Remove all ops
-		Set<OfflinePlayer> operators = server.getOperators();
-		operators.forEach(player -> {
-			player.setOp(false);
-		});
-
-		// Kick everyone
-		server.getOnlinePlayers().forEach(player -> {
-			player.kickPlayer("Keepcraft is resetting, please rejoin in 30 seconds...");
-		});
-
-		// Clean database
-		plotDataManager.truncate();
-		factionSpawnManager.truncate();
-		lootBlockDataManager.truncate();
-		userDataManager.resetNonAdminUserData();
-
+	private void setup() {
 		WorldSetter setter = new WorldSetter(plotService, factionSpawnService);
-		world = setter.reset(world);
-		getConfig().set("spawn.world", world.getName());
-
+		World world = setter.setupWorld(Keepcraft.getWorld());
 		userService.refreshCache();
 		plotService.refreshCache();
 		factionSpawnService.refreshCache();
-
-		// Restore state of white list and ops
-		operators.forEach(player -> {
-			player.setOp(true);
-		});
-		whitelistedPlayers.forEach(player -> {
-			player.setWhitelisted(true);
-		});
-		server.setWhitelist(originallyWhiteListed);
-		log("Successfully reset map on world " + world.getName());
+		log(String.format("Successfully setup map on world '%s", world.getName()));
 	}
 
 	public static void log(String text) {

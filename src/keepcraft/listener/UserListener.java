@@ -60,22 +60,6 @@ public class UserListener implements Listener {
 			user.setPrivilege(UserPrivilege.MEMBER);
 			userService.updateUser(user);
 
-			// Clear everything (do this because /reset doesn't)
-			// Unnecessary should resets ever happen via deleting /world folder
-			player.getInventory().clear();
-			player.setHealth(20);
-			player.setFoodLevel(20);
-			player.setSaturation(20);
-			player.setExhaustion(0);
-			player.setExp(0);
-			player.setLevel(0);
-			player.setTotalExperience(0);
-			player.setFireTicks(0);
-			player.setFallDistance(0);
-			player.setSneaking(false);
-			player.setSprinting(false);
-			player.setFlying(false);
-
 			setBasicEquipment(player);
 			teleportHome(player, user);
 		} else if (player.getLocation().getWorld() != Keepcraft.getWorld()) {
