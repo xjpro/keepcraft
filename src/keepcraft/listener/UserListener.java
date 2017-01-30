@@ -57,7 +57,12 @@ public class UserListener implements Listener {
 		User user = userService.loadOfflineUser(player.getName());
 
 		if (firstTimeUser || user.getPrivilege() == UserPrivilege.INIT) {
-			user.setPrivilege(UserPrivilege.MEMBER);
+			if (player.isOp()) {
+				user.setPrivilege(UserPrivilege.ADMIN);
+			} else {
+				user.setPrivilege(UserPrivilege.MEMBER);
+			}
+
 			userService.updateUser(user);
 
 			setBasicEquipment(player);

@@ -48,12 +48,18 @@ public class WorldSetter {
 	}
 
 	private void prepareBaseArea(Location center, int radius) {
-		WorldHelper.inCircle(center.getBlockX(), center.getBlockZ(), 1, 64, radius, (x, y, z) -> {
+		WorldHelper.inCircle(center.getBlockX(), center.getBlockZ(), 1, 125, radius, (x, y, z) -> {
 			Block block = center.getWorld().getBlockAt(x, y, z);
 			Material type = block.getType();
 
-			// Remove water at 62
-			if (y <= 62 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
+			// Prevent generated sky islands in plot area
+			if (y > 70) {
+				if (type.isSolid() && !block.getRelative(BlockFace.DOWN).getType().isSolid()) {
+					block.setType(Material.AIR);
+				}
+			}
+			// Remove water below 63 in plot area
+			else if (y < 63 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
 				if (y < 58) {
 					block.setType(Material.STONE);
 				} else {
@@ -74,11 +80,9 @@ public class WorldSetter {
 			if (y < platformBottomY || y == platformTopY) {
 				// Make huge cylinder from bedrock to spawn location
 				world.getBlockAt(x, y, z).setType(Material.BEDROCK);
-			}
-			else if(y > platformTopY) {
+			} else if (y > platformTopY) {
 				world.getBlockAt(x, y, z).setType(Material.AIR);
-			}
-			else {
+			} else {
 				world.getBlockAt(x, y, z).setType(Material.AIR); // set things to air by default
 				// Build hollow area
 				// North wall

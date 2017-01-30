@@ -112,7 +112,7 @@ public class Keepcraft extends JavaPlugin {
 			getCommand(siegeCommand).setExecutor(siegeCommandListener);
 		}
 
-		log(String.format("Keepcraft enabled on world '%s'", getWorld().getName()));
+		log(String.format("Keepcraft enabled on '%s'", getWorld().getName()));
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class Keepcraft extends JavaPlugin {
 		userService.refreshCache();
 		plotService.refreshCache();
 		factionSpawnService.refreshCache();
-		log(String.format("Successfully setup map on world '%s", world.getName()));
+		log(String.format("Successfully setup map on '%s'", world.getName()));
 	}
 
 	public static void log(String text) {
