@@ -1,279 +1,268 @@
 package keepcraft.data;
 
+import keepcraft.Keepcraft;
+import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.UserPrivilege;
-import keepcraft.data.models.User;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import keepcraft.Keepcraft;
 
-public class UserDataManager extends DataManager<User> {
+public class UserDataManager {
 
-    public UserDataManager(Database database) {
-        super(database);
-        init();
-    }
+	private Database database;
 
-    private void init() {
-        try {
-            PreparedStatement statement
-                    = database.createStatement("CREATE TABLE IF NOT EXISTS users (Name, Privilege, Faction, Money, LastPlotId, FirstOnline, LastOnline)");
-            statement.execute();
-        } catch (Exception e) {
-            Keepcraft.log("Error initializing table: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-    }
+	public UserDataManager(Database database) {
+		this.database = database;
+		init();
+	}
 
-    @Override
-    public void updateData(User data) {
-        Keepcraft.log("Updating data for " + data.getName());
-        try {
-            PreparedStatement statement
-                    = database.createStatement("UPDATE users SET Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, LastOnline = datetime('now') WHERE ROWID = ?");
-            statement.setInt(1, data.getPrivilege());
-            statement.setInt(2, data.getFaction());
-            statement.setInt(3, data.getMoney());
-            statement.setInt(4, data.getLastPlotId());
-            statement.setInt(5, data.getId());
-            statement.execute();
+	private void init() {
+		try {
+			PreparedStatement statement
+					= database.createStatement("CREATE TABLE IF NOT EXISTS users (Name, Privilege, Faction, Money, LastPlotId, FirstOnline, LastOnline)");
+			statement.execute();
+		} catch (Exception e) {
+			Keepcraft.log("Error initializing table: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+	}
 
-            // TODO: if the record did not exist, we'll have to create it
-        } catch (Exception e) {
-            Keepcraft.log("Error setting user data: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-    }
+	public void updateData(User data) {
+		Keepcraft.log("Updating data for " + data.getName());
+		try {
+			PreparedStatement statement
+					= database.createStatement("UPDATE users SET Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, LastOnline = datetime('now') WHERE ROWID = ?");
+			statement.setInt(1, data.getPrivilege());
+			statement.setInt(2, data.getFaction());
+			statement.setInt(3, data.getMoney());
+			statement.setInt(4, data.getLastPlotId());
+			statement.setInt(5, data.getId());
+			statement.execute();
 
-    @Override
-    public User getData(Object key) {
-        String name;
-        if (key instanceof String) {
-            name = (String) key;
-        } else {
-            return null;
-        }
+			// TODO: if the record did not exist, we'll have to create it
+		} catch (Exception e) {
+			Keepcraft.error("Error setting user data: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+	}
 
-        Keepcraft.log("Beginning lookup on " + name);
-        int id = 0, privilege = 0, faction = 0, money = 0, lastPlotId = 0;
-        try {
-            PreparedStatement statement
-                    = database.createStatement("SELECT ROWID, Privilege, Faction, Money, LastPlotId FROM users WHERE Name = ? LIMIT 1");
-            statement.setString(1, name);
-            ResultSet result = statement.executeQuery();
+	public User getData(Object key) {
+		String name;
+		if (key instanceof String) {
+			name = (String) key;
+		} else {
+			return null;
+		}
 
-            boolean found = result.next();
+		Keepcraft.log("Beginning lookup on " + name);
+		int id = 0, privilege = 0, faction = 0, money = 0, lastPlotId = 0;
+		try {
+			PreparedStatement statement
+					= database.createStatement("SELECT ROWID, Privilege, Faction, Money, LastPlotId FROM users WHERE Name = ? LIMIT 1");
+			statement.setString(1, name);
+			ResultSet result = statement.executeQuery();
 
-            if (!found) {
-                Keepcraft.log("No user was found, creating record");
-                result.close();
+			boolean found = result.next();
 
-                // Determine faction to place on
-                int redCount = this.getFactionCount(UserFaction.FactionRed);
-                int blueCount = this.getFactionCount(UserFaction.FactionBlue);
-                int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
+			if (!found) {
+				Keepcraft.log("No user was found, creating record");
+				result.close();
 
-                User newUser = new User(0);
-                newUser.setName(name);
-                newUser.setPrivilege(UserPrivilege.MEMBER);
-                newUser.setFaction(UserFaction.getSmallestFaction(redCount, blueCount, greenCount));
-                newUser.setMoney(0);
+				// Determine faction to place on
+				int redCount = this.getFactionCount(UserFaction.FactionRed);
+				int blueCount = this.getFactionCount(UserFaction.FactionBlue);
+				int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
 
-                putData(newUser);
-                return getData(name);
-            } else {
-                Keepcraft.log("Lookup on " + name + " successful");
-                id = result.getInt("ROWID");
-                privilege = result.getInt("Privilege");
-                faction = result.getInt("Faction");
-                money = result.getInt("Money");
-                lastPlotId = result.getInt("LastPlotId");
-            }
+				User newUser = new User(0);
+				newUser.setName(name);
+				newUser.setPrivilege(UserPrivilege.MEMBER);
+				newUser.setFaction(UserFaction.getSmallestFaction(redCount, blueCount, greenCount));
+				newUser.setMoney(0);
 
-            result.close();
-        } catch (Exception e) {
-            Keepcraft.log("Error during user data lookup: " + e.getMessage());
-        } finally {
-            database.close();
-        }
+				putData(newUser);
+				return getData(name);
+			} else {
+				Keepcraft.log("Lookup on " + name + " successful");
+				id = result.getInt("ROWID");
+				privilege = result.getInt("Privilege");
+				faction = result.getInt("Faction");
+				money = result.getInt("Money");
+				lastPlotId = result.getInt("LastPlotId");
+			}
 
-        User user = new User(id);
-        user.setName(name);
-        user.setPrivilege(privilege);
-        user.setFaction(faction);
-        user.setMoney(money);
-        user.setLastPlotId(lastPlotId);
+			result.close();
+		} catch (Exception e) {
+			Keepcraft.error("Error during user data lookup: " + e.getMessage());
+		} finally {
+			database.close();
+		}
 
-        Keepcraft.log("User data was retrieved with values: " + user);
+		User user = new User(id);
+		user.setName(name);
+		user.setPrivilege(privilege);
+		user.setFaction(faction);
+		user.setMoney(money);
+		user.setLastPlotId(lastPlotId);
 
-        return user;
-    }
+		Keepcraft.log("User data was retrieved with values: " + user);
 
-    @Override
-    public Collection<User> getAllData() {
-        ArrayList<User> allData = new ArrayList<>();
+		return user;
+	}
 
-        Keepcraft.log("Beginning lookup of all user data");
+//	public Collection<User> getAllData() {
+//		ArrayList<User> allData = new ArrayList<>();
+//
+//		Keepcraft.log("Beginning lookup of all user data");
+//
+//		try {
+//			PreparedStatement statement
+//					= database.createStatement("SELECT ROWID, Name, Privilege, Faction, Money FROM users");
+//			ResultSet result = statement.executeQuery();
+//
+//			while (result.next()) {
+//				int id = result.getInt("ROWID");
+//				String name = result.getString("Name");
+//				int privilege = result.getInt("Privilege");
+//				int faction = result.getInt("Faction");
+//				int money = result.getInt("Money");
+//				int lastPlotId = result.getInt("LastPlotId");
+//
+//				User user = new User(id);
+//				user.setName(name);
+//				user.setPrivilege(privilege);
+//				user.setFaction(faction);
+//				user.setMoney(money);
+//				user.setLastPlotId(lastPlotId);
+//
+//				allData.add(user);
+//			}
+//
+//			result.close();
+//		} catch (Exception e) {
+//			Keepcraft.error("Error during all user data lookup: " + e.getMessage());
+//		} finally {
+//			database.close();
+//		}
+//
+//		return allData;
+//	}
 
-        try {
-            PreparedStatement statement
-                    = database.createStatement("SELECT ROWID, Name, Privilege, Faction, Money FROM users");
-            ResultSet result = statement.executeQuery();
+	public void putData(User user) {
 
-            while (result.next()) {
-                int id = result.getInt("ROWID");
-                String name = result.getString("Name");
-                int privilege = result.getInt("Privilege");
-                int faction = result.getInt("Faction");
-                int money = result.getInt("Money");
-                int lastPlotId = result.getInt("LastPlotId");
+		Keepcraft.log("Creating record for " + user.getName());
+		try {
+			PreparedStatement statement
+					= database.createStatement("INSERT INTO users (Name, Privilege, Faction, Money, LastPlotId, FirstOnline, LastOnline) VALUES(?, ?, ?, ?, ?, datetime('now'), datetime('now'))");
+			statement.setString(1, user.getName());
+			statement.setInt(2, user.getPrivilege());
+			statement.setInt(3, user.getFaction());
+			statement.setInt(4, user.getMoney());
+			statement.setInt(5, user.getLastPlotId());
+			statement.execute();
+		} catch (Exception e) {
+			Keepcraft.error("Error creating user data: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+	}
 
-                User user = new User(id);
-                user.setName(name);
-                user.setPrivilege(privilege);
-                user.setFaction(faction);
-                user.setMoney(money);
-                user.setLastPlotId(lastPlotId);
+	public void deleteData(User user) {
+		Keepcraft.log("Deleting record for " + user.getName());
+		try {
+			PreparedStatement statement
+					= database.createStatement("DELETE FROM users WHERE Name = ?");
+			statement.setString(1, user.getName());
+			statement.execute();
+		} catch (Exception e) {
+			Keepcraft.error("Error deleting user data: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+	}
 
-                allData.add(user);
-            }
+//	public void resetNonAdminUserData() {
+//		Keepcraft.log("Reset non-admin user records");
+//		try {
+//			PreparedStatement statement
+//					= database.createStatement("UPDATE users SET Privilege = ?, Money = 0, LastPlotId = NULL WHERE Privilege < ?");
+//			statement.setInt(1, UserPrivilege.INIT);
+//			statement.setInt(2, UserPrivilege.ADMIN);
+//			statement.execute();
+//		} catch (Exception e) {
+//			Keepcraft.log("Error resetting non-admin user data: " + e.getMessage());
+//		} finally {
+//			database.close();
+//		}
+//	}
 
-            result.close();
-        } catch (Exception e) {
-            Keepcraft.log("Error during all user data lookup: " + e.getMessage());
-        } finally {
-            database.close();
-        }
+//	public void truncate() {
+//		Keepcraft.log("Truncating users table");
+//		try {
+//			PreparedStatement statement = database.createStatement("DELETE FROM users");
+//			statement.execute();
+//		} catch (Exception e) {
+//			Keepcraft.log("(KC) Error truncating users: " + e.getMessage());
+//		} finally {
+//			database.close();
+//		}
+//	}
 
-        return allData;
-    }
+	public boolean exists(Object key) {
+		String name;
+		if (key instanceof String) {
+			name = (String) key;
+		} else {
+			return false;
+		}
 
-    @Override
-    public void putData(User user) {
+		boolean found = false;
+		Keepcraft.log("Checking for existence of " + name);
+		try {
+			PreparedStatement statement
+					= database.createStatement("SELECT ROWID FROM users WHERE Name = ? LIMIT 1");
+			statement.setString(1, name);
+			ResultSet result = statement.executeQuery();
 
-        Keepcraft.log("Creating record for " + user.getName());
-        try {
-            PreparedStatement statement
-                    = database.createStatement("INSERT INTO users (Name, Privilege, Faction, Money, LastPlotId, FirstOnline, LastOnline) VALUES(?, ?, ?, ?, ?, datetime('now'), datetime('now'))");
-            statement.setString(1, user.getName());
-            statement.setInt(2, user.getPrivilege());
-            statement.setInt(3, user.getFaction());
-            statement.setInt(4, user.getMoney());
-            statement.setInt(5, user.getLastPlotId());
-            statement.execute();
-        } catch (Exception e) {
-            Keepcraft.log("Error creating user data: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-    }
+			found = result.next();
 
-    @Override
-    public void deleteData(User user) {
-        Keepcraft.log("Deleting record for " + user.getName());
-        try {
-            PreparedStatement statement
-                    = database.createStatement("DELETE FROM users WHERE Name = ?");
-            statement.setString(1, user.getName());
-            statement.execute();
-        } catch (Exception e) {
-            Keepcraft.log("Error deleting user data: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-    }
+			result.close();
+		} catch (Exception e) {
+			Keepcraft.error("Error during user data lookup: " + e.getMessage());
+		} finally {
+			database.close();
+		}
 
-    public void resetNonAdminUserData() {
-        Keepcraft.log("Reset non-admin user records");
-        try {
-            PreparedStatement statement
-                    = database.createStatement("UPDATE users SET Privilege = ?, Money = 0, LastPlotId = NULL WHERE Privilege < ?");
-            statement.setInt(1, UserPrivilege.INIT);
-            statement.setInt(2, UserPrivilege.ADMIN);
-            statement.execute();
-        } catch (Exception e) {
-            Keepcraft.log("Error resetting non-admin user data: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-    }
+		return found;
+	}
 
-    @Override
-    public void truncate() {
-        Keepcraft.log("Truncating users table");
-        try {
-            PreparedStatement statement = database.createStatement("DELETE FROM users");
-            statement.execute();
-        } catch (Exception e) {
-            Keepcraft.log("(KC) Error truncating users: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-    }
+	private int getFactionCount(int faction) {
+		int memberCount = 0;
+		try {
+			PreparedStatement statement = database.createStatement(
+					"SELECT ROWID FROM users WHERE Faction = ? AND Privilege != ? AND "
+							+ "((julianday(datetime('now')) - julianday(LastOnline)) < ?)"
+			);
+			statement.setInt(1, faction);
+			statement.setInt(2, UserPrivilege.ADMIN);
+			statement.setFloat(3, 3.0f);
+			ResultSet result = statement.executeQuery();
 
-    @Override
-    public boolean exists(Object key) {
-        String name;
-        if (key instanceof String) {
-            name = (String) key;
-        } else {
-            return false;
-        }
+			while (result.next()) {
+				memberCount++;
+			}
 
-        boolean found = false;
-        Keepcraft.log("Checking for existence of " + name);
-        try {
-            PreparedStatement statement
-                    = database.createStatement("SELECT ROWID FROM users WHERE Name = ? LIMIT 1");
-            statement.setString(1, name);
-            ResultSet result = statement.executeQuery();
+			result.close();
+		} catch (Exception e) {
+			Keepcraft.error("Error counting faction members: " + e.getMessage());
+		} finally {
+			database.close();
+		}
 
-            found = result.next();
+		Keepcraft.log("Active member count for " + UserFaction.asString(faction) + " is " + memberCount);
 
-            result.close();
-        } catch (Exception e) {
-            Keepcraft.log("Error during user data lookup: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-
-        return found;
-    }
-
-    public int getFactionCount(int faction) {
-        int memberCount = 0;
-        try {
-            PreparedStatement statement = database.createStatement(
-                    "SELECT ROWID FROM users WHERE Faction = ? AND Privilege != ? AND "
-                    + "((julianday(datetime('now')) - julianday(LastOnline)) < ?)"
-            );
-            statement.setInt(1, faction);
-            statement.setInt(2, UserPrivilege.ADMIN);
-            statement.setFloat(3, 3.0f);
-            ResultSet result = statement.executeQuery();
-
-            while (result.next()) {
-                memberCount++;
-            }
-
-            result.close();
-        } catch (Exception e) {
-            Keepcraft.log("Error counting faction members: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-
-        Keepcraft.log("Active member count for " + UserFaction.asString(faction) + " is " + memberCount);
-
-        return memberCount;
-    }
-
-    public void updateLastOnline(User user) {
-        updateData(user);
-    }
-
+		return memberCount;
+	}
 }

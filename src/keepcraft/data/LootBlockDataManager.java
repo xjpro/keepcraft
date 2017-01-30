@@ -8,10 +8,12 @@ import java.util.Collection;
 import keepcraft.Keepcraft;
 import keepcraft.data.models.LootBlock;
 
-public class LootBlockDataManager extends DataManager<LootBlock> {
+public class LootBlockDataManager {
+
+    private Database database;
 
     public LootBlockDataManager(Database database) {
-        super(database);
+        this.database = database;
         init();
     }
 
@@ -27,7 +29,6 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
         }
     }
 
-    @Override
     public void updateData(LootBlock block) {
         Keepcraft.log("Updating data for loot block");
         try {
@@ -50,13 +51,6 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
         }
     }
 
-    @Override
-    public LootBlock getData(Object key) {
-        // This should probably not be called so
-        throw new UnsupportedOperationException("Don't call this, get the data from the data cache");
-    }
-
-    @Override
     public Collection<LootBlock> getAllData() {
         ArrayList<LootBlock> allData = new ArrayList<>();
 
@@ -93,7 +87,6 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
         return allData;
     }
 
-    @Override
     public void putData(LootBlock block) {
 
         Keepcraft.log("Creating record for new loot block");
@@ -114,7 +107,6 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
         }
     }
 
-    @Override
     public void deleteData(LootBlock block) {
         Keepcraft.log("Deleting record for loot block");
         try {
@@ -128,7 +120,6 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
         }
     }
 
-    @Override
     public void truncate() {
         Keepcraft.log("Truncating lootBlocks table");
         try {
@@ -139,12 +130,6 @@ public class LootBlockDataManager extends DataManager<LootBlock> {
         } finally {
             database.close();
         }
-    }
-
-    @Override
-    public boolean exists(Object key) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
 }

@@ -1,7 +1,7 @@
 package keepcraft.data;
 
 import keepcraft.Keepcraft;
-import keepcraft.data.models.*;
+import keepcraft.data.models.FactionSpawn;
 import org.bukkit.Location;
 
 import java.sql.PreparedStatement;
@@ -9,12 +9,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 
-public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
+public class FactionSpawnDataManager {
+
+	private Database database;
 
 	public FactionSpawnDataManager(Database database) {
-		super(database);
+		this.database = database;
 		init();
 	}
 
@@ -23,13 +24,12 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS factionSpawns (FactionValue, LocX, LocY, LocZ)");
 			statement.execute();
 		} catch (Exception e) {
-			Keepcraft.log("Error initializing factions table: " + e.getMessage());
+			Keepcraft.error("Error initializing factions table: " + e.getMessage());
 		} finally {
 			database.close();
 		}
 	}
 
-	@Override
 	public void updateData(FactionSpawn spawn) {
 		//Keepcraft.log("Updating record for " + faction.toString());
 		try {
@@ -45,22 +45,15 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 				putData(spawn);
 			}
 		} catch (Exception e) {
-			Keepcraft.log("Error updating factionSpawn record: " + e.getMessage());
+			Keepcraft.error("Error updating factionSpawn record: " + e.getMessage());
 		} finally {
 			database.close();
 		}
 	}
 
-	@Override
-	public FactionSpawn getData(Object key) {
-		// This should probably not be called so
-		throw new UnsupportedOperationException("Don't call this, get the data from the data cache");
-	}
-
-	@Override
 	public Collection<FactionSpawn> getAllData() {
 		List<FactionSpawn> allData = new ArrayList<>();
-		Keepcraft.log("Updating factionSpawn data cache");
+		Keepcraft.error("Updating factionSpawn data cache");
 
 		try {
 			PreparedStatement statement = database.createStatement("SELECT FactionValue, LocX, LocY, LocZ FROM factionSpawns");
@@ -72,7 +65,7 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 				int locY = result.getInt("LocY");
 				int locZ = result.getInt("LocZ");
 
-				Keepcraft.log(String.format("FactionSpawn for %s was found at at (%s, %s, %s)", new Object[]{factionValue, locX, locY, locZ}));
+				Keepcraft.log(String.format("FactionSpawn for %s was found at at (%s, %s, %s)", factionValue, locX, locY, locZ));
 
 				FactionSpawn spawn = new FactionSpawn(factionValue, new Location(Keepcraft.getWorld(), locX, locY, locZ));
 				allData.add(spawn);
@@ -80,7 +73,7 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 
 			result.close();
 		} catch (Exception e) {
-			Keepcraft.log("Error updating factionSpawns data cache: " + e.getMessage());
+			Keepcraft.error("Error updating factionSpawns data cache: " + e.getMessage());
 		} finally {
 			database.close();
 		}
@@ -88,7 +81,6 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 		return allData;
 	}
 
-	@Override
 	public void putData(FactionSpawn spawn) {
 
 		Keepcraft.log(String.format("Creating record for factionSpawn %s", spawn.getFactionValue()));
@@ -101,13 +93,12 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 			statement.setInt(4, spawn.getLocation().getBlockZ());
 			statement.execute();
 		} catch (Exception e) {
-			Keepcraft.log("Error creating factionSpawn record: " + e.getMessage());
+			Keepcraft.error("Error creating factionSpawn record: " + e.getMessage());
 		} finally {
 			database.close();
 		}
 	}
 
-	@Override
 	public void deleteData(FactionSpawn spawn) {
 		//logger.log(Level.INFO, String.format("(KC) Deleting record for plot %s", plot.getName()));
 		try {
@@ -115,29 +106,21 @@ public class FactionSpawnDataManager extends DataManager<FactionSpawn> {
 			statement.setInt(1, spawn.getFactionValue());
 			statement.execute();
 		} catch (Exception e) {
-			Keepcraft.log("Error deleting plot record: " + e.getMessage());
+			Keepcraft.error("Error deleting plot record: " + e.getMessage());
 		} finally {
 			database.close();
 		}
 	}
 
-	@Override
 	public void truncate() {
 		Keepcraft.log("Truncating factionSpawns table");
 		try {
 			PreparedStatement statement = database.createStatement("DELETE FROM factionSpawns");
 			statement.execute();
 		} catch (Exception e) {
-			logger.log(Level.INFO, String.format("(KC) Error truncating factionSpawns: %s", e.getMessage()));
+			Keepcraft.error(String.format("Error truncating factionSpawns: %s", e.getMessage()));
 		} finally {
 			database.close();
 		}
 	}
-
-	@Override
-	public boolean exists(Object key) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

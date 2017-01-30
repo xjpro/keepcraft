@@ -1,22 +1,21 @@
 package keepcraft.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
-
-import keepcraft.data.models.WorldPoint;
+import keepcraft.Keepcraft;
 import keepcraft.data.models.Plot;
+import keepcraft.data.models.PlotProtection;
+import keepcraft.data.models.WorldPoint;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import keepcraft.Keepcraft;
-import keepcraft.data.models.PlotProtection;
+public class PlotDataManager {
 
-public class PlotDataManager extends DataManager<Plot> {
+	private Database database;
 
 	public PlotDataManager(Database database) {
-		super(database);
+		this.database = database;
 		init();
 	}
 
@@ -28,15 +27,14 @@ public class PlotDataManager extends DataManager<Plot> {
 			statement = database.createStatement("CREATE TABLE IF NOT EXISTS plotProtections (PlotId, Type, ProtectedRadius, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId)");
 			statement.execute();
 		} catch (Exception e) {
-			logger.log(Level.INFO, String.format("(KC) Error initializing tables: %s", e.getMessage()));
+			Keepcraft.error(String.format("Error initializing tables: %s", e.getMessage()));
 		} finally {
 			database.close();
 		}
 	}
 
-	@Override
 	public void updateData(Plot plot) {
-		logger.log(Level.INFO, String.format("(KC) Updating record for plot %s", plot.getName()));
+		Keepcraft.log(String.format("Updating record for plot %s", plot.getName()));
 		try {
 			PreparedStatement statement = database.createStatement("UPDATE plots SET LocX = ?, LocY = ?, LocZ = ?, Radius = ?, Name = ?, OrderNumber = ? WHERE ROWID = ?");
 			statement.setInt(1, plot.getWorldPoint().x);
@@ -67,22 +65,15 @@ public class PlotDataManager extends DataManager<Plot> {
 				statement.executeUpdate();
 			}
 		} catch (Exception e) {
-			logger.log(Level.INFO, String.format("(KC) Error updating plot record: %s", e.getMessage()));
+			Keepcraft.error(String.format("Error updating plot record: %s", e.getMessage()));
 		} finally {
 			database.close();
 		}
 	}
 
-	@Override
-	public Plot getData(Object key) {
-		// This should probably not be called so
-		throw new UnsupportedOperationException("Don't call this, get the data from the data cache");
-	}
-
-	@Override
 	public Collection<Plot> getAllData() {
 		ArrayList<Plot> allData = new ArrayList<>();
-		logger.info("(KC) Updating plot data cache");
+		Keepcraft.log("Updating plot data cache");
 
 		try {
 			PreparedStatement statement = database.createStatement("SELECT ROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId FROM plots");
@@ -98,7 +89,7 @@ public class PlotDataManager extends DataManager<Plot> {
 				int orderNumber = result.getInt("OrderNumber");
 				int setterId = result.getInt("SetterId");
 
-				logger.log(Level.INFO, String.format("(KC) Plot %s was found at (%s, %s, %s)", new Object[]{name, locX, locY, locZ}));
+				Keepcraft.log(String.format("Plot %s was found at (%s, %s, %s)", name, locX, locY, locZ));
 
 				Plot plot = new Plot();
 				plot.setWorldPoint(new WorldPoint(locX, locY, locZ));
@@ -126,8 +117,8 @@ public class PlotDataManager extends DataManager<Plot> {
 				double triggerRadius = result.getDouble("TriggerRadius");
 				boolean capturable = result.getBoolean("Capturable");
 				int captureSeconds = result.getInt("CaptureTime");
-				int captureEffect = result.getInt("CaptureEffect");
-				int spawnId = result.getInt("SpawnId");
+				//int captureEffect = result.getInt("CaptureEffect");
+				//int spawnId = result.getInt("SpawnId");
 
 				PlotProtection protection = new PlotProtection(plotId);
 				protection.setType(type);
@@ -149,7 +140,7 @@ public class PlotDataManager extends DataManager<Plot> {
 			}
 			result.close();
 		} catch (Exception e) {
-			logger.log(Level.INFO, String.format("(KC) Error updating plot data cache: %s", e.getMessage()));
+			Keepcraft.error(String.format("Error updating plot data cache: %s", e.getMessage()));
 		} finally {
 			database.close();
 		}
@@ -157,10 +148,9 @@ public class PlotDataManager extends DataManager<Plot> {
 		return allData;
 	}
 
-	@Override
 	public void putData(Plot plot) {
 
-		logger.log(Level.INFO, String.format("(KC) Creating record for plot %s", plot.getName()));
+		Keepcraft.log(String.format("Creating record for plot %s", plot.getName()));
 		try {
 			PreparedStatement statement
 					= database.createStatement("INSERT INTO plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, DateTimeSet) VALUES(?, ?, ?, ?, ?, ?, ?, datetime('now'))");
@@ -186,15 +176,14 @@ public class PlotDataManager extends DataManager<Plot> {
 			statement.setInt(9, 0); // spawn
 			statement.execute();
 		} catch (Exception e) {
-			logger.log(Level.INFO, String.format("(KC) Error creating plot record: %s", e.getMessage()));
+			Keepcraft.error(String.format("Error creating plot record: %s", e.getMessage()));
 		} finally {
 			database.close();
 		}
 	}
 
-	@Override
 	public void deleteData(Plot plot) {
-		logger.log(Level.INFO, String.format("(KC) Deleting record for plot %s", plot.getName()));
+		Keepcraft.log(String.format("Deleting record for plot %s", plot.getName()));
 		try {
 			PreparedStatement statement = database.createStatement("DELETE FROM plots WHERE ROWID = ?");
 			statement.setInt(1, plot.getId());
@@ -204,32 +193,25 @@ public class PlotDataManager extends DataManager<Plot> {
 			statement.setInt(1, plot.getId());
 			statement.execute();
 		} catch (Exception e) {
-			logger.log(Level.INFO, String.format("(KC) Error deleting plot record: %s", e.getMessage()));
+			Keepcraft.error(String.format("(KC) Error deleting plot record: %s", e.getMessage()));
 		} finally {
 			database.close();
 		}
 	}
 
-	@Override
-	public void truncate() {
-		Keepcraft.log("Truncating plots & plotProtections tables");
-		try {
-			PreparedStatement statement = database.createStatement("DELETE FROM plots");
-			statement.execute();
-
-			statement = database.createStatement("DELETE FROM plotProtections");
-			statement.execute();
-		} catch (Exception e) {
-			logger.log(Level.INFO, String.format("(KC) Error truncating plot: %s", e.getMessage()));
-		} finally {
-			database.close();
-		}
-	}
-
-	@Override
-	public boolean exists(Object key) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+//	public void truncate() {
+//		Keepcraft.log("Truncating plots & plotProtections tables");
+//		try {
+//			PreparedStatement statement = database.createStatement("DELETE FROM plots");
+//			statement.execute();
+//
+//			statement = database.createStatement("DELETE FROM plotProtections");
+//			statement.execute();
+//		} catch (Exception e) {
+//			Keepcraft.error(String.format("Error truncating plot: %s", e.getMessage()));
+//		} finally {
+//			database.close();
+//		}
+//	}
 
 }
