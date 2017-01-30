@@ -60,8 +60,14 @@ public class BlockProtectionListener implements Listener {
 
 		// Allow TNT & Redstone Blocks under certain conditions...
 		if (blockType == Material.TNT || blockType == Material.REDSTONE_BLOCK) {
+			// Placement in own plot...
+			if (blockType == Material.TNT && plot.isFactionProtected(user.getFaction())) {
+				chatService.sendFailureMessage(user, "Cannot place TNT in your own team's base");
+				event.setCancelled(true);
+				event.setBuild(false);
+			}
 			// Cannot be immune to attack (send special message if this is met)
-			if (plot.isImmuneToAttack()) {
+			else if (plot.isImmuneToAttack()) {
 				chatService.sendFailureMessage(user, "Area can only be attacked from 8pm to midnight CST");
 				event.setCancelled(true);
 				event.setBuild(false);

@@ -193,10 +193,16 @@ public class Plot {
         if (protection.getKeepRadius() > 0) {
             info += "Keep protected radius: " + protection.getKeepRadius() + "\n";
         }
-        info += "Admin Radius: " + protection.getAdminRadius() + "\n";
-        info += "Trigger Radius: " + protection.getTriggerRadius() + "\n";
-        info += "Capturable: " + protection.getCapturable() + "\n";
-        info += "Capture time: " + protection.getCaptureTime() + "s\n";
+        if(protection.getAdminRadius() > 0) {
+            info += "Admin Radius: " + protection.getAdminRadius() + "\n";
+        }
+        if(protection.getTriggerRadius() > 0) {
+            info += "Trigger Radius: " + protection.getTriggerRadius() + "\n";
+        }
+        if(protection.getCapturable()) {
+            info += "Capturable: " + protection.getCapturable() + "\n";
+            info += "Capture time: " + protection.getCaptureTime() + "s\n";
+        }
         info += "Rally number: " + orderNumber + "\n";
         return info;
     }

@@ -248,11 +248,11 @@ public class UserDataManager extends DataManager<User> {
         int memberCount = 0;
         try {
             PreparedStatement statement = database.createStatement(
-                    "SELECT ROWID FROM users WHERE Faction = ? AND Privilege = ? AND "
+                    "SELECT ROWID FROM users WHERE Faction = ? AND Privilege != ? AND "
                     + "((julianday(datetime('now')) - julianday(LastOnline)) < ?)"
             );
             statement.setInt(1, faction);
-            statement.setInt(2, UserPrivilege.MEMBER);
+            statement.setInt(2, UserPrivilege.ADMIN);
             statement.setFloat(3, 3.0f);
             ResultSet result = statement.executeQuery();
 

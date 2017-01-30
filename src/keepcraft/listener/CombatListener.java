@@ -62,7 +62,7 @@ public class CombatListener implements Listener {
                         return;
                     }
 
-                    int armorValue = Armor.getArmorValue(defender.getInventory().getArmorContents());
+                    int armorValue = Armor.getArmorValue(defender.getInventory());
                     int extraDamage = (int) Math.ceil(event.getDamage() * (armorValue / 75.0));
 
                     // In order to prevent infinite loops but still get proper death messages
