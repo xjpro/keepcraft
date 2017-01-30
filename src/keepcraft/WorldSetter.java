@@ -28,6 +28,7 @@ public class WorldSetter {
 		int currentWorldNumber = currentWorldNameNumber.length() == 0 ? 0 : Integer.parseInt(currentWorldNameNumber);
 
 		// Create new world
+		// Seed with floating island near 175, 175: 794682861
 		WorldCreator creator = (new WorldCreator("world" + (currentWorldNumber + 1)))
 				.seed(new Random().nextInt())
 				.type(WorldType.NORMAL)
