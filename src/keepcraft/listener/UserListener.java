@@ -42,11 +42,8 @@ public class UserListener implements Listener {
 
 		@Override
 		public void run() {
-			int startingHealth = 10;
-			int startingFood = 100;
-
-			p.setHealth(startingHealth);
-			p.setFoodLevel(startingFood);
+			p.setHealth(10);
+			p.setFoodLevel(20);
 		}
 	}
 
@@ -68,15 +65,16 @@ public class UserListener implements Listener {
 			player.getInventory().clear();
 			player.setHealth(20);
 			player.setFoodLevel(20);
-			player.setSaturation(0);
+			player.setSaturation(20);
+			player.setExhaustion(0);
 			player.setExp(0);
 			player.setLevel(0);
 			player.setTotalExperience(0);
-			player.setExhaustion(0);
 			player.setFireTicks(0);
 			player.setFallDistance(0);
 			player.setSneaking(false);
 			player.setSprinting(false);
+			player.setFlying(false);
 
 			setBasicEquipment(player);
 			teleportHome(player, user);
