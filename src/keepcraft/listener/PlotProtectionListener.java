@@ -134,17 +134,17 @@ public class PlotProtectionListener implements Listener {
 		Block block = event.getBlock();
 		boolean cancelPlacement = false;
 
-		// Placement in own plot...
+		// Placement of TNT in own plot...
 		if (block.getType() == Material.TNT && plot.isFactionProtected(user.getFaction())) {
 			chatService.sendFailureMessage(user, "Cannot place TNT in your own team's base");
 			cancelPlacement = true;
 		}
-		// Cannot be immune to attack (send special message if this is met)
-		else if (plot.isImmuneToAttack()) {
+		// Plot is immune to attack
+		else if (plot.isImmuneToAttack() && !plot.isFactionProtected(user.getFaction())) {
 			chatService.sendFailureMessage(user, "Area can only be attacked from 8pm to midnight CST");
 			cancelPlacement = true;
 		}
-		// Cannot be admin protected
+		// Admin protected
 		else if (plot.isAdminProtected() || plot.isInAdminProtectedRadius(block.getLocation()) || plot.isEventProtected()) {
 			chatService.sendFailureMessage(user, "This area is protected");
 			cancelPlacement = true;

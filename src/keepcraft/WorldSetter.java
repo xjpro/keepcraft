@@ -7,7 +7,10 @@ import keepcraft.services.PlotService;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.inventory.ItemStack;
 
+// -5036103636176790253 spawn in big ass canyons with small sky island near 175, 175, meanwhile -175,-175 is in ocean (a very bad spawn seed)
+// 794682861 huge floating island near 175, 175
 public class WorldSetter {
 
 	private final PlotService plotService;
@@ -48,13 +51,14 @@ public class WorldSetter {
 	}
 
 	private void prepareBaseArea(Location center, int radius) {
-		WorldHelper.inCircle(center.getBlockX(), center.getBlockZ(), 1, 125, radius, (x, y, z) -> {
+		WorldHelper.inCircle(center.getBlockX(), center.getBlockZ(), 1, 135, radius, (x, y, z) -> {
 			Block block = center.getWorld().getBlockAt(x, y, z);
 			Material type = block.getType();
 
 			// Prevent generated sky islands in plot area
-			if (y > 70) {
-				if (type.isSolid() && !block.getRelative(BlockFace.DOWN).getType().isSolid()) {
+			if (y > 90) {
+				if ((type == Material.DIRT || type == Material.STONE || type == Material.GRASS || type == Material.COAL_ORE)
+						&& !block.getRelative(BlockFace.DOWN).getType().isSolid()) {
 					block.setType(Material.AIR);
 				}
 			}
@@ -80,6 +84,10 @@ public class WorldSetter {
 			if (y < platformBottomY || y == platformTopY) {
 				// Make huge cylinder from bedrock to spawn location
 				world.getBlockAt(x, y, z).setType(Material.BEDROCK);
+				if (y == platformTopY && x == center.getX() && z == center.getZ()) {
+					// Hole for beacon light
+					world.getBlockAt(x, y, z).setType(Material.AIR);
+				}
 			} else if (y > platformTopY) {
 				world.getBlockAt(x, y, z).setType(Material.AIR);
 			} else {
@@ -107,7 +115,7 @@ public class WorldSetter {
 			}
 		});
 
-
 		center.getRelative(BlockFace.DOWN).setType(Material.BEACON);
+		world.dropItem(center.getLocation().add(0, 1, 0), new ItemStack(Material.WOOD_PICKAXE, 1));
 	}
 }
