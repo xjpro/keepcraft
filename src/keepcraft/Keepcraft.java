@@ -1,15 +1,9 @@
 package keepcraft;
 
+import keepcraft.command.*;
 import keepcraft.data.*;
 import keepcraft.data.models.User;
 import keepcraft.listener.*;
-import keepcraft.command.BasicCommandListener;
-import keepcraft.command.AdminCommandListener;
-import keepcraft.command.FactionCommandListener;
-import keepcraft.command.SiegeCommandListener;
-import keepcraft.command.PlotCommandListener;
-import keepcraft.command.ChatCommandListener;
-import keepcraft.command.CommandListener;
 
 import java.util.logging.Logger;
 
@@ -76,6 +70,13 @@ public class Keepcraft extends JavaPlugin {
 		String[] chatCommands = {"t", "r", "g"};
 		for (String chatCommand : chatCommands) {
 			getCommand(chatCommand).setExecutor(chatCommandListener);
+		}
+
+		// Init commands
+		CommandListener initCommandListener = new InitCommandListener(userService, chatService);
+		String[] initCommands = {"join"};
+		for (String command : initCommands) {
+			getCommand(command).setExecutor(initCommandListener);
 		}
 
 		// Admin commands

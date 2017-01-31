@@ -9,7 +9,6 @@ public abstract class CommandListener implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String commandName = command.getName();
-        //logger.info("KC: Working on command: " + commandName);
         return handle(commandName.toLowerCase(), sender, args);
     }
 

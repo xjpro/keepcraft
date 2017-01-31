@@ -68,6 +68,9 @@ commands:
     plot:
         description: Plot commands
         usage: /plot
+    join:
+        description: Join a player's team
+        usage: /join <name>
     cap:
         description: Begin capturing a plot
         usage: /cap
