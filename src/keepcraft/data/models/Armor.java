@@ -6,31 +6,30 @@ import org.bukkit.inventory.PlayerInventory;
 public class Armor {
 
 	private static class ArmorValue {
+		static short LeatherHelm = 1;
+		static short ChainHelm = 2;
+		static short IronHelm = 2;
+		static short GoldHelm = 2;
+		static short DiamondHelm = 3;
+		static short PumpkinHelm = 0;
 
-		public static short LeatherHelm = 1;
-		public static short ChainHelm = 2;
-		public static short IronHelm = 2;
-		public static short GoldHelm = 2;
-		public static short DiamondHelm = 3;
-		public static short PumpkinHelm = 0;
+		static short LeatherChest = 3;
+		static short ChainChest = 5;
+		static short IronChest = 6;
+		static short GoldChest = 5;
+		static short DiamondChest = 8;
 
-		public static short LeatherChest = 3;
-		public static short ChainChest = 5;
-		public static short IronChest = 6;
-		public static short GoldChest = 5;
-		public static short DiamondChest = 8;
+		static short LeatherLegs = 2;
+		static short ChainLegs = 4;
+		static short IronLegs = 5;
+		static short GoldLegs = 3;
+		static short DiamondLegs = 6;
 
-		public static short LeatherLegs = 2;
-		public static short ChainLegs = 4;
-		public static short IronLegs = 5;
-		public static short GoldLegs = 3;
-		public static short DiamondLegs = 6;
-
-		public static short LeatherBoots = 1;
-		public static short ChainBoots = 1;
-		public static short IronBoots = 2;
-		public static short GoldBoots = 1;
-		public static short DiamondBoots = 3;
+		static short LeatherBoots = 1;
+		static short ChainBoots = 1;
+		static short IronBoots = 2;
+		static short GoldBoots = 1;
+		static short DiamondBoots = 3;
 	}
 
 	public static int getArmorValue(PlayerInventory inventory) {

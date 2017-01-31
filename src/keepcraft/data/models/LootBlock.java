@@ -145,7 +145,7 @@ public class LootBlock implements Runnable {
         dispenseTaskId = 0; // We are done with this dispensing round
 
         // This will call startDispensing in 5 minutes, ensures we don't get any immeadiate repeats
-        delayedTaskId = scheduler.scheduleSyncDelayedTask(Keepcraft.instance(), new LootBlockScheduler(this), 1200 * 10);
+        delayedTaskId = scheduler.scheduleSyncDelayedTask(Keepcraft.getPlugin(), new LootBlockScheduler(this), 1200 * 10);
     }
 
     public void startDispensing() {

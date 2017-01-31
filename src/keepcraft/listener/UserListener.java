@@ -117,7 +117,7 @@ public class UserListener implements Listener {
 
 		// Want to set the player's starting health and food values but the server will not respond to
 		// those changes in this method body. So we'll set a slightly delayed task to do it.
-		//Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.instance(), new StartingValueSetter(p), 40);
+		//Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), new StartingValueSetter(p), 40);
 		Keepcraft.log(String.format("%s respawning", p.getName()));
 	}
 

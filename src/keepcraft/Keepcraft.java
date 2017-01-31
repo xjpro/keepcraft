@@ -59,7 +59,7 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new WorldEntityListener(), this);
 		manager.registerEvents(new ExplosionListener(plotService), this);
 		manager.registerEvents(new PlotAttackListener(userService, plotService, chatService), this);
-		manager.registerEvents(new BlockProtectionListener(userService, plotService, chatService), this);
+		manager.registerEvents(new PlotProtectionListener(userService, plotService, chatService), this);
 		//manager.registerEvents(new ChunkListener(), this);
 		//manager.registerEvents(new LootBlockListener(), this);
 		manager.registerEvents(new StormListener(), this);
@@ -126,7 +126,7 @@ public class Keepcraft extends JavaPlugin {
 		});
 	}
 
-	public static Keepcraft instance() {
+	public static Keepcraft getPlugin() {
 		return (Keepcraft) Bukkit.getPluginManager().getPlugin("Keepcraft");
 	}
 
