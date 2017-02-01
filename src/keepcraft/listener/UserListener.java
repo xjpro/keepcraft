@@ -72,6 +72,9 @@ public class UserListener implements Listener {
 			teleportHome(player, user);
 		}
 
+		player.setPlayerListName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
+		//player.setDisplayName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
+
 		Plot lastPlot = plotService.getPlot(user.getLastPlotId());
 		if (lastPlot != null && !lastPlot.isFactionProtected(user.getFaction())) {
 			// Last plot id only stored when we logged off in an owned plot.
