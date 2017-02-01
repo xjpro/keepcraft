@@ -1,5 +1,6 @@
 package keepcraft.listener;
 
+import keepcraft.Keepcraft;
 import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
@@ -80,9 +81,24 @@ public class PlotProtectionListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled()) return;
 
+		Block block = event.getBlock();
+
+		if (block.getType() == Material.BEACON) {
+			Plot plot = plotService.getIntersectedPlot(block.getLocation());
+			if (plot.isFactionProtected() && plot.isInAdminProtectedRadius(block.getLocation())) {
+				// A beacon block was broken in the admin protected radius of a team plot
+				Keepcraft.log("Beacon broken!");
+			}
+		}
+
 		Player player = event.getPlayer();
 		if (player == null) return;
-		Block block = event.getBlock();
+
+		if (block.getType() == Material.ENDER_STONE && !userService.getOnlineUser(player.getName()).isAdmin()) {
+			// Only admin may remove ender blocks
+			event.setCancelled(true);
+			return;
+		}
 
 		switch (block.getType()) {
 			// Put materials here that can be broken no matter what
@@ -131,21 +147,21 @@ public class PlotProtectionListener implements Listener {
 	}
 
 	private void handleAttackBlockPlacement(BlockPlaceEvent event, Plot plot, User user) {
-		Block block = event.getBlock();
+		//Block block = event.getBlock();
 		boolean cancelPlacement = false;
 
-		// Placement of TNT in own plot...
-		if (block.getType() == Material.TNT && plot.isFactionProtected(user.getFaction())) {
-			chatService.sendFailureMessage(user, "Cannot place TNT in your own team's base");
+		// Placement in own plot...
+		if (plot.isFactionProtected(user.getFaction())) {
+			chatService.sendFailureMessage(user, "Cannot place attack blocks in your own base");
 			cancelPlacement = true;
 		}
 		// Plot is immune to attack
-		else if (plot.isImmuneToAttack() && !plot.isFactionProtected(user.getFaction())) {
+		else if (plot.isImmuneToAttack()) {
 			chatService.sendFailureMessage(user, "Area can only be attacked from 8pm to 11pm CST");
 			cancelPlacement = true;
 		}
 		// Admin protected
-		else if (plot.isAdminProtected() || plot.isInAdminProtectedRadius(block.getLocation()) || plot.isEventProtected()) {
+		else if (plot.isAdminProtected()/* || plot.isInAdminProtectedRadius(block.getLocation()) || plot.isEventProtected()*/) {
 			chatService.sendFailureMessage(user, "This area is protected");
 			cancelPlacement = true;
 		}
