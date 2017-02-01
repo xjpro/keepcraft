@@ -141,7 +141,7 @@ public class PlotProtectionListener implements Listener {
 		}
 		// Plot is immune to attack
 		else if (plot.isImmuneToAttack() && !plot.isFactionProtected(user.getFaction())) {
-			chatService.sendFailureMessage(user, "Area can only be attacked from 8pm to midnight CST");
+			chatService.sendFailureMessage(user, "Area can only be attacked from 8pm to 11pm CST");
 			cancelPlacement = true;
 		}
 		// Admin protected

@@ -72,7 +72,12 @@ public class UserListener implements Listener {
 			teleportHome(player, user);
 		}
 
-		player.setPlayerListName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
+		if (player.isOp()) {
+			player.setPlayerListName(ChatService.NameAdmin + player.getDisplayName());
+		} else {
+			player.setPlayerListName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
+		}
+
 		//player.setDisplayName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
 
 		Plot lastPlot = plotService.getPlot(user.getLastPlotId());
