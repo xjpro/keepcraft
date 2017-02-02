@@ -1,6 +1,5 @@
 package keepcraft.listener;
 
-import keepcraft.Keepcraft;
 import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
@@ -9,14 +8,12 @@ import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 public class PlotProtectionListener implements Listener {
 
@@ -114,22 +111,6 @@ public class PlotProtectionListener implements Listener {
 		}
 		if (!Privilege.canInteract(userService.getOnlineUser(player.getName()), block.getLocation(), plot)) {
 			event.setCancelled(true);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-		if (event.isCancelled()) return;
-
-		Block block = event.getBlock();
-		// TODO block gravity turns block to air before sending us this event
-		if (event.getBlock().getType() == Material.BEACON && event.getTo() == Material.AIR &&
-				(event.getEntityType() == EntityType.PRIMED_TNT || event.getEntityType() == EntityType.FALLING_BLOCK)) {
-			Plot plot = plotService.getIntersectedPlot(block.getLocation());
-			if (plot.isFactionProtected() && plot.isInAdminProtectedRadius(block.getLocation())) {
-				// A beacon block was blown up by TNT in the admin protected radius of a team plot
-				Keepcraft.log("Beacon blown up!");
-			}
 		}
 	}
 

@@ -91,6 +91,11 @@ public class Plot {
 		return protection != null && intersects(new WorldPoint(loc), protection.getTriggerRadius());
 	}
 
+	public boolean isUnderCenter(Location location) {
+		Location plotLocation = getLocation();
+		return plotLocation.getBlockX() == location.getBlockX() && plotLocation.getBlockZ() == location.getBlockZ() && plotLocation.getBlockY() > location.getBlockY();
+	}
+
 	public int getId() {
 		return id;
 	}

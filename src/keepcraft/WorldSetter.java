@@ -83,10 +83,17 @@ public class WorldSetter {
 		WorldHelper.inCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), 1, 150, 3, (x, y, z) -> {
 			if (y < platformBottomY || y == platformTopY) {
 				// Make huge cylinder from ENDER_STONE to spawn location
-				world.getBlockAt(x, y, z).setType(Material.ENDER_STONE);
-				if (y == platformTopY && x == center.getX() && z == center.getZ()) {
-					// Hole for beacon light
-					world.getBlockAt(x, y, z).setType(Material.AIR);
+				if (x == center.getX() && z == center.getZ()) {
+					if (y == platformTopY) {
+						// Hole for beacon light
+						world.getBlockAt(x, y, z).setType(Material.AIR);
+					} else {
+						// Thread of blocks for the win condition
+						world.getBlockAt(x, y, z).setType(Material.DIAMOND_BLOCK);
+					}
+				} else {
+					// Not in center, make ender stone
+					world.getBlockAt(x, y, z).setType(Material.ENDER_STONE);
 				}
 			} else if (y > platformTopY) {
 				world.getBlockAt(x, y, z).setType(Material.AIR);
