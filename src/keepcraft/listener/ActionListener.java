@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.player.*;
 import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
@@ -176,6 +177,12 @@ public class ActionListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
+		if (event.getBlockClicked().getType() == Material.STATIONARY_LAVA) {
+			// Don't allow people to scoop lava
+			event.setCancelled(true);
+			return;
+		}
+
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		Plot plot = plotService.getIntersectedPlot(event.getBlockClicked().getLocation());
 
