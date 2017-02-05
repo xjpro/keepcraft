@@ -48,16 +48,17 @@ public class ExplosionListener implements Listener {
 
 			Keepcraft.log("Team plot core destroyed");
 			chatService.sendGlobalAlertMessage(String.format("%s has been destroyed!", plot.getName()));
+			chatService.sendGlobalAlertMessage("The map will reset tomorrow at 8pm CST");
 
 			// Make plot public
-			plot.getProtection().setType(PlotProtection.PUBLIC);
+			plot.getProtection().setType(PlotProtection.ADMIN);
 			plotService.updatePlot(plot);
 
 			// Blow some shit up
 			Location explosionLocation = plot.getLocation().clone();
-			explosionLocation.setY(8);
-			while(explosionLocation.getBlockY() < plot.getLocation().getBlockY() + 10) {
-				location.getWorld().createExplosion(explosionLocation.add(0, 4, 0), 16f);
+			explosionLocation.add(0, -16, 0);
+			while (explosionLocation.getBlockY() < plot.getLocation().getBlockY() + 16) {
+				location.getWorld().createExplosion(explosionLocation.add(0, 4, 0), 8f);
 			}
 
 			// Create reset flag
