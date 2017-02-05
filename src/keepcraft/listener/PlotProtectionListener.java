@@ -13,7 +13,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+
+import java.util.List;
 
 public class PlotProtectionListener implements Listener {
 
@@ -111,6 +115,33 @@ public class PlotProtectionListener implements Listener {
 		}
 		if (!Privilege.canInteract(userService.getOnlineUser(player.getName()), block.getLocation(), plot)) {
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPistonExtend(BlockPistonExtendEvent event) {
+		Plot plot = plotService.getIntersectedPlot(event.getBlock().getLocation());
+		// Piston itself would need to be near center to affect center so we're fine checking the piston block
+		if (plot == null || !plot.isFactionProtected()) return;
+
+		event.getBlocks().forEach(block -> {
+			if (plot.isUnderCenter(block.getLocation())) {
+				// Don't allow piston to move any center blocks
+				event.setCancelled(true);
+			}
+		});
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onBlockDispense(BlockDispenseEvent event) {
+		if (event.getItem().getType() == Material.TNT) {
+			// Do not allow TNT to dispense in protected plots
+			// This could only really happen if a team member was dispensing TNT into their own plot
+
+			Plot plot = plotService.getIntersectedPlot(event.getBlock().getLocation());
+			if (plot != null && plot.isFactionProtected()) {
+				event.setCancelled(true);
+			}
 		}
 	}
 
