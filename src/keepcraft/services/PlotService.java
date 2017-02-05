@@ -58,7 +58,7 @@ public class PlotService {
     }
 
     public void updatePlot(Plot plot) {
-        plotDataManager.putData(plot);
+        plotDataManager.updateData(plot);
     }
 
     public Plot createTeamPlot(User setter, Location loc, int userFaction, int radius) {
