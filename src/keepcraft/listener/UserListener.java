@@ -84,9 +84,11 @@ public class UserListener implements Listener {
 		if (lastPlot != null && !lastPlot.isFactionProtected(user.getFaction())) {
 			// Last plot id only stored when we logged off in an owned plot.
 			// This plot is now longer secured so teleport home.
-			Keepcraft.log(String.format("Player %s logged into a formerly secured area, teleporting home", player.getName()));
-			teleportHome(player, user);
-			player.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returning home");
+
+			// todo check that this still works
+			//Keepcraft.log(String.format("Player %s logged into a formerly secured area, teleporting home", player.getName()));
+			//teleportHome(player, user);
+			//player.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returning home");
 		}
 	}
 
