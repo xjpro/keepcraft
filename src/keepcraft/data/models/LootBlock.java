@@ -90,39 +90,42 @@ public class LootBlock implements Runnable {
 			ItemStack item;
 			double value = Random.nextDouble();
 
-			if (value <= 0.20) {
-				item = new ItemStack(Material.ROTTEN_FLESH, 1);
-			} else if (value <= 0.50) {
-				item = new ItemStack(Material.SULPHUR, 1);
-			} else if (value <= 0.65) {
-				item = new ItemStack(Material.ARROW, 1);
-			} else if (value <= 0.70) {
-				item = new ItemStack(Material.BONE, 1);
-			} else if (value <= 0.75) {
-				item = new ItemStack(Material.STRING, 1);
-			} else if (value <= 0.77) {
-				item = new ItemStack(Material.FERMENTED_SPIDER_EYE, 1); // spider eye
-			} else if (value <= 0.79) {
-				item = new ItemStack(Material.SPIDER_EYE, 1); // spider eye (not from nether)
-			} else if (value <= 0.81) {
-				item = new ItemStack(Material.GOLD_NUGGET, 1); // golden nugget
-			} else if (value <= 0.83) {
-				item = new ItemStack(Material.GHAST_TEAR, 1); // ghast tear
-			} else if (value <= 0.85) {
-				item = new ItemStack(Material.BLAZE_ROD, 1); // blaze rod
-			} else if (value <= 0.86) {
-				item = new ItemStack(Material.GLOWSTONE, 1);
-			} else if (value <= 0.87) {
-				item = new ItemStack(Material.NETHERRACK, 1);
-			} else if (value <= 0.88) {
-				item = new ItemStack(Material.INK_SACK, 1, (short) 4); // ink
-			} else if (value <= 0.92) {
-				item = new ItemStack(Material.NETHER_BRICK, 1); // nether block
-			} else if (value <= 0.97) {
+			// Items to facilitate sieging
+			if (value <= 0.20) { // 20%
+				item = new ItemStack(Material.GOLD_NUGGET, 1); // gold nuggets, to make magma blocks
+			} else if (value <= 0.50) { // 30%
+				item = new ItemStack(Material.SULPHUR, 1); // sulfur, for tnt
+			} else if (value <= 0.70) { // 20%
+				item = new ItemStack(Material.ARROW, 1); // arrow
+			}
+			// Items to facilitate building with nether materials
+			else if (value <= 0.75) { // 5%
+				item = new ItemStack(Material.NETHER_BRICK, 1); // block of nether brick
+			}
+			// Items to facilitate brewing
+			else if (value <= 0.85) { // 10%
+				// Needed for all potions (makes the base potions)
 				item = new ItemStack(Material.NETHER_STALK, 1); // nether stalk
-			} else if (value <= 0.99) {
-				item = new ItemStack(Material.CLAY_BALL, 1);
-			} else {
+			} else if (value <= 0.88) { // 3%
+				// Makes regen potion
+				item = new ItemStack(Material.GHAST_TEAR, 1); // ghast tear
+			} else if (value <= 0.91) { // 3%
+				// Makes poison potion
+				item = new ItemStack(Material.SPIDER_EYE, 1); // spider eye
+			} else if (value <= 0.93) { // 2%
+				// Makes night vision & invis potions
+				item = new ItemStack(Material.BROWN_MUSHROOM, 1); // used for creating fermented spider eyes
+			}
+			// Items that come in grinders
+			else if (value <= 0.95) { // 2%
+				item = new ItemStack(Material.BONE, 1);
+			} else if (value <= 0.97) { // 2%
+				item = new ItemStack(Material.STRING, 1);
+			} else if (value <= 0.99) { // 2%
+				item = new ItemStack(Material.SLIME_BALL, 1);
+			}
+			// Remainder: give out pork
+			else {
 				item = new ItemStack(Material.PORK, 1);
 			}
 
