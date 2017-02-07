@@ -39,7 +39,7 @@ public class LootBlockDataManager {
             statement.setInt(3, block.getLocation().getBlockZ());
             statement.setInt(4, block.getStatus());
             statement.setInt(5, block.getType());
-            statement.setDouble(6, block.getOutput());
+            statement.setDouble(6, block.getOutputPerHour());
             statement.setInt(7, block.getId());
             statement.execute();
         } catch (Exception e) {
@@ -70,7 +70,7 @@ public class LootBlockDataManager {
                 LootBlock block = new LootBlock(id, Keepcraft.getWorld().getBlockAt(locX, locY, locZ));
                 block.setStatus(status);
                 block.setType(type);
-                block.setOutput(output);
+                block.setOutputPerHour(output);
 
                 allData.add(block);
             }
@@ -96,7 +96,7 @@ public class LootBlockDataManager {
             statement.setInt(3, block.getLocation().getBlockZ());
             statement.setInt(4, block.getStatus());
             statement.setInt(5, block.getType());
-            statement.setDouble(6, block.getOutput());
+            statement.setDouble(6, block.getOutputPerHour());
             statement.execute();
         } catch (Exception e) {
             Keepcraft.error("Error creating lootBlocks data: " + e.getMessage());

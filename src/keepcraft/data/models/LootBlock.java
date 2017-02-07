@@ -12,14 +12,18 @@ import java.util.Random;
 
 public class LootBlock implements Runnable {
 
-	private static Random random = new Random();
+	private static Random Random = new Random();
 
 	private final int id;
 	private final Block block;
 	private int status = 1;
 	private int type = 1;
-	private double output = 1;
 
+	// Output in items generated per hour
+	private double outputPerHour = 60;
+	// Fractional output from previous run
+	private double leftoverOutput = 0;
+	// Id of the Bukkit repeating task performing output
 	private int dispenseTaskId = 0;
 
 	public LootBlock(int id, Block block) {
@@ -59,25 +63,32 @@ public class LootBlock implements Runnable {
 		type = value;
 	}
 
-	public double getOutput() {
-		return output;
+	public double getOutputPerHour() {
+		return outputPerHour;
 	}
 
-	public void setOutput(double value) {
-		output = value;
+	public void setOutputPerHour(double value) {
+		outputPerHour = value;
 	}
 
 	@Override
+	// Runs every minute
 	public void run() {
-		if (block.getType() != Material.CHEST) return;
-		if (output == 0) return;
+		if (block.getType() != Material.CHEST || outputPerHour == 0) return;
 
 		Chest chest = (Chest) block.getState();
-		Inventory inv = chest.getBlockInventory();
+		Inventory inventory = chest.getBlockInventory();
 
-		for (int i = 0; i < (output * 60); i++) {
+		// Say outputPerHour per hour is 75
+		// We'll need to put (75/60) = 1.25 items into the chest per minute
+		// It's obviously impossible to put fractions of items into the chest
+		double fullOutputThisRun = (outputPerHour / 60) + leftoverOutput;
+		long integerOutputThisRun = (long) fullOutputThisRun; // So calculate the integer amount we can put in
+		leftoverOutput = fullOutputThisRun - integerOutputThisRun; // And save the remainder to be used in the next run
+
+		for (int i = 0; i < integerOutputThisRun; i++) {
 			ItemStack item;
-			double value = random.nextDouble();
+			double value = Random.nextDouble();
 
 			if (value <= 0.20) {
 				item = new ItemStack(Material.ROTTEN_FLESH, 1);
@@ -104,7 +115,7 @@ public class LootBlock implements Runnable {
 			} else if (value <= 0.87) {
 				item = new ItemStack(Material.NETHERRACK, 1);
 			} else if (value <= 0.88) {
-				item = new ItemStack(Material.INK_SACK, 1, (short) 4); // lapis
+				item = new ItemStack(Material.INK_SACK, 1, (short) 4); // ink
 			} else if (value <= 0.92) {
 				item = new ItemStack(Material.NETHER_BRICK, 1); // nether block
 			} else if (value <= 0.97) {
@@ -115,8 +126,7 @@ public class LootBlock implements Runnable {
 				item = new ItemStack(Material.PORK, 1);
 			}
 
-			// Excess items are not put in by default
-			inv.addItem(item);
+			inventory.addItem(item);
 		}
 
 		// Make a little smoke effect

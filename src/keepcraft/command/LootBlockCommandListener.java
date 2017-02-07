@@ -41,10 +41,10 @@ public class LootBlockCommandListener extends CommandListener {
                     return false;
                 }
                 lootBlock.stopDispensing();
-                lootBlock.setOutput(output);
+                lootBlock.setOutputPerHour(output);
 				lootBlockService.updateLootBlock(lootBlock);
                 lootBlock.startDispensing();
-                chatService.sendSuccessMessage(sender, "Loot block output set to " + output + " per minute");
+                chatService.sendSuccessMessage(sender, String.format("Loot block output set to %s per hour", output));
                 return true;
             } else if (args[0].equalsIgnoreCase("type") && args.length == 2) {
                 int type;
