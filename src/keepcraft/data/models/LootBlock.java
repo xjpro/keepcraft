@@ -98,33 +98,34 @@ public class LootBlock implements Runnable {
 			} else if (value <= 0.70) { // 20%
 				item = new ItemStack(Material.ARROW, 1); // arrow
 			}
-			// Items to facilitate building with nether materials
-			else if (value <= 0.75) { // 5%
-				item = new ItemStack(Material.NETHER_BRICK, 1); // block of nether brick
-			}
 			// Items to facilitate brewing
-			else if (value <= 0.85) { // 10%
+			else if (value <= 0.80) { // 10%
 				// Needed for all potions (makes the base potions)
 				item = new ItemStack(Material.NETHER_STALK, 1); // nether stalk
-			} else if (value <= 0.88) { // 3%
+			}
+			else if(value <= 0.83) { // 3%
+				// Need to make brewing stand and as fuel
+				item = new ItemStack(Material.BLAZE_ROD, 1); // blaze rod
+			}
+			else if (value <= 0.86) { // 3%
 				// Makes regen potion
 				item = new ItemStack(Material.GHAST_TEAR, 1); // ghast tear
-			} else if (value <= 0.91) { // 3%
+			} else if (value <= 0.89) { // 3%
 				// Makes poison potion
 				item = new ItemStack(Material.SPIDER_EYE, 1); // spider eye
-			} else if (value <= 0.93) { // 2%
+			} else if (value <= 0.91) { // 2%
 				// Makes night vision & invis potions
 				item = new ItemStack(Material.BROWN_MUSHROOM, 1); // used for creating fermented spider eyes
 			}
 			// Items that come in grinders
-			else if (value <= 0.95) { // 2%
+			else if (value <= 0.92) { // 1%
 				item = new ItemStack(Material.BONE, 1);
-			} else if (value <= 0.97) { // 2%
+			} else if (value <= 0.93) { // 1%
 				item = new ItemStack(Material.STRING, 1);
-			} else if (value <= 0.99) { // 2%
+			} else if (value <= 0.95) { // 2%
 				item = new ItemStack(Material.SLIME_BALL, 1);
 			}
-			// Remainder: give out pork
+			// Remainder 5% (pork)
 			else {
 				item = new ItemStack(Material.PORK, 1);
 			}
@@ -134,6 +135,7 @@ public class LootBlock implements Runnable {
 
 		// Make a little smoke effect
 		block.getWorld().playEffect(block.getRelative(BlockFace.UP).getLocation(), Effect.SMOKE, 4);
+		block.getWorld().playEffect(block.getLocation(), Effect.CLICK1, 0);
 	}
 
 	public void startDispensing() {

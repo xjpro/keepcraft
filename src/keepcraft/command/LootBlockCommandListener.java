@@ -27,7 +27,7 @@ public class LootBlockCommandListener extends CommandListener {
         LootBlock lootBlock = sender.getTargetLootBlock();
 
         if (lootBlock == null) {
-        	chatService.sendFailureMessage(sender, "No target - punch a loot block to target it");
+        	chatService.sendFailureMessage(sender, "No target - right click a loot block to target it");
             return true;
         }
 

@@ -12,9 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 public class LootBlockListener implements Listener {
@@ -36,7 +37,7 @@ public class LootBlockListener implements Listener {
 		if (event.isCancelled()) return;
 
 		Block placed = event.getBlock();
-		if (placed.getType() == Material.CHORUS_FLOWER) {
+		if (placed.getType() == Material.TRAPPED_CHEST) {
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
@@ -71,17 +72,19 @@ public class LootBlockListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onBlockDamage(BlockDamageEvent event) {
-		Block damaged = event.getBlock();
-		if (damaged.getType() == Material.CHEST) {
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onRightClickChestBlock(PlayerInteractEvent event) {
+		if (!event.hasBlock() || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+		Block clickedBlock = event.getClickedBlock();
+		if (clickedBlock.getType() == Material.CHEST) {
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
 			if (player.isOp() || user.isAdmin()) {
-				LootBlock lootBlock = lootBlockService.getLootBlock(damaged);
+				LootBlock lootBlock = lootBlockService.getLootBlock(clickedBlock);
 				user.setTargetLootBlock(lootBlock);
-				player.sendMessage(ChatService.Success + "Loot block targeted");
+				chatService.sendSuccessMessage(user, "Loot block targeted");
 			}
 		}
 	}

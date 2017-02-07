@@ -133,24 +133,21 @@ public class UserListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
+		if(event.isCancelled()) return;
 
 		ItemStack inHand = event.getItem();
+		if(inHand == null) return;
 
-		if (user.isAdmin() || inHand == null) {
+		Player player = event.getPlayer();
+		User user = userService.getOnlineUser(player.getName());
+
+		if (player.isOp() || user.isAdmin()) {
 			return;
 		}
 
 		if (inHand.getType().equals(Material.ENDER_PEARL)) {
 			event.setCancelled(true);
-			p.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled, pending balance changes");
-		} else if (inHand.getType().equals(Material.POTION)) {
-			byte data = inHand.getData().getData();
-			if (data == 12 || data == 5 || data == 37 || data == 44 || data == 36 || data == 33) {
-				event.setCancelled(true);
-				p.sendMessage(ChatService.Failure + "This potion is disabled, pending balance changes");
-			}
+			player.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled, pending balance changes");
 		}
 	}
 
