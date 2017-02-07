@@ -26,10 +26,10 @@ public class CraftItemListener implements Listener {
 
 			case FERMENTED_SPIDER_EYE: // weakness and also some upgrades
 				// Allows converting some potions into others
-				for (ItemStack bottle : event.getContents().getStorageContents()) {
-					//if(bottle.getType())
-					// todo check if bottle is Potion of Night Vision and allow that
-				}
+//				for (ItemStack bottle : event.getContents().getStorageContents()) {
+//					//if(bottle.getType())
+//					// todo check if bottle is Potion of Night Vision and allow that
+//				}
 				event.setCancelled(true);
 				break;
 
