@@ -115,8 +115,8 @@ public class User {
         return currentPlot;
     }
 
-    public void setCurrentPlot(Plot value) {
-        currentPlot = value;
+    public void setCurrentPlot(Plot plot) {
+        currentPlot = plot;
     }
 
     public LootBlock getTargetLootBlock() {

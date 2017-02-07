@@ -59,7 +59,7 @@ public class Siege implements Runnable {
         if (!inProgress) {
             begin();
         } else {
-            List<User> attackers = new ArrayList<User>();
+            List<User> attackers = new ArrayList<>();
             Collection<User> users = userService.getOnlineUsers();
             for (User user : users) {
                 if (user.getCurrentPlot() == plot && !user.isAdmin() && user.getFaction() == attackingFaction) {
