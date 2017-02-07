@@ -1,184 +1,137 @@
 package keepcraft.data.models;
 
-import java.util.Calendar;
-import java.util.Random;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import keepcraft.Keepcraft;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitScheduler;
-import keepcraft.Keepcraft;
+
+import java.util.Random;
 
 public class LootBlock implements Runnable {
 
-    private static class LootBlockScheduler implements Runnable {
+	private static Random random = new Random();
 
-        private final LootBlock target;
+	private final int id;
+	private final Block block;
+	private int status = 1;
+	private int type = 1;
+	private double output = 1;
 
-        public LootBlockScheduler(LootBlock lootblock) {
-            target = lootblock;
-        }
+	private int dispenseTaskId = 0;
 
-        @Override
-        public void run() {
-            target.startDispensing(true);
-        }
-    }
+	public LootBlock(int id, Block block) {
+		this.id = id;
+		this.block = block;
+	}
 
-    private static Random random = new Random();
-    private final BukkitScheduler scheduler;
+	public int getId() {
+		return id;
+	}
 
-    private final int id;
-    private final Block block;
-    private int status = 1;
-    private int type = 1;
-    private double output = 1;
+	public Block getBlock() {
+		return block;
+	}
 
-    private int dispenseTaskId = 0;
-    private int delayedTaskId = 0;
+	public Location getLocation() {
+		return block.getLocation();
+	}
 
-    public LootBlock(int id, Block block) {
-        this.id = id;
-        this.block = block;
-        this.scheduler = Bukkit.getScheduler();
-    }
+	public Chunk getChunk() {
+		return block.getChunk();
+	}
 
-    public int getId() {
-        return id;
-    }
+	public int getStatus() {
+		return status;
+	}
 
-    public Location getLocation() {
-        return block.getLocation();
-    }
+	public void setStatus(int value) {
+		status = value;
+	}
 
-    public Chunk getChunk() {
-        return block.getChunk();
-    }
+	public int getType() {
+		return type;
+	}
 
-    public int getStatus() {
-        return status;
-    }
+	public void setType(int value) {
+		type = value;
+	}
 
-    public void setStatus(int value) {
-        status = value;
-    }
+	public double getOutput() {
+		return output;
+	}
 
-    public int getType() {
-        return type;
-    }
+	public void setOutput(double value) {
+		output = value;
+	}
 
-    public void setType(int value) {
-        type = value;
-    }
+	@Override
+	public void run() {
+		if (block.getType() != Material.CHEST) return;
+		if (output == 0) return;
 
-    public double getOutput() {
-        return output;
-    }
+		Chest chest = (Chest) block.getState();
+		Inventory inv = chest.getBlockInventory();
 
-    public void setOutput(double value) {
-        output = value;
-    }
+		for (int i = 0; i < (output * 60); i++) {
+			ItemStack item;
+			double value = random.nextDouble();
 
-    @Override
-    public void run() {
-        if (block.getType() != Material.CHEST) {
-            return;
-        }
+			if (value <= 0.20) {
+				item = new ItemStack(Material.ROTTEN_FLESH, 1);
+			} else if (value <= 0.50) {
+				item = new ItemStack(Material.SULPHUR, 1);
+			} else if (value <= 0.65) {
+				item = new ItemStack(Material.ARROW, 1);
+			} else if (value <= 0.70) {
+				item = new ItemStack(Material.BONE, 1);
+			} else if (value <= 0.75) {
+				item = new ItemStack(Material.STRING, 1);
+			} else if (value <= 0.77) {
+				item = new ItemStack(Material.FERMENTED_SPIDER_EYE, 1); // spider eye
+			} else if (value <= 0.79) {
+				item = new ItemStack(Material.SPIDER_EYE, 1); // spider eye (not from nether)
+			} else if (value <= 0.81) {
+				item = new ItemStack(Material.GOLD_NUGGET, 1); // golden nugget
+			} else if (value <= 0.83) {
+				item = new ItemStack(Material.GHAST_TEAR, 1); // ghast tear
+			} else if (value <= 0.85) {
+				item = new ItemStack(Material.BLAZE_ROD, 1); // blaze rod
+			} else if (value <= 0.86) {
+				item = new ItemStack(Material.GLOWSTONE, 1);
+			} else if (value <= 0.87) {
+				item = new ItemStack(Material.NETHERRACK, 1);
+			} else if (value <= 0.88) {
+				item = new ItemStack(Material.INK_SACK, 1, (short) 4); // lapis
+			} else if (value <= 0.92) {
+				item = new ItemStack(Material.NETHER_BRICK, 1); // nether block
+			} else if (value <= 0.97) {
+				item = new ItemStack(Material.NETHER_STALK, 1); // nether stalk
+			} else if (value <= 0.99) {
+				item = new ItemStack(Material.CLAY_BALL, 1);
+			} else {
+				item = new ItemStack(Material.PORK, 1);
+			}
 
-        Chest chest = (Chest) block.getState();
-        Inventory inv = chest.getBlockInventory();
+			// Excess items are not put in by default
+			inv.addItem(item);
+		}
 
-        for (int i = 0; i < (output * 60); i++) {
-            ItemStack item = null;
-            double value = random.nextDouble();
+		// Make a little smoke effect
+		block.getWorld().playEffect(block.getRelative(BlockFace.UP).getLocation(), Effect.SMOKE, 4);
+	}
 
-            if (value <= 0.20) {
-                item = new ItemStack(Material.ROTTEN_FLESH, 1);
-            } else if (value <= 0.50) {
-                item = new ItemStack(Material.SULPHUR, 1);
-            } else if (value <= 0.65) {
-                item = new ItemStack(Material.ARROW, 1);
-            } else if (value <= 0.70) {
-                item = new ItemStack(Material.BONE, 1);
-            } else if (value <= 0.75) {
-                item = new ItemStack(Material.STRING, 1);
-            } else if (value <= 0.77) {
-                item = new ItemStack(Material.FERMENTED_SPIDER_EYE, 1); // spider eye
-            } else if (value <= 0.79) {
-                item = new ItemStack(Material.SPIDER_EYE, 1); // spider eye (not from nether)
-            } else if (value <= 0.81) {
-                item = new ItemStack(Material.GOLD_NUGGET, 1); // golden nugget
-            } else if (value <= 0.83) {
-                item = new ItemStack(Material.GHAST_TEAR, 1); // ghast tear
-            } else if (value <= 0.85) {
-                item = new ItemStack(Material.BLAZE_ROD, 1); // blaze rod
-            } else if (value <= 0.86) {
-                item = new ItemStack(Material.GLOWSTONE, 1);
-            } else if (value <= 0.87) {
-                item = new ItemStack(Material.NETHERRACK, 1);
-            } else if (value <= 0.88) {
-                item = new ItemStack(Material.INK_SACK, 1, (short) 4); // lapis
-            } else if (value <= 0.92) {
-                item = new ItemStack(Material.NETHER_BRICK, 1); // nether block
-            } else if (value <= 0.97) {
-                item = new ItemStack(Material.NETHER_STALK, 1); // nether stalk
-            } else if (value <= 0.99) {
-                item = new ItemStack(Material.CLAY_BALL, 1);
-            } else {
-                item = new ItemStack(Material.PORK, 1);
-            }
+	public void startDispensing() {
+		stopDispensing();
+		dispenseTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Keepcraft.getPlugin(), this, 1200, 1200);
+	}
 
-            // Excess items are not put in by default
-            inv.addItem(item);
-        }
-
-        World w = chest.getWorld();
-        w.playEffect(block.getRelative(BlockFace.UP).getLocation(), Effect.SMOKE, 4);
-
-        dispenseTaskId = 0; // We are done with this dispensing round
-
-        // This will call startDispensing in 5 minutes, ensures we don't get any immeadiate repeats
-        delayedTaskId = scheduler.scheduleSyncDelayedTask(Keepcraft.getPlugin(), new LootBlockScheduler(this), 1200 * 10);
-    }
-
-    public void startDispensing() {
-        if (dispenseTaskId == 0 && delayedTaskId == 0) // if this is false we're currently running
-        {
-            int minutesIntoHour = Calendar.getInstance().get(Calendar.MINUTE);
-            int remainingMinutes = 60 - minutesIntoHour;
-            Keepcraft.log("There are " + remainingMinutes + "m remaining in the hour");
-
-            // start a task 1200 * remaining minutes when lootblock will dipsense
-            long nextDispense = 1200 * (remainingMinutes + 1 + random.nextInt(2));
-            dispenseTaskId = Bukkit.getScheduler().scheduleSyncDelayedTask(
-                    Bukkit.getPluginManager().getPlugin("Keepcraft"), this, nextDispense);
-        }
-    }
-
-    private void startDispensing(boolean isDelayedTask) {
-        if (isDelayedTask) {
-            delayedTaskId = 0;
-        }
-        startDispensing();
-    }
-
-    public void stopDispensing() {
-        if (delayedTaskId != 0) {
-            scheduler.cancelTask(delayedTaskId);
-            delayedTaskId = 0;
-        }
-
-        if (dispenseTaskId != 0) {
-            scheduler.cancelTask(dispenseTaskId);
-            dispenseTaskId = 0;
-        }
-    }
-
+	public void stopDispensing() {
+		if (dispenseTaskId != 0) {
+			Bukkit.getScheduler().cancelTask(dispenseTaskId);
+			dispenseTaskId = 0;
+		}
+	}
 }

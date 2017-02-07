@@ -38,13 +38,13 @@ public class PlotCommandListener extends CommandListener {
                 // Create plot
                 if (privilege == UserPrivilege.ADMIN) {
                     Player p = (Player) commandSender;
-                    Location loc = p.getLocation();
+                    Location location = p.getLocation();
                     String name = "";
                     for (int i = 1; i < args.length; i++) {
                         name += args[i] + " ";
                     }
 
-                    plotService.createAdminPlot(sender, loc, name, Plot.DEFAULT_RADIUS);
+                    plotService.createAdminPlot(location, name, Plot.DEFAULT_RADIUS);
                     commandSender.sendMessage(ChatService.Success + "A new plot has been created");
                     return true;
                 }

@@ -23,14 +23,14 @@ public class LootBlockDataManager {
                     = database.createStatement("CREATE TABLE IF NOT EXISTS lootBlocks (LocX, LocY, LocZ, Status, Type, Output)");
             statement.execute();
         } catch (Exception e) {
-            Keepcraft.log("Error initializing table: " + e.getMessage());
+            Keepcraft.error("Error initializing table: " + e.getMessage());
         } finally {
             database.close();
         }
     }
 
     public void updateData(LootBlock block) {
-        Keepcraft.log("Updating data for loot block");
+        Keepcraft.log("Updating data for lootBlocks");
         try {
             PreparedStatement statement
                     = database.createStatement("UPDATE lootBlocks SET LocX = ?, LocY = ?, LocZ = ?, Status = ?, Type = ?, Output = ? WHERE ROWID = ?");
@@ -42,10 +42,8 @@ public class LootBlockDataManager {
             statement.setDouble(6, block.getOutput());
             statement.setInt(7, block.getId());
             statement.execute();
-
-            // TODO: if the record did not exist, we'll have to create it
         } catch (Exception e) {
-            Keepcraft.log("Error setting loot block data: " + e.getMessage());
+            Keepcraft.error("Error setting lootBlocks data: " + e.getMessage());
         } finally {
             database.close();
         }
@@ -54,7 +52,7 @@ public class LootBlockDataManager {
     public Collection<LootBlock> getAllData() {
         ArrayList<LootBlock> allData = new ArrayList<>();
 
-        Keepcraft.log("Beginning lookup of all loot blocks");
+        Keepcraft.log("Beginning lookup of all lootBlocks");
 
         try {
             PreparedStatement statement = database.createStatement("SELECT ROWID, LocX, LocY, LocZ, Status, Type, Output FROM lootBlocks");
@@ -79,7 +77,7 @@ public class LootBlockDataManager {
 
             result.close();
         } catch (Exception e) {
-            Keepcraft.log("Error during all loot block data lookup: " + e.getMessage());
+            Keepcraft.error("Error during all lootBlocks data lookup: " + e.getMessage());
         } finally {
             database.close();
         }
@@ -89,7 +87,7 @@ public class LootBlockDataManager {
 
     public void putData(LootBlock block) {
 
-        Keepcraft.log("Creating record for new loot block");
+        Keepcraft.log("Creating record for new lootBlocks");
         try {
             PreparedStatement statement
                     = database.createStatement("INSERT INTO lootBlocks (LocX, LocY, LocZ, Status, Type, Output) VALUES(?, ?, ?, ?, ?, ?)");
@@ -101,35 +99,22 @@ public class LootBlockDataManager {
             statement.setDouble(6, block.getOutput());
             statement.execute();
         } catch (Exception e) {
-            Keepcraft.log("Error creating loot block data: " + e.getMessage());
+            Keepcraft.error("Error creating lootBlocks data: " + e.getMessage());
         } finally {
             database.close();
         }
     }
 
     public void deleteData(LootBlock block) {
-        Keepcraft.log("Deleting record for loot block");
+        Keepcraft.log("Deleting record for lootBlocks");
         try {
             PreparedStatement statement = database.createStatement("DELETE FROM lootBlocks WHERE ROWID = ?");
             statement.setInt(1, block.getId());
             statement.execute();
         } catch (Exception e) {
-            Keepcraft.log("Error deleting user data: " + e.getMessage());
+            Keepcraft.error("Error deleting lootBlocks data: " + e.getMessage());
         } finally {
             database.close();
         }
     }
-
-    public void truncate() {
-        Keepcraft.log("Truncating lootBlocks table");
-        try {
-            PreparedStatement statement = database.createStatement("DELETE FROM lootBlocks");
-            statement.execute();
-        } catch (Exception e) {
-            Keepcraft.log("(KC) Error truncating lootBlocks: " + e.getMessage());
-        } finally {
-            database.close();
-        }
-    }
-
 }

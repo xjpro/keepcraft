@@ -47,6 +47,9 @@ commands:
     plottp:
         description: Teleport to a plot name
         usage: /plottop <plot name>
+    lootblock:
+        description: Edit a lootblock
+        usage: /lootblock
     dawn:
         description: Let there be light!
         usage: /dawn

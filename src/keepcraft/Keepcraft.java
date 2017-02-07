@@ -22,12 +22,13 @@ public class Keepcraft extends JavaPlugin {
 	private final UserDataManager userDataManager = new UserDataManager(database);
 	private final PlotDataManager plotDataManager = new PlotDataManager(database);
 	private final FactionSpawnDataManager factionSpawnManager = new FactionSpawnDataManager(database);
-	//private final LootBlockDataManager lootBlockDataManager = new LootBlockDataManager(database);
+	private final LootBlockDataManager lootBlockDataManager = new LootBlockDataManager(database);
 
 	// Services
 	private final UserService userService = new UserService(userDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
+	private final LootBlockService lootBlockService = new LootBlockService(lootBlockDataManager);
 	private final ChatService chatService = new ChatService(userService);
 
 	@Override
@@ -54,8 +55,7 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new ExplosionListener(plotService, chatService), this);
 		manager.registerEvents(new PlotAttackListener(userService, plotService, chatService), this);
 		manager.registerEvents(new PlotProtectionListener(userService, plotService, chatService), this);
-		//manager.registerEvents(new ChunkListener(), this);
-		//manager.registerEvents(new LootBlockListener(), this);
+		manager.registerEvents(new LootBlockListener(userService, lootBlockService, chatService), this);
 		manager.registerEvents(new StormListener(), this);
 
 		// Basic commands
@@ -99,12 +99,12 @@ public class Keepcraft extends JavaPlugin {
 			getCommand(plotCommand).setExecutor(plotCommandListener);
 		}
 
-//        // LootBlock commands
-//        CommandListener lootBlockCommandListener = new LootBlockCommandListener();
-//        String[] lootBlockCommands = {"lootblock"};
-//        for (int i = 0; i < lootBlockCommands.length; i++) {
-//            getCommand(lootBlockCommands[i]).setExecutor(lootBlockCommandListener);
-//        }
+		// LootBlock commands
+		CommandListener lootBlockCommandListener = new LootBlockCommandListener(userService, lootBlockService, chatService);
+		String[] lootBlockCommands = {"lootblock"};
+		for (String lootBlockCommand : lootBlockCommands) {
+			getCommand(lootBlockCommand).setExecutor(lootBlockCommandListener);
+		}
 
 		// Siege commands
 		CommandListener siegeCommandListener = new SiegeCommandListener(userService, plotService, chatService);
@@ -141,6 +141,7 @@ public class Keepcraft extends JavaPlugin {
 		userService.refreshCache();
 		plotService.refreshCache();
 		factionSpawnService.refreshCache();
+		lootBlockService.refreshCache();
 		log(String.format("Successfully setup map on '%s'", world.getName()));
 	}
 

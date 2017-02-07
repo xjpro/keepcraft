@@ -28,16 +28,16 @@ public class ChatService {
     public final static ChatColor Info = ChatColor.DARK_GRAY;
     public final static ChatColor Change = ChatColor.DARK_PURPLE;
 
-    public final static ChatColor PrivateMessage = ChatColor.LIGHT_PURPLE;
-    public final static ChatColor GlobalMessage = ChatColor.GRAY;
-    public final static ChatColor FactionMessage = ChatColor.GREEN;
-    public final static ChatColor AdminMessage = ChatColor.YELLOW;
+    private final static ChatColor PrivateMessage = ChatColor.LIGHT_PURPLE;
+    private final static ChatColor GlobalMessage = ChatColor.GRAY;
+    private final static ChatColor FactionMessage = ChatColor.GREEN;
+    private final static ChatColor AdminMessage = ChatColor.YELLOW;
 
-    public final static String ChatFormat = "%s %s(%s) %s";
-    public final static String AlertFormat = "%s%s";
-    public final static String PlayerDeathFormat = "%s %s%s %s";
-    public final static String PlotCaptureFormat = "%s %s %s %s";
-    public final static String PlotDefendFormat = "%s %s %s";
+    private final static String ChatFormat = "%s %s(%s) %s";
+    private final static String AlertFormat = "%s%s";
+	private final static String PlayerDeathFormat = "%s %s%s %s";
+    private final static String PlotCaptureFormat = "%s %s %s %s";
+    private final static String PlotDefendFormat = "%s %s %s";
 
     public ChatService(UserService userService) {
         this.userService = userService;
@@ -99,6 +99,11 @@ public class ChatService {
 
     public void sendAlertMessage(User target, String text) {
         String message = String.format(ChatService.AlertFormat, ChatService.Info, text);
+        Bukkit.getPlayer(target.getName()).sendMessage(message);
+    }
+
+    public void sendSuccessMessage(User target, String text) {
+        String message = String.format(ChatService.AlertFormat, ChatService.Success, text);
         Bukkit.getPlayer(target.getName()).sendMessage(message);
     }
 
