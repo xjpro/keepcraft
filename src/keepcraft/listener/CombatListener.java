@@ -71,26 +71,15 @@ public class CombatListener implements Listener {
 					//System.out.println("original final damage " + event.getFinalDamage());
 
 					double damageAdditionToBalanceArmor = calcDamageAdditionToBalanceArmor(event, defender);
-					//System.out.println("damageAdditionToBalanceArmor: " + damageAdditionToBalanceArmor);
 					double damageAdditionToBalanceProtectionEnchantments = calcDamageAdditionToBalanceProtectionEnchantments(event, defender);
-					//System.out.println("damageAdditionToBalanceProtectionEnchantments: " + damageAdditionToBalanceProtectionEnchantments);
 					double damageReductionToBalanceAttackEnchantments = calcDamageReductionToBalanceAttackEnchantments(event, attacker);
+					//System.out.println("damageAdditionToBalanceArmor: " + damageAdditionToBalanceArmor);
+					//System.out.println("damageAdditionToBalanceProtectionEnchantments: " + damageAdditionToBalanceProtectionEnchantments);
 					//System.out.println("damageReductionToBalanceAttackEnchantments: " + damageReductionToBalanceAttackEnchantments);
-					event.setDamage(event.getDamage() + damageAdditionToBalanceArmor + damageAdditionToBalanceProtectionEnchantments - damageReductionToBalanceAttackEnchantments);
 
+					event.setDamage(event.getDamage() + damageAdditionToBalanceArmor + damageAdditionToBalanceProtectionEnchantments - damageReductionToBalanceAttackEnchantments);
 					//System.out.println("changed damage " + event.getDamage());
 					//System.out.println("changed final damage " + event.getFinalDamage());
-
-					// In order to prevent infinite loops but still get proper death messages
-					// set health to 0 if this extra damage is going to kill the player
-//					if(extraDamage < 0) {
-//						// Give some health back
-//					}
-//					if (defender.getHealth() - extraDamage <= 0) {
-//						defender.setHealth(0);
-//					} else {
-//						defender.damage(extraDamage); // damage has no source so it doesn't loop back into this same function
-//					}
 				}
 			}
 		}
@@ -174,14 +163,14 @@ public class CombatListener implements Listener {
 
 				// Default: Increases arrow damage by 25% × (level + 1), rounded up to nearest half-heart
 				double originalModifier = 0.25 * (enchantmentLevel + 1);
-				// Adjusted: Run log10(enchantment level + 0.25) to get an adjusted increase that has diminishing returns
-				double adjustedModifier = Math.log10(enchantmentLevel + 0.25);
+				// Adjusted: Run log10(enchantment level + 0.2) to get an adjusted increase that has diminishing returns
+				double adjustedModifier = Math.log10(enchantmentLevel + 0.2);
 
-				// level 1 = +50% adjusted to +9%
-				// level 2 = +75% adjusted to ...
-				// level 3 = +100% adjusted to ...
-				// level 4 = +125% adjusted to ...
-				// level 5 = +150% adjusted to ...
+				// level 1 = +50% adjusted to +8%
+				// level 2 = +75% adjusted to +34%
+				// level 3 = +100% adjusted to +51%
+				// level 4 = +125% adjusted to +62%
+				// level 5 = +150% adjusted to +72.0%
 
 				double damageWithoutEnchantment = event.getDamage() / (1 + originalModifier);
 				return event.getDamage() - (damageWithoutEnchantment * (1 + adjustedModifier));
