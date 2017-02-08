@@ -57,11 +57,13 @@ public class LootBlockListener implements Listener {
 
 		Block broken = event.getBlock();
 		if (broken.getType() == Material.CHEST) {
+			LootBlock lootBlock = lootBlockService.getLootBlock(broken);
+			if (lootBlock == null) return;
+
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
 			if (player.isOp() || user.isAdmin()) {
-				LootBlock lootBlock = lootBlockService.getLootBlock(broken);
 				lootBlock.stopDispensing();
 				lootBlockService.removeLootBlock(lootBlock);
 				chatService.sendSuccessMessage(user, "Loot block destroyed");
