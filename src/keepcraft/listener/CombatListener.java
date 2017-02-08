@@ -7,10 +7,7 @@ import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -49,6 +46,13 @@ public class CombatListener implements Listener {
 						attacker = (Player) shooter;
 						arrowHit = true;
 					}
+				} else if (damager instanceof ThrownPotion) {
+					// todo I think we need this to prevent team killing via potions
+//					ThrownPotion potion = (ThrownPotion) damager;
+//					LivingEntity shooter = (LivingEntity) potion.getShooter();
+//					if (shooter instanceof Player) {
+//						attacker = (Player) shooter;
+//					}
 				}
 
 				if (attacker != null) {
