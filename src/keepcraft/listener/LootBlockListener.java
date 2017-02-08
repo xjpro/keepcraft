@@ -80,11 +80,13 @@ public class LootBlockListener implements Listener {
 
 		Block clickedBlock = event.getClickedBlock();
 		if (clickedBlock.getType() == Material.CHEST) {
+			LootBlock lootBlock = lootBlockService.getLootBlock(clickedBlock);
+			if (lootBlock == null) return;
+
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
 			if (player.isOp() || user.isAdmin()) {
-				LootBlock lootBlock = lootBlockService.getLootBlock(clickedBlock);
 				user.setTargetLootBlock(lootBlock);
 				chatService.sendSuccessMessage(user, "Loot block targeted");
 			}

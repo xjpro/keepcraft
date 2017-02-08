@@ -1,13 +1,14 @@
 package keepcraft.listener;
 
 import keepcraft.Keepcraft;
+import keepcraft.data.models.Armor;
+import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,113 +17,109 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import keepcraft.data.models.Armor;
-import keepcraft.data.models.User;
 
 public class CombatListener implements Listener {
 
-    private final UserService userService;
+	private final UserService userService;
 
-    public CombatListener(UserService userService) {
-        this.userService = userService;
-    }
+	public CombatListener(UserService userService) {
+		this.userService = userService;
+	}
 
-    @EventHandler(priority = EventPriority.LOW)
-    public void onEntityDamage(EntityDamageEvent event) {
-        DamageCause cause = event.getCause();
-        if (cause.equals(DamageCause.ENTITY_ATTACK) || cause.equals(DamageCause.PROJECTILE)) {
-            EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) event;
-            Entity damager = damageEvent.getDamager();
-            Entity damaged = damageEvent.getEntity();
+	@EventHandler(priority = EventPriority.LOW)
+	public void onEntityDamage(EntityDamageEvent event) {
+		DamageCause cause = event.getCause();
+		if (cause.equals(DamageCause.ENTITY_ATTACK) || cause.equals(DamageCause.PROJECTILE)) {
+			EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) event;
+			Entity damager = damageEvent.getDamager();
+			Entity damaged = damageEvent.getEntity();
 
-            if (damaged instanceof Player) {
-                boolean arrowHit = false;
-                Player attacker = null;
+			if (damaged instanceof Player) {
+				boolean arrowHit = false;
+				Player attacker = null;
 
-                if (damager instanceof Player) {
-                    attacker = (Player) damager;
-                } else if (damager instanceof Arrow) {
-                    Arrow proj = (Arrow) damager;
-                    LivingEntity shooter = (LivingEntity) proj.getShooter();
-                    if (shooter instanceof Player) {
-                        attacker = (Player) shooter;
-                        arrowHit = true;
-                    }
-                } else if (damager instanceof ThrownPotion) {
-                    // TODO: implement potion shit someday, when Bukkit updates
-                }
+				if (damager instanceof Player) {
+					attacker = (Player) damager;
+				} else if (damager instanceof Arrow) {
+					Arrow proj = (Arrow) damager;
+					LivingEntity shooter = (LivingEntity) proj.getShooter();
+					if (shooter instanceof Player) {
+						attacker = (Player) shooter;
+						arrowHit = true;
+					}
+				}
 
-                if (attacker != null) {
-                    User attackingUser = userService.getOnlineUser(attacker.getName());
-                    Player defender = (Player) damaged;
-                    User defendingUser = userService.getOnlineUser(defender.getName());
+				if (attacker != null) {
+					User attackingUser = userService.getOnlineUser(attacker.getName());
+					Player defender = (Player) damaged;
+					User defendingUser = userService.getOnlineUser(defender.getName());
 
-                    if (attackingUser.getFaction() == defendingUser.getFaction()) {
-                        event.setCancelled(true);
-                        return;
-                    }
+					if (attackingUser.getFaction() == defendingUser.getFaction()) {
+						event.setCancelled(true);
+						return;
+					}
 
-                    int armorValue = Armor.getArmorValue(defender.getInventory());
-                    int extraDamage = (int) Math.ceil(event.getDamage() * (armorValue / 75.0));
+					int armorValue = Armor.getArmorValue(defender.getInventory());
+					int extraDamage = (int) Math.ceil(event.getDamage() * (armorValue / 75.0));
 
-                    // In order to prevent infinite loops but still get proper death messages
-                    // set health to 0 if this extra damage is going to kill the player
-                    if (defender.getHealth() - extraDamage <= 0) {
-                        defender.setHealth(0);
-                    } else {
-                        defender.damage(extraDamage); // damage has no source so it doesn't loop back into this same function
-                    }
+					// In order to prevent infinite loops but still get proper death messages
+					// set health to 0 if this extra damage is going to kill the player
+					if (defender.getHealth() - extraDamage <= 0) {
+						defender.setHealth(0);
+					} else {
+						defender.damage(extraDamage); // damage has no source so it doesn't loop back into this same function
+					}
 
-                    if (arrowHit && defender.getFoodLevel() > 0) {
-                        defender.setFoodLevel(defender.getFoodLevel() - 3);
-                    }
-                }
-            }
-        }
-    }
+					if (arrowHit && defender.getFoodLevel() > 0) {
+						defender.setFoodLevel(defender.getFoodLevel() - 3);
+					}
+				}
+			}
+		}
+	}
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onEntityDeath(EntityDeathEvent event) {
-        event.setDroppedExp(0);
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onEntityDeath(EntityDeathEvent event) {
+		event.setDroppedExp(0);
 
-        if (event.getEntity() instanceof Player) {
-            // Get target
-            Player p = (Player) event.getEntity();
-            User target = userService.getOnlineUser(p.getName());
-            if(target == null) {
-                Keepcraft.error("Unknown player died");
-                return;
-            }
+		if (event.getEntity() instanceof Player) {
+			// Get target
+			Player p = (Player) event.getEntity();
+			User target = userService.getOnlineUser(p.getName());
+			if (target == null) {
+				Keepcraft.error("Unknown player died");
+				return;
+			}
 
-            if (target.isAdmin()) {
-                event.getDrops().clear();
-            }
+			if (target.isAdmin()) {
+				event.getDrops().clear();
+			}
 
-            PlayerDeathEvent e = (PlayerDeathEvent) event;
+			PlayerDeathEvent e = (PlayerDeathEvent) event;
 
-            String message = e.getDeathMessage();
-            String[] parts = message.trim().split(" ");
-            String attackerName = parts[parts.length - 1];
+			String message = e.getDeathMessage();
+			String[] parts = message.trim().split(" ");
+			String attackerName = parts[parts.length - 1];
 
-            User attackerUser = userService.getOnlineUser(attackerName);
+			User attackerUser = userService.getOnlineUser(attackerName);
 
-            if (attackerUser != null) {
-                String causeSection = "";
-                for (int i = 1; i < parts.length - 1; i++) {
-                    causeSection += parts[i] + " ";
-                }
+			if (attackerUser != null) {
+				String causeSection = "";
+				for (int i = 1; i < parts.length - 1; i++) {
+					causeSection += parts[i] + " ";
+				}
 
-                e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection + attackerUser.getColoredName());
-            } else {
-                String causeSection = "";
-                for (int i = 1; i < parts.length; i++) {
-                    causeSection += parts[i] + " ";
-                }
+				e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection + attackerUser.getColoredName());
+			} else {
+				String causeSection = "";
+				for (int i = 1; i < parts.length; i++) {
+					causeSection += parts[i] + " ";
+				}
 
-                e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection);
-            }
-        }
-        // This was put in to stop farmable monster spawners:
+				e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection);
+			}
+		}
+		// This was put in to stop farmable monster spawners:
 //        else {
 //            Entity target = event.getEntity();
 //            EntityDamageEvent damageEvent = target.getLastDamageCause();
@@ -132,6 +129,6 @@ public class CombatListener implements Listener {
 //                event.getDrops().clear();
 //            }
 //        }
-    }
+	}
 
 }
