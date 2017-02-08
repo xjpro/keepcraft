@@ -45,7 +45,7 @@ public class PlotProtectionListener implements Listener {
 		Block block = event.getBlock();
 
 		// Blocks not allowed except by admin placement
-		if (block.getType() == Material.ENCHANTMENT_TABLE || block.getType() == Material.BREWING_STAND) {
+		if (block.getType() == Material.ENCHANTMENT_TABLE) {
 			handleDisallowedBlockPlacement(event);
 			return;
 		}
