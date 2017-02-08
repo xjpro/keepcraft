@@ -5,6 +5,8 @@ import keepcraft.data.models.Armor;
 import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -13,10 +15,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class CombatListener implements Listener {
 
@@ -27,12 +29,11 @@ public class CombatListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void onEntityDamage(EntityDamageEvent event) {
+	public void onEntityDamage(EntityDamageByEntityEvent event) {
 		DamageCause cause = event.getCause();
 		if (cause.equals(DamageCause.ENTITY_ATTACK) || cause.equals(DamageCause.PROJECTILE)) {
-			EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) event;
-			Entity damager = damageEvent.getDamager();
-			Entity damaged = damageEvent.getEntity();
+			Entity damager = event.getDamager();
+			Entity damaged = event.getEntity();
 
 			if (damaged instanceof Player) {
 				boolean arrowHit = false;
@@ -41,8 +42,9 @@ public class CombatListener implements Listener {
 				if (damager instanceof Player) {
 					attacker = (Player) damager;
 				} else if (damager instanceof Arrow) {
-					Arrow proj = (Arrow) damager;
-					LivingEntity shooter = (LivingEntity) proj.getShooter();
+					Arrow projectile = (Arrow) damager;
+					LivingEntity shooter = (LivingEntity) projectile.getShooter();
+
 					if (shooter instanceof Player) {
 						attacker = (Player) shooter;
 						arrowHit = true;
@@ -65,12 +67,16 @@ public class CombatListener implements Listener {
 						defender.setFoodLevel(defender.getFoodLevel() - 2);
 					}
 
-					// All of this nerfed armor, which is no longer necessary since 1.9 armor nerfs
-					//int armorValue = Armor.getArmorValue(defender.getInventory());
-					//int extraDamage = (int) Math.ceil(event.getDamage() * (armorValue / 75.0));
+					double damageAdditionToBalanceArmor = calcDamageAdditionToBalanceArmor(event, defender);
+					double damageAdditionToBalanceProtectionEnchantments = calcDamageAdditionToBalanceProtectionEnchantments(event, defender);
+					double damageReductionToBalanceAttackEnchantments = calcDamageReductionToBalanceAttackEnchantments(event, attacker);
+					event.setDamage(event.getDamage() + damageAdditionToBalanceArmor + damageAdditionToBalanceProtectionEnchantments - damageReductionToBalanceAttackEnchantments);
 
 					// In order to prevent infinite loops but still get proper death messages
 					// set health to 0 if this extra damage is going to kill the player
+//					if(extraDamage < 0) {
+//						// Give some health back
+//					}
 //					if (defender.getHealth() - extraDamage <= 0) {
 //						defender.setHealth(0);
 //					} else {
@@ -87,8 +93,8 @@ public class CombatListener implements Listener {
 
 		if (event.getEntity() instanceof Player) {
 			// Get target
-			Player p = (Player) event.getEntity();
-			User target = userService.getOnlineUser(p.getName());
+			Player player = (Player) event.getEntity();
+			User target = userService.getOnlineUser(player.getName());
 			if (target == null) {
 				Keepcraft.error("Unknown player died");
 				return;
@@ -132,6 +138,64 @@ public class CombatListener implements Listener {
 //                event.getDrops().clear();
 //            }
 //        }
+	}
+
+	private double calcDamageAdditionToBalanceArmor(EntityDamageByEntityEvent event, Player defender) {
+		int armorValue = Armor.getArmorValue(defender.getInventory());
+		return event.getDamage() * (armorValue / 75.0);
+	}
+
+	private double calcDamageAdditionToBalanceProtectionEnchantments(EntityDamageByEntityEvent event, Player defender) {
+		double enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(defender.getInventory());
+		return event.getDamage() * (enchantmentProtectionFactor / 40.0);
+	}
+
+	private double calcDamageReductionToBalanceAttackEnchantments(EntityDamageByEntityEvent event, Player attacker) {
+		ItemStack weapon = attacker.getEquipment().getItemInMainHand();
+		if (weapon == null) {
+			// todo investigate possibility of switching off quickly (probably applies only to bows)
+		} else {
+			Material weaponType = weapon.getType();
+			if (event.getDamager() instanceof Arrow && weaponType != Material.BOW) {
+				// todo investigate possibility of switching off quickly (probably applies only to bows)
+			}
+			// Damage enchanted bow
+			else if (weaponType == Material.BOW && weapon.getEnchantments().containsKey(Enchantment.ARROW_DAMAGE)) {
+				int enchantmentLevel = weapon.getEnchantments().get(Enchantment.ARROW_DAMAGE);
+
+				// Default: Increases arrow damage by 25% × (level + 1), rounded up to nearest half-heart
+				double originalModifier = 0.25 * (enchantmentLevel + 1);
+				// Adjusted: Run log10(enchantment level + 0.5) to get an adjusted increase that has diminishing returns
+				double adjustedModifier = Math.log10(enchantmentLevel + 0.5);
+
+				// level 1 = +50% adjusted to +17.7%
+				// level 2 = +75% adjusted to +39.8%
+				// level 3 = +100% adjusted to +54.4%
+				// level 4 = +125% adjusted to +65.3%
+				// level 5 = +150% adjusted to +74%
+
+				double originalIncreasedDamageFromEnchantment = event.getDamage() * originalModifier;
+				double adjustedIncreaseDamageFromEnchantment = event.getDamage() * adjustedModifier;
+				return originalIncreasedDamageFromEnchantment - adjustedIncreaseDamageFromEnchantment;
+			}
+			// Damage enchanted anything else
+			else if (weapon.getEnchantments().containsKey(Enchantment.DAMAGE_ALL)) { // all non-bow, but we can assume a sword
+				int enchantmentLevel = weapon.getEnchantments().get(Enchantment.DAMAGE_ALL);
+
+				// Adds 1 extra damage for the first level, and 0.5 (Heart.svg × 1⁄4) for each additional level.
+				// level 1 = 1 adjusted to .223
+				// level 2 = 1.5 adjusted to 0.811
+				// level 3 = 2 adjusted to 1.18
+				// level 4 = 2.5 adjusted to 1.45
+				// level 5 = 3 adjusted to 1.66
+
+				double originalIncreasedDamageFromEnchantment = 1 + ((enchantmentLevel - 1) * .5);
+				double adjustedIncreaseDamageFromEnchantment = Math.log(enchantmentLevel + 0.25);
+				return originalIncreasedDamageFromEnchantment - adjustedIncreaseDamageFromEnchantment;
+			}
+		}
+
+		return 0;
 	}
 
 }

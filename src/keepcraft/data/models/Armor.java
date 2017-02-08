@@ -1,5 +1,6 @@
 package keepcraft.data.models;
 
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -120,5 +121,31 @@ public class Armor {
 		}
 
 		return totalArmor;
+	}
+
+	public static double getEnchantmentProtectionFactor(PlayerInventory inventory) {
+		int enchantmentProtectionFactor = 0;
+
+		ItemStack helmet = inventory.getHelmet();
+		if (helmet != null) {
+			enchantmentProtectionFactor += helmet.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
+		}
+
+		ItemStack chestPlate = inventory.getChestplate();
+		if (chestPlate != null) {
+			enchantmentProtectionFactor += chestPlate.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
+		}
+
+		ItemStack leggings = inventory.getLeggings();
+		if (leggings != null) {
+			enchantmentProtectionFactor += leggings.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
+		}
+
+		ItemStack boots = inventory.getBoots();
+		if (boots != null) {
+			enchantmentProtectionFactor += boots.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
+		}
+
+		return Math.max(enchantmentProtectionFactor, 20);
 	}
 }
