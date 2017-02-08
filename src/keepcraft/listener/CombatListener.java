@@ -67,6 +67,9 @@ public class CombatListener implements Listener {
 						defender.setFoodLevel(defender.getFoodLevel() - 2);
 					}
 
+					// event.getDamage() is damage INCLUDING enchantment power but BEFORE armor mitigation
+					// event.getFinalDamage() is damage AFTER enchantment power AND armor mitigation
+
 					//System.out.println("original damage " + event.getDamage());
 					//System.out.println("original final damage " + event.getFinalDamage());
 
