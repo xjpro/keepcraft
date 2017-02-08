@@ -146,6 +146,6 @@ public class Armor {
 			enchantmentProtectionFactor += boots.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
 		}
 
-		return Math.max(enchantmentProtectionFactor, 20);
+		return Math.min(enchantmentProtectionFactor, 20);
 	}
 }

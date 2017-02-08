@@ -67,10 +67,19 @@ public class CombatListener implements Listener {
 						defender.setFoodLevel(defender.getFoodLevel() - 2);
 					}
 
+					//System.out.println("original damage " + event.getDamage());
+					//System.out.println("original final damage " + event.getFinalDamage());
+
 					double damageAdditionToBalanceArmor = calcDamageAdditionToBalanceArmor(event, defender);
+					//System.out.println("damageAdditionToBalanceArmor: " + damageAdditionToBalanceArmor);
 					double damageAdditionToBalanceProtectionEnchantments = calcDamageAdditionToBalanceProtectionEnchantments(event, defender);
+					//System.out.println("damageAdditionToBalanceProtectionEnchantments: " + damageAdditionToBalanceProtectionEnchantments);
 					double damageReductionToBalanceAttackEnchantments = calcDamageReductionToBalanceAttackEnchantments(event, attacker);
+					//System.out.println("damageReductionToBalanceAttackEnchantments: " + damageReductionToBalanceAttackEnchantments);
 					event.setDamage(event.getDamage() + damageAdditionToBalanceArmor + damageAdditionToBalanceProtectionEnchantments - damageReductionToBalanceAttackEnchantments);
+
+					//System.out.println("changed damage " + event.getDamage());
+					//System.out.println("changed final damage " + event.getFinalDamage());
 
 					// In order to prevent infinite loops but still get proper death messages
 					// set health to 0 if this extra damage is going to kill the player
@@ -147,7 +156,7 @@ public class CombatListener implements Listener {
 
 	private double calcDamageAdditionToBalanceProtectionEnchantments(EntityDamageByEntityEvent event, Player defender) {
 		double enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(defender.getInventory());
-		return event.getDamage() * (enchantmentProtectionFactor / 40.0);
+		return event.getDamage() * (enchantmentProtectionFactor / 35.0);
 	}
 
 	private double calcDamageReductionToBalanceAttackEnchantments(EntityDamageByEntityEvent event, Player attacker) {
@@ -161,26 +170,25 @@ public class CombatListener implements Listener {
 			}
 			// Damage enchanted bow
 			else if (weaponType == Material.BOW && weapon.getEnchantments().containsKey(Enchantment.ARROW_DAMAGE)) {
-				int enchantmentLevel = weapon.getEnchantments().get(Enchantment.ARROW_DAMAGE);
+				int enchantmentLevel = weapon.getEnchantmentLevel(Enchantment.ARROW_DAMAGE);
 
 				// Default: Increases arrow damage by 25% × (level + 1), rounded up to nearest half-heart
 				double originalModifier = 0.25 * (enchantmentLevel + 1);
-				// Adjusted: Run log10(enchantment level + 0.5) to get an adjusted increase that has diminishing returns
-				double adjustedModifier = Math.log10(enchantmentLevel + 0.5);
+				// Adjusted: Run log10(enchantment level + 0.25) to get an adjusted increase that has diminishing returns
+				double adjustedModifier = Math.log10(enchantmentLevel + 0.25);
 
-				// level 1 = +50% adjusted to +17.7%
-				// level 2 = +75% adjusted to +39.8%
-				// level 3 = +100% adjusted to +54.4%
-				// level 4 = +125% adjusted to +65.3%
-				// level 5 = +150% adjusted to +74%
+				// level 1 = +50% adjusted to +9%
+				// level 2 = +75% adjusted to ...
+				// level 3 = +100% adjusted to ...
+				// level 4 = +125% adjusted to ...
+				// level 5 = +150% adjusted to ...
 
-				double originalIncreasedDamageFromEnchantment = event.getDamage() * originalModifier;
-				double adjustedIncreaseDamageFromEnchantment = event.getDamage() * adjustedModifier;
-				return originalIncreasedDamageFromEnchantment - adjustedIncreaseDamageFromEnchantment;
+				double damageWithoutEnchantment = event.getDamage() / (1 + originalModifier);
+				return event.getDamage() - (damageWithoutEnchantment * (1 + adjustedModifier));
 			}
 			// Damage enchanted anything else
 			else if (weapon.getEnchantments().containsKey(Enchantment.DAMAGE_ALL)) { // all non-bow, but we can assume a sword
-				int enchantmentLevel = weapon.getEnchantments().get(Enchantment.DAMAGE_ALL);
+				int enchantmentLevel = weapon.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
 
 				// Adds 1 extra damage for the first level, and 0.5 (Heart.svg × 1⁄4) for each additional level.
 				// level 1 = 1 adjusted to .223
