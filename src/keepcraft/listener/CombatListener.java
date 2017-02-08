@@ -55,24 +55,27 @@ public class CombatListener implements Listener {
 					User defendingUser = userService.getOnlineUser(defender.getName());
 
 					if (attackingUser.getFaction() == defendingUser.getFaction()) {
+						// Team members cannot damage each other
 						event.setCancelled(true);
 						return;
 					}
 
-					int armorValue = Armor.getArmorValue(defender.getInventory());
-					int extraDamage = (int) Math.ceil(event.getDamage() * (armorValue / 75.0));
+					// Remove food from bar when hit by an arrow
+					if (arrowHit && defender.getFoodLevel() > 0) {
+						defender.setFoodLevel(defender.getFoodLevel() - 2);
+					}
+
+					// All of this nerfed armor, which is no longer necessary since 1.9 armor nerfs
+					//int armorValue = Armor.getArmorValue(defender.getInventory());
+					//int extraDamage = (int) Math.ceil(event.getDamage() * (armorValue / 75.0));
 
 					// In order to prevent infinite loops but still get proper death messages
 					// set health to 0 if this extra damage is going to kill the player
-					if (defender.getHealth() - extraDamage <= 0) {
-						defender.setHealth(0);
-					} else {
-						defender.damage(extraDamage); // damage has no source so it doesn't loop back into this same function
-					}
-
-					if (arrowHit && defender.getFoodLevel() > 0) {
-						defender.setFoodLevel(defender.getFoodLevel() - 3);
-					}
+//					if (defender.getHealth() - extraDamage <= 0) {
+//						defender.setHealth(0);
+//					} else {
+//						defender.damage(extraDamage); // damage has no source so it doesn't loop back into this same function
+//					}
 				}
 			}
 		}
