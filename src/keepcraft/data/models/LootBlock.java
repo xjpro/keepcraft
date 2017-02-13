@@ -102,12 +102,10 @@ public class LootBlock implements Runnable {
 			else if (value <= 0.80) { // 10%
 				// Needed for all potions (makes the base potions)
 				item = new ItemStack(Material.NETHER_STALK, 1); // nether stalk
-			}
-			else if(value <= 0.83) { // 3%
+			} else if (value <= 0.83) { // 3%
 				// Need to make brewing stand and as fuel
 				item = new ItemStack(Material.BLAZE_ROD, 1); // blaze rod
-			}
-			else if (value <= 0.86) { // 3%
+			} else if (value <= 0.86) { // 3%
 				// Makes regen potion
 				item = new ItemStack(Material.GHAST_TEAR, 1); // ghast tear
 			} else if (value <= 0.89) { // 3%
@@ -125,7 +123,11 @@ public class LootBlock implements Runnable {
 			} else if (value <= 0.95) { // 2%
 				item = new ItemStack(Material.SLIME_BALL, 1);
 			}
-			// Remainder 5% (pork)
+			// Items that allow building with nether materials
+			else if (value <= 0.96) { // 1%
+				item = new ItemStack(Material.QUARTZ, 1);
+			}
+			// Remainder 4% (pork)
 			else {
 				item = new ItemStack(Material.PORK, 1);
 			}
