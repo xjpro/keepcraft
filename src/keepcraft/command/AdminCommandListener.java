@@ -98,23 +98,7 @@ public class AdminCommandListener extends CommandListener {
 			}
 			return true;
 		}
-		// Set a spawn
-		else if (commandName.equals("setspawn") && args.length == 1) {
-			int faction;
-
-			try {
-				faction = Integer.parseInt(args[0]);
-			} catch (NumberFormatException e) {
-				// invalid input
-				commandSender.sendMessage(ChatService.Failure + "Faction must be an integer");
-				return false;
-			}
-
-			//ServerConditions.setSpawn(faction, p.getLocation());
-			//commandSender.sendMessage(ChatService.Success + "Set faction " + faction + "'s spawn to " + p.getLocation());
-			commandSender.sendMessage(ChatService.Failure + "Command disabled in favor of resetting the map");
-			return true;
-		} // Set team
+		// Set team
 		else if (commandName.equals("setfaction") && args.length == 2) {
 			String targetName = args[0];
 			User target = userService.getOnlineUser(targetName);
