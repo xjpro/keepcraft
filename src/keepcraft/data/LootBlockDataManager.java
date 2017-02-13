@@ -29,18 +29,17 @@ public class LootBlockDataManager {
         }
     }
 
-    public void updateData(LootBlock block) {
+    public void updateData(LootBlock lootBlock) {
         Keepcraft.log("Updating data for lootBlocks");
         try {
             PreparedStatement statement
-                    = database.createStatement("UPDATE lootBlocks SET LocX = ?, LocY = ?, LocZ = ?, Status = ?, Type = ?, Output = ? WHERE ROWID = ?");
-            statement.setInt(1, block.getLocation().getBlockX());
-            statement.setInt(2, block.getLocation().getBlockY());
-            statement.setInt(3, block.getLocation().getBlockZ());
-            statement.setInt(4, block.getStatus());
-            statement.setInt(5, block.getType());
-            statement.setDouble(6, block.getOutputPerHour());
-            statement.setInt(7, block.getId());
+                    = database.createStatement("UPDATE lootBlocks SET Status = ?, Type = ?, Output = ? WHERE LocX = ? AND LocY = ? AND LocZ = ?");
+            statement.setInt(1, lootBlock.getStatus());
+            statement.setInt(2, lootBlock.getType());
+            statement.setDouble(3, lootBlock.getOutputPerHour());
+            statement.setInt(4, lootBlock.getLocation().getBlockX());
+            statement.setInt(5, lootBlock.getLocation().getBlockY());
+            statement.setInt(6, lootBlock.getLocation().getBlockZ());
             statement.execute();
         } catch (Exception e) {
             Keepcraft.error("Error setting lootBlocks data: " + e.getMessage());
@@ -55,11 +54,10 @@ public class LootBlockDataManager {
         Keepcraft.log("Beginning lookup of all lootBlocks");
 
         try {
-            PreparedStatement statement = database.createStatement("SELECT ROWID, LocX, LocY, LocZ, Status, Type, Output FROM lootBlocks");
+            PreparedStatement statement = database.createStatement("SELECT LocX, LocY, LocZ, Status, Type, Output FROM lootBlocks");
             ResultSet result = statement.executeQuery();
             
             while (result.next()) {
-                int id = result.getInt("ROWID");
                 int locX = result.getInt("LocX");
                 int locY = result.getInt("LocY");
                 int locZ = result.getInt("LocZ");
@@ -67,12 +65,12 @@ public class LootBlockDataManager {
                 int type = result.getInt("Type");
                 int output = result.getInt("Output");
 
-                LootBlock block = new LootBlock(id, Keepcraft.getWorld().getBlockAt(locX, locY, locZ));
-                block.setStatus(status);
-                block.setType(type);
-                block.setOutputPerHour(output);
+                LootBlock lootBlock = new LootBlock(Keepcraft.getWorld().getBlockAt(locX, locY, locZ));
+                lootBlock.setStatus(status);
+                lootBlock.setType(type);
+                lootBlock.setOutputPerHour(output);
 
-                allData.add(block);
+                allData.add(lootBlock);
             }
 
             result.close();
@@ -85,18 +83,18 @@ public class LootBlockDataManager {
         return allData;
     }
 
-    public void putData(LootBlock block) {
+    public void putData(LootBlock lootBlock) {
 
         Keepcraft.log("Creating record for new lootBlocks");
         try {
             PreparedStatement statement
                     = database.createStatement("INSERT INTO lootBlocks (LocX, LocY, LocZ, Status, Type, Output) VALUES(?, ?, ?, ?, ?, ?)");
-            statement.setInt(1, block.getLocation().getBlockX());
-            statement.setInt(2, block.getLocation().getBlockY());
-            statement.setInt(3, block.getLocation().getBlockZ());
-            statement.setInt(4, block.getStatus());
-            statement.setInt(5, block.getType());
-            statement.setDouble(6, block.getOutputPerHour());
+            statement.setInt(1, lootBlock.getLocation().getBlockX());
+            statement.setInt(2, lootBlock.getLocation().getBlockY());
+            statement.setInt(3, lootBlock.getLocation().getBlockZ());
+            statement.setInt(4, lootBlock.getStatus());
+            statement.setInt(5, lootBlock.getType());
+            statement.setDouble(6, lootBlock.getOutputPerHour());
             statement.execute();
         } catch (Exception e) {
             Keepcraft.error("Error creating lootBlocks data: " + e.getMessage());
@@ -105,11 +103,13 @@ public class LootBlockDataManager {
         }
     }
 
-    public void deleteData(LootBlock block) {
+    public void deleteData(LootBlock lootBlock) {
         Keepcraft.log("Deleting record for lootBlocks");
         try {
-            PreparedStatement statement = database.createStatement("DELETE FROM lootBlocks WHERE ROWID = ?");
-            statement.setInt(1, block.getId());
+            PreparedStatement statement = database.createStatement("DELETE FROM lootBlocks WHERE LocX = ? AND LocY = ? AND LocZ = ?");
+            statement.setInt(1, lootBlock.getLocation().getBlockX());
+            statement.setInt(2, lootBlock.getLocation().getBlockY());
+            statement.setInt(3, lootBlock.getLocation().getBlockZ());
             statement.execute();
         } catch (Exception e) {
             Keepcraft.error("Error deleting lootBlocks data: " + e.getMessage());

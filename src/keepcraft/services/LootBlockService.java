@@ -38,10 +38,10 @@ public class LootBlockService {
 	}
 
 	public LootBlock createLootBlock(Block block) {
-		LootBlock lootBlock = new LootBlock(0, block);
+		LootBlock lootBlock = new LootBlock(block);
 		lootBlockDataManager.putData(lootBlock);
-		refreshCache();
-		return getLootBlock(block);
+		lootBlocks.add(lootBlock);
+		return lootBlock;
 	}
 
 	public void removeLootBlock(LootBlock lootBlock) {

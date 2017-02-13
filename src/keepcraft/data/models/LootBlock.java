@@ -14,7 +14,6 @@ public class LootBlock implements Runnable {
 
 	private static Random Random = new Random();
 
-	private final int id;
 	private final Block block;
 	private int status = 1;
 	private int type = 1;
@@ -26,13 +25,8 @@ public class LootBlock implements Runnable {
 	// Id of the Bukkit repeating task performing output
 	private int dispenseTaskId = 0;
 
-	public LootBlock(int id, Block block) {
-		this.id = id;
+	public LootBlock(Block block) {
 		this.block = block;
-	}
-
-	public int getId() {
-		return id;
 	}
 
 	public Block getBlock() {
