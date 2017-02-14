@@ -15,17 +15,22 @@ public class Plot {
 	public final static int DEFAULT_RADIUS = 10;
 	public final static int DEFAULT_TRIGGER_RADIUS = 10;
 
+	private final int id;
+	private final PlotProtection protection;
 	private WorldPoint worldPoint;
-	private int id;
 	private float radius;
 	private String name;
-	private PlotProtection protection;
 	private int orderNumber = -1;
 	private int setterId;
 
 	//private User setter;
 	//private Timestamp timestampSet;
 	private Siege activeSiege = null;
+
+	public Plot(int id, PlotProtection protection) {
+		this.id = id;
+		this.protection = protection;
+	}
 
 	public Location getLocation() {
 		return worldPoint.asLocation();
@@ -100,10 +105,6 @@ public class Plot {
 		return id;
 	}
 
-	public void setId(int value) {
-		id = value;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -163,10 +164,6 @@ public class Plot {
 		// return hour < 19 || hour > 22;
 		// immune if before 6pm (hour values 17 and below) or after 10 (hour values 22 and above)
 		// return hour < 18 || hour > 21;
-	}
-
-	public void setProtection(PlotProtection value) {
-		protection = value;
 	}
 
 	public float getRadius() {

@@ -17,7 +17,7 @@ public class PlotService {
 	}
 
 	public void refreshCache() {
-		plots = plotDataManager.getAllData();
+		plots = plotDataManager.getAllPlots();
 	}
 
 	public Collection<Plot> getPlots() {
@@ -53,53 +53,37 @@ public class PlotService {
 	}
 
 	public void removePlot(Plot plot) {
-		plotDataManager.deleteData(plot);
+		plotDataManager.deletePlot(plot);
 		plots.remove(plot);
 	}
 
 	public void updatePlot(Plot plot) {
-		plotDataManager.updateData(plot);
+		plotDataManager.updatePlot(plot);
 	}
 
 	public Plot createTeamPlot(Location location, int userFaction, int radius) {
-		String plotName = UserFaction.asString(userFaction) + "'s Base";
-		Plot plot = createPlot(location, plotName, radius);
+		String plotName = String.format("%s Base", UserFaction.asString(userFaction));
 
-		PlotProtection protection = new PlotProtection(-1);
+		Plot plot = plotDataManager.createPlot(location, plotName, radius);
+		PlotProtection protection = plot.getProtection();
 		protection.setType(userFaction);
 		protection.setAdminRadius(3);
 		protection.setProtectedRadius(radius);
-		protection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
-		protection.setCapturable(false);
-		plot.setProtection(protection);
 
-		plotDataManager.putData(plot);
+		plotDataManager.updatePlot(plot);
 		refreshCache();
 		return getPlot(plotName);
 	}
 
-	public Plot createAdminPlot(Location location, String name, int radius) {
-		Plot plot = createPlot(location, name, radius);
-
-		PlotProtection protection = new PlotProtection(-1);
+	public Plot createAdminPlot(Location location, String plotName, int radius) {
+		Plot plot = plotDataManager.createPlot(location, plotName, radius);
+		PlotProtection protection = plot.getProtection();
 		protection.setType(PlotProtection.ADMIN);
 		protection.setAdminRadius(Plot.DEFAULT_RADIUS);
 		protection.setProtectedRadius(radius);
-		protection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
-		protection.setCapturable(false);
-		plot.setProtection(protection);
 
-		plotDataManager.putData(plot);
+		plotDataManager.updatePlot(plot);
 		refreshCache();
-		return getPlot(name);
-	}
-
-	private Plot createPlot(Location location, String name, int radius) {
-		Plot plot = new Plot();
-		plot.setWorldPoint(new WorldPoint(location));
-		plot.setRadius(radius);
-		plot.setName(name.trim());
-		//plot.setSetterId(setter.getId()); todo use this
-		return plot;
+		return getPlot(plotName);
 	}
 }
