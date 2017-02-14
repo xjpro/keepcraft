@@ -127,8 +127,7 @@ public class AdminCommandListener extends CommandListener {
 		else if (commandName.equals("delete") && args.length == 1) {
 			String targetName = args[0];
 
-			User deleted = new User(0);
-			deleted.setName(targetName.trim());
+			User deleted = new User(targetName.trim());
 			boolean success = userService.removeUser(deleted);
 
 			if (success) {

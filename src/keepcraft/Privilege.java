@@ -66,7 +66,7 @@ public abstract class Privilege {
 	}
 
 	public static boolean canModifyPlotData(User user, Plot plot) {
-		return user.getPrivilege() == UserPrivilege.ADMIN || user.getId() == plot.getSetterId();
+		return user.getPrivilege() == UserPrivilege.ADMIN;// || user.getId() == plot.getSetterId();
 	}
 
 	public static boolean isAdmin(User user) {

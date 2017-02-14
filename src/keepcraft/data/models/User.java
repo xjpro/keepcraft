@@ -9,8 +9,7 @@ import org.bukkit.ChatColor;
 public class User {
 
     // Persistent data, from database
-    private int id;
-    private String name;
+    private final String name;
     private int privilege;
     private int faction;
     private int money;
@@ -22,12 +21,8 @@ public class User {
     private boolean receiveGlobalMessages = true;
     private String lastPrivateMessageSender = null;
 
-    public User(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
+    public User(String name) {
+        this.name = name;
     }
 
     public String getName() {
@@ -56,10 +51,6 @@ public class User {
             return factionChatColor + "<" + ChatService.NameAdmin + name + factionChatColor + ">";
         }
         return getChatTag();
-    }
-
-    public void setName(String value) {
-        name = value;
     }
 
     public int getPrivilege() {

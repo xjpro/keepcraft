@@ -29,16 +29,16 @@ public class UserDataManager {
 		}
 	}
 
-	public void updateData(User data) {
-		Keepcraft.log("Updating data for " + data.getName());
+	public void updateData(User user) {
+		Keepcraft.log("Updating data for " + user.getName());
 		try {
 			PreparedStatement statement
-					= database.createStatement("UPDATE users SET Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, LastOnline = datetime('now') WHERE ROWID = ?");
-			statement.setInt(1, data.getPrivilege());
-			statement.setInt(2, data.getFaction());
-			statement.setInt(3, data.getMoney());
-			statement.setInt(4, data.getLastPlotId());
-			statement.setInt(5, data.getId());
+					= database.createStatement("UPDATE users SET Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, LastOnline = datetime('now') WHERE Name = ?");
+			statement.setInt(1, user.getPrivilege());
+			statement.setInt(2, user.getFaction());
+			statement.setInt(3, user.getMoney());
+			statement.setInt(4, user.getLastPlotId());
+			statement.setString(5, user.getName());
 			statement.execute();
 
 			// TODO: if the record did not exist, we'll have to create it
@@ -58,10 +58,10 @@ public class UserDataManager {
 		}
 
 		Keepcraft.log("Beginning lookup on " + name);
-		int id = 0, privilege = 0, faction = 0, money = 0, lastPlotId = 0;
+		int privilege = 0, faction = 0, money = 0, lastPlotId = 0;
 		try {
 			PreparedStatement statement
-					= database.createStatement("SELECT ROWID, Privilege, Faction, Money, LastPlotId FROM users WHERE Name = ? LIMIT 1");
+					= database.createStatement("SELECT Privilege, Faction, Money, LastPlotId FROM users WHERE Name = ? LIMIT 1");
 			statement.setString(1, name);
 			ResultSet result = statement.executeQuery();
 
@@ -76,8 +76,7 @@ public class UserDataManager {
 				int blueCount = this.getFactionCount(UserFaction.FactionBlue);
 				int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
 
-				User newUser = new User(0);
-				newUser.setName(name);
+				User newUser = new User(name);
 				newUser.setPrivilege(UserPrivilege.MEMBER);
 				newUser.setFaction(UserFaction.getSmallestFaction(redCount, blueCount, greenCount));
 				newUser.setMoney(0);
@@ -86,7 +85,6 @@ public class UserDataManager {
 				return getData(name);
 			} else {
 				Keepcraft.log("Lookup on " + name + " successful");
-				id = result.getInt("ROWID");
 				privilege = result.getInt("Privilege");
 				faction = result.getInt("Faction");
 				money = result.getInt("Money");
@@ -100,8 +98,7 @@ public class UserDataManager {
 			database.close();
 		}
 
-		User user = new User(id);
-		user.setName(name);
+		User user = new User(name);
 		user.setPrivilege(privilege);
 		user.setFaction(faction);
 		user.setMoney(money);
@@ -150,7 +147,7 @@ public class UserDataManager {
 //		return allData;
 //	}
 
-	public void putData(User user) {
+	private void putData(User user) {
 
 		Keepcraft.log("Creating record for " + user.getName());
 		try {
