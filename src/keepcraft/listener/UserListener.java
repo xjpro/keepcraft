@@ -80,8 +80,8 @@ public class UserListener implements Listener {
 
 		//player.setDisplayName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
 
-		Plot lastPlot = plotService.getPlot(user.getLastPlotId());
-		if (lastPlot != null && !lastPlot.isFactionProtected(user.getFaction())) {
+		Plot loggedOffFriendlyPlot = plotService.getPlot(user.getLoggedOffFriendlyPlotId());
+		if (loggedOffFriendlyPlot != null && !loggedOffFriendlyPlot.isFactionProtected(user.getFaction())) {
 			// Last plot id only stored when we logged off in an owned plot.
 			// This plot is now longer secured so teleport home.
 
@@ -99,16 +99,16 @@ public class UserListener implements Listener {
 		Player p = event.getPlayer();
 		User user = userService.getOnlineUser(p.getName());
 
-		Plot lastPlot = user.getCurrentPlot();
-		if (lastPlot != null && lastPlot.isFactionProtected(user.getFaction())) {
+		Plot currentPlot = user.getCurrentPlot();
+		if (currentPlot != null && currentPlot.isFactionProtected(user.getFaction())) {
 			// User is logging off in owned territory, make a note of this so
 			// we can later warp them home if the territory switches control
-			user.setLastPlotId(lastPlot.getId());
+			user.setLoggedOffFriendlyPlotId(currentPlot.getId());
 		} else {
-			user.setLastPlotId(0);
+			user.setLoggedOffFriendlyPlotId(0);
 		}
 
-		userService.setUserOffline(user);
+		userService.saveUserAndSetOffline(user);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

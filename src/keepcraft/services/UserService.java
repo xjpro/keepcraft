@@ -28,10 +28,7 @@ public class UserService {
 	}
 
 	public User getUser(String name) {
-		if (userDataManager.exists(name)) {
-			return userDataManager.getData(name);
-		}
-		return null;
+		return userDataManager.getData(name);
 	}
 
 	public User getOnlineUser(String name) {
@@ -39,12 +36,12 @@ public class UserService {
 	}
 
 	public User loadOfflineUser(String name) {
-		User user = userDataManager.getData(name);
+		User user = userDataManager.exists(name) ? userDataManager.getData(name) : createUser(name);
 		onlineUsers.put(user.getName(), user);
 		return user;
 	}
 
-	public void setUserOffline(User user) {
+	public void saveUserAndSetOffline(User user) {
 		userDataManager.updateData(user);
 		onlineUsers.remove(user.getName());
 	}
@@ -59,5 +56,20 @@ public class UserService {
 		}
 		userDataManager.deleteData(user);
 		return true;
+	}
+
+	private User createUser(String name) {
+		// Determine faction to place on
+		int redCount = userDataManager.getFactionCount(UserFaction.FactionRed);
+		int blueCount = userDataManager.getFactionCount(UserFaction.FactionBlue);
+		int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
+
+		User user = new User(name);
+		user.setPrivilege(UserPrivilege.MEMBER);
+		user.setFaction(UserFaction.getSmallestFaction(redCount, blueCount, greenCount));
+		user.setMoney(0);
+		user.setLoggedOffFriendlyPlotId(0);
+		userDataManager.putData(user);
+		return user;
 	}
 }

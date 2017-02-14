@@ -37,11 +37,9 @@ public class UserDataManager {
 			statement.setInt(1, user.getPrivilege());
 			statement.setInt(2, user.getFaction());
 			statement.setInt(3, user.getMoney());
-			statement.setInt(4, user.getLastPlotId());
+			statement.setInt(4, user.getLoggedOffFriendlyPlotId());
 			statement.setString(5, user.getName());
 			statement.execute();
-
-			// TODO: if the record did not exist, we'll have to create it
 		} catch (Exception e) {
 			Keepcraft.error("Error setting user data: " + e.getMessage());
 		} finally {
@@ -49,46 +47,27 @@ public class UserDataManager {
 		}
 	}
 
-	public User getData(Object key) {
-		String name;
-		if (key instanceof String) {
-			name = (String) key;
-		} else {
-			return null;
-		}
+	public User getData(String name) {
 
 		Keepcraft.log("Beginning lookup on " + name);
-		int privilege = 0, faction = 0, money = 0, lastPlotId = 0;
+		User user = null;
+
 		try {
-			PreparedStatement statement
-					= database.createStatement("SELECT Privilege, Faction, Money, LastPlotId FROM users WHERE Name = ? LIMIT 1");
+			PreparedStatement statement = database.createStatement("SELECT Privilege, Faction, Money, LastPlotId FROM users WHERE Name = ? LIMIT 1");
 			statement.setString(1, name);
 			ResultSet result = statement.executeQuery();
 
 			boolean found = result.next();
 
 			if (!found) {
-				Keepcraft.log("No user was found, creating record");
-				result.close();
-
-				// Determine faction to place on
-				int redCount = this.getFactionCount(UserFaction.FactionRed);
-				int blueCount = this.getFactionCount(UserFaction.FactionBlue);
-				int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
-
-				User newUser = new User(name);
-				newUser.setPrivilege(UserPrivilege.MEMBER);
-				newUser.setFaction(UserFaction.getSmallestFaction(redCount, blueCount, greenCount));
-				newUser.setMoney(0);
-
-				putData(newUser);
-				return getData(name);
+				Keepcraft.log("No user was found for name " + name);
 			} else {
-				Keepcraft.log("Lookup on " + name + " successful");
-				privilege = result.getInt("Privilege");
-				faction = result.getInt("Faction");
-				money = result.getInt("Money");
-				lastPlotId = result.getInt("LastPlotId");
+				user = new User(name);
+				user.setPrivilege(result.getInt("Privilege"));
+				user.setFaction(result.getInt("Faction"));
+				user.setMoney(result.getInt("Money"));
+				user.setLoggedOffFriendlyPlotId(result.getInt("LastPlotId"));
+				Keepcraft.log("User data was retrieved with values: " + user);
 			}
 
 			result.close();
@@ -97,14 +76,6 @@ public class UserDataManager {
 		} finally {
 			database.close();
 		}
-
-		User user = new User(name);
-		user.setPrivilege(privilege);
-		user.setFaction(faction);
-		user.setMoney(money);
-		user.setLastPlotId(lastPlotId);
-
-		Keepcraft.log("User data was retrieved with values: " + user);
 
 		return user;
 	}
@@ -132,7 +103,7 @@ public class UserDataManager {
 //				user.setPrivilege(privilege);
 //				user.setFaction(faction);
 //				user.setMoney(money);
-//				user.setLastPlotId(lastPlotId);
+//				user.setLoggedOffFriendlyPlotId(lastPlotId);
 //
 //				allData.add(user);
 //			}
@@ -147,7 +118,7 @@ public class UserDataManager {
 //		return allData;
 //	}
 
-	private void putData(User user) {
+	public void putData(User user) {
 
 		Keepcraft.log("Creating record for " + user.getName());
 		try {
@@ -157,7 +128,7 @@ public class UserDataManager {
 			statement.setInt(2, user.getPrivilege());
 			statement.setInt(3, user.getFaction());
 			statement.setInt(4, user.getMoney());
-			statement.setInt(5, user.getLastPlotId());
+			statement.setInt(5, user.getLoggedOffFriendlyPlotId());
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error creating user data: " + e.getMessage());
@@ -235,7 +206,7 @@ public class UserDataManager {
 		return found;
 	}
 
-	private int getFactionCount(int faction) {
+	public int getFactionCount(int faction) {
 		int memberCount = 0;
 		try {
 			PreparedStatement statement = database.createStatement(
