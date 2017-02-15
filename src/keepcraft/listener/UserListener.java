@@ -1,5 +1,6 @@
 package keepcraft.listener;
 
+import keepcraft.Keepcraft;
 import keepcraft.data.models.*;
 import keepcraft.services.ChatService;
 import keepcraft.services.FactionSpawnService;
@@ -11,14 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import keepcraft.Keepcraft;
 
 public class UserListener implements Listener {
 
@@ -52,6 +48,7 @@ public class UserListener implements Listener {
 		event.setJoinMessage(null);
 
 		Player player = event.getPlayer();
+		//Player player = userService.loadMetadata(event.getPlayer());
 
 		boolean firstTimeUser = !userService.userIsRegistered(player.getName());
 		User user = userService.loadOfflineUser(player.getName());

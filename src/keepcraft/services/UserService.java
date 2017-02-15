@@ -1,7 +1,9 @@
 package keepcraft.services;
 
 import keepcraft.data.UserDataManager;
-import keepcraft.data.models.*;
+import keepcraft.data.models.User;
+import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserPrivilege;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +36,15 @@ public class UserService {
 	public User getOnlineUser(String name) {
 		return onlineUsers.get(name);
 	}
+
+	// todo potential simpler way to decorate a player with extra data
+//	public Player loadMetadata(Player player) {
+//		User user = getUser(player.getName());
+//		player.setMetadata("privilege", new FixedMetadataValue(Keepcraft.getPlugin(), user.getPrivilege()));
+//		player.setMetadata("faction", new FixedMetadataValue(Keepcraft.getPlugin(), user.getFaction()));
+//		player.setMetadata("loggedOffFriendlyPlotId", new FixedMetadataValue(Keepcraft.getPlugin(), user.getLoggedOffFriendlyPlotId()));
+//		return player;
+//	}
 
 	public User loadOfflineUser(String name) {
 		User user = userDataManager.exists(name) ? userDataManager.getData(name) : createUser(name);
