@@ -59,6 +59,7 @@ public class UserListener implements Listener {
 		if (firstTimeUser || user.getPrivilege() == UserPrivilege.INIT) {
 			if (player.isOp()) {
 				user.setPrivilege(UserPrivilege.ADMIN);
+				user.setFaction(UserFaction.FactionGold);
 			} else {
 				user.setPrivilege(UserPrivilege.MEMBER);
 			}

@@ -14,31 +14,31 @@ public class LootBlock implements Runnable {
 
 	private static Random Random = new Random();
 
-	private final Block block;
+	private final WorldPoint worldPoint;
 	private int status = 1;
 	private int type = 1;
 
 	// Output in items generated per hour
-	private double outputPerHour = 60;
+	private int outputPerHour = 60;
 	// Fractional output from previous run
 	private double leftoverOutput = 0;
 	// Id of the Bukkit repeating task performing output
 	private int dispenseTaskId = 0;
 
-	public LootBlock(Block block) {
-		this.block = block;
+	public LootBlock(WorldPoint worldPoint) {
+		this.worldPoint = worldPoint;
 	}
 
 	public Block getBlock() {
-		return block;
+		return Keepcraft.getWorld().getBlockAt(getLocation());
 	}
 
 	public Location getLocation() {
-		return block.getLocation();
+		return worldPoint.asLocation();
 	}
 
 	public Chunk getChunk() {
-		return block.getChunk();
+		return getBlock().getChunk();
 	}
 
 	public int getStatus() {
@@ -57,18 +57,19 @@ public class LootBlock implements Runnable {
 		type = value;
 	}
 
-	public double getOutputPerHour() {
+	public int getOutputPerHour() {
 		return outputPerHour;
 	}
 
-	public void setOutputPerHour(double value) {
+	public void setOutputPerHour(int value) {
 		outputPerHour = value;
 	}
 
 	@Override
 	// Runs every minute
 	public void run() {
-		if (block.getType() != Material.CHEST || outputPerHour == 0) return;
+		Block block = getBlock();
+		if (block == null || block.getType() != Material.CHEST || outputPerHour == 0) return;
 
 		Chest chest = (Chest) block.getState();
 		Inventory inventory = chest.getBlockInventory();
@@ -76,7 +77,7 @@ public class LootBlock implements Runnable {
 		// Say outputPerHour per hour is 75
 		// We'll need to put (75/60) = 1.25 items into the chest per minute
 		// It's obviously impossible to put fractions of items into the chest
-		double fullOutputThisRun = (outputPerHour / 60) + leftoverOutput;
+		double fullOutputThisRun = (outputPerHour / 60.0) + leftoverOutput;
 		long integerOutputThisRun = (long) fullOutputThisRun; // So calculate the integer amount we can put in
 		leftoverOutput = fullOutputThisRun - integerOutputThisRun; // And save the remainder to be used in the next run
 

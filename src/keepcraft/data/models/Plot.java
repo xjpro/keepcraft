@@ -18,7 +18,7 @@ public class Plot {
 	private final int id;
 	private final PlotProtection protection;
 	private WorldPoint worldPoint;
-	private float radius;
+	private double radius;
 	private String name;
 	private int orderNumber = -1;
 	private int setterId;
@@ -166,11 +166,11 @@ public class Plot {
 		// return hour < 18 || hour > 21;
 	}
 
-	public float getRadius() {
+	public double getRadius() {
 		return radius;
 	}
 
-	public void setRadius(float value) {
+	public void setRadius(double value) {
 		radius = value;
 	}
 

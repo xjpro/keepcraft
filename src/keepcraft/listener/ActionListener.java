@@ -1,11 +1,11 @@
 package keepcraft.listener;
 
-import keepcraft.Keepcraft;
-import keepcraft.services.ChatService;
+import keepcraft.Privilege;
+import keepcraft.data.models.Plot;
+import keepcraft.data.models.PlotProtection;
+import keepcraft.data.models.User;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -13,11 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
-import keepcraft.Privilege;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.PlotProtection;
-import keepcraft.data.models.User;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 
 public class ActionListener implements Listener {
 
@@ -27,69 +26,6 @@ public class ActionListener implements Listener {
 	public ActionListener(UserService userService, PlotService plotService) {
 		this.userService = userService;
 		this.plotService = plotService;
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerMove(PlayerMoveEvent event) {
-		Location to = event.getTo();
-		Location from = event.getFrom();
-
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
-
-		// Code for updating player's current plot
-		Plot currentPlot = user.getCurrentPlot();
-		Plot candidatePlot = plotService.getIntersectedPlot(p.getLocation());
-
-		if (currentPlot != candidatePlot) {
-			if (currentPlot != null && candidatePlot == null) {
-				p.sendMessage(ChatService.Info + "Leaving " + currentPlot.getColoredName());
-				user.setCurrentPlot(null);
-			}
-
-			if (candidatePlot != null) {
-				if (currentPlot == null) {
-					p.sendMessage(ChatService.Info + "Entering " + candidatePlot.getColoredName());
-				}
-				user.setCurrentPlot(candidatePlot);
-			}
-		} else if (currentPlot != null && !currentPlot.isAdminProtected() && !currentPlot.isEventProtected()
-				&& currentPlot.getProtection().getKeepRadius() > 0) // we are in a plot with a keep radius
-		{
-			// if are going to intersects protected but didn't before
-			if (currentPlot.isInTeamProtectedRadius(to) && !currentPlot.isInTeamProtectedRadius(from)) {
-				p.sendMessage(ChatService.Info + "Entering " + candidatePlot.getColoredName() + " (Keep)");
-			} // if we are not going to intersects protected but did before
-			else if (!currentPlot.isInTeamProtectedRadius(to) && currentPlot.isInTeamProtectedRadius(from)) {
-				p.sendMessage(ChatService.Info + "Leaving " + candidatePlot.getColoredName() + " (Keep)");
-			}
-		}
-		// End plot update code
-
-		currentPlot = user.getCurrentPlot();
-
-		if ((currentPlot != null && currentPlot.isFactionProtected(user.getFaction()))
-				|| p.getGameMode() == GameMode.CREATIVE
-				|| event.getEventName().equals("PLAYER_TELEPORT")) {
-			// Considers which are not subject to float prevention
-			return;
-		}
-
-		// Begin invalid teleportation and float prevention
-		if ((from.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)
-				&& (p.getFallDistance() == 0.0F && p.getVelocity().getY() <= -0.6D)
-				&& (p.getLocation().getY() > 0.0D)) {
-			Keepcraft.log(String.format("A float by %s was prevented", user.getName()));
-
-			// Find the ground
-			Location groundLocation = from.clone();
-			while (groundLocation.getBlock().getType() == Material.AIR && groundLocation.getY() > 0) {
-				groundLocation.add(0, -1, 0);
-			}
-			groundLocation.add(0, 1, 0); // Ground located
-			p.teleport(groundLocation);
-		}
-		// End invalid teleportation and float prevention
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

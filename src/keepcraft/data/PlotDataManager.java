@@ -135,7 +135,7 @@ public class PlotDataManager {
 
 			PlotProtection plotProtection = new PlotProtection(id);
 			plotProtection.setType(PlotProtection.PUBLIC);
-			plotProtection.setProtectedRadius(Plot.DEFAULT_RADIUS);
+			plotProtection.setProtectedRadius(radius);
 			plotProtection.setKeepRadius(0);
 			plotProtection.setAdminRadius(Plot.DEFAULT_RADIUS);
 			plotProtection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
@@ -145,7 +145,7 @@ public class PlotDataManager {
 			plot = new Plot(id, plotProtection);
 			plot.setWorldPoint(new WorldPoint(location));
 			plot.setName(name);
-			plot.setRadius(Plot.DEFAULT_RADIUS);
+			plot.setRadius(radius);
 			plot.setOrderNumber(-1);
 			plot.setSetterId(-1);
 

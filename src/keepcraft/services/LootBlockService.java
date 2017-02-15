@@ -2,6 +2,7 @@ package keepcraft.services;
 
 import keepcraft.data.LootBlockDataManager;
 import keepcraft.data.models.LootBlock;
+import keepcraft.data.models.WorldPoint;
 import org.bukkit.block.Block;
 
 import java.util.Collection;
@@ -38,7 +39,7 @@ public class LootBlockService {
 	}
 
 	public LootBlock createLootBlock(Block block) {
-		LootBlock lootBlock = new LootBlock(block);
+		LootBlock lootBlock = new LootBlock(new WorldPoint(block.getLocation()));
 		lootBlockDataManager.putData(lootBlock);
 		lootBlocks.add(lootBlock);
 		return lootBlock;
