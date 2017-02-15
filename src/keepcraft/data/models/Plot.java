@@ -32,18 +32,6 @@ public class Plot {
 		this.protection = protection;
 	}
 
-	public Plot(int id) {
-		this.id = id;
-		protection = new PlotProtection(id);
-		protection.setType(PlotProtection.PUBLIC);
-		protection.setProtectedRadius(radius);
-		protection.setKeepRadius(0);
-		protection.setAdminRadius(Plot.DEFAULT_RADIUS);
-		protection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
-		protection.setCapturable(false);
-		protection.setCaptureTime(0);
-	}
-
 	public Location getLocation() {
 		return worldPoint.asLocation();
 	}

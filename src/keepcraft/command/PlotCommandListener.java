@@ -44,7 +44,7 @@ public class PlotCommandListener extends CommandListener {
                         name += args[i] + " ";
                     }
 
-                    plotService.createAdminPlot(location, name, Plot.DEFAULT_RADIUS);
+                    plotService.createAdminPlot(new WorldPoint(location), name, Plot.DEFAULT_RADIUS);
                     commandSender.sendMessage(ChatService.Success + "A new plot has been created");
                     return true;
                 }

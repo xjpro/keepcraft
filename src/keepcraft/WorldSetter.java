@@ -2,6 +2,7 @@ package keepcraft;
 
 import keepcraft.data.models.FactionSpawn;
 import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.WorldPoint;
 import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import org.bukkit.*;
@@ -43,7 +44,7 @@ public class WorldSetter {
 		goodSpawnLocation.add(0, 5, 0); // Get above terrain
 
 		prepareSpawnArea(goodSpawnLocation);
-		plotService.createTeamPlot(goodSpawnLocation, faction, TEAM_PLOT_RADIUS);
+		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), faction, TEAM_PLOT_RADIUS);
 
 		// Go in air one block and center on block so spawn is not buried
 		FactionSpawn spawn = new FactionSpawn(faction, goodSpawnLocation.clone().add(0, 1, 0));

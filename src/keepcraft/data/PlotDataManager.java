@@ -4,7 +4,6 @@ import keepcraft.Keepcraft;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.WorldPoint;
-import org.bukkit.Location;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -96,7 +95,7 @@ public class PlotDataManager {
 				plot.setOrderNumber(result.getInt("OrderNumber"));
 				plot.setSetterId(result.getInt("SetterId"));
 
-				Keepcraft.log(String.format("Plot %s was found at (%s, %s, %s)", plot.getName(), plot.getLocation().getBlockX(), plot.getLocation().getBlockY(), plot.getLocation().getBlockZ()));
+				Keepcraft.log(String.format("Plot %s was found at (%s, %s, %s)", plot.getName(), plot.getWorldPoint().x, plot.getWorldPoint().y, plot.getWorldPoint().z));
 
 				allData.add(plot);
 			}
@@ -111,7 +110,7 @@ public class PlotDataManager {
 		return allData;
 	}
 
-	public Plot createPlot(Location location, String name, double radius) {
+	public Plot createPlot(WorldPoint worldPoint, String name, double radius) {
 
 		Plot plot = null;
 
@@ -119,9 +118,9 @@ public class PlotDataManager {
 		try {
 			PreparedStatement statement
 					= database.createStatement("INSERT INTO plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, DateTimeSet) VALUES(?, ?, ?, ?, ?, ?, ?, datetime('now'))");
-			statement.setInt(1, location.getBlockX());
-			statement.setInt(2, location.getBlockY());
-			statement.setInt(3, location.getBlockZ());
+			statement.setInt(1, worldPoint.x);
+			statement.setInt(2, worldPoint.y);
+			statement.setInt(3, worldPoint.z);
 			statement.setDouble(4, radius);
 			statement.setString(5, name);
 			statement.setInt(6, -1);
@@ -132,11 +131,19 @@ public class PlotDataManager {
 			ResultSet resultSet = statement.executeQuery();
 			int id = resultSet.getInt("ROWID");
 
-			plot = new Plot(id);
-			plot.setWorldPoint(new WorldPoint(location));
+			PlotProtection plotProtection = new PlotProtection(id);
+			plotProtection.setType(PlotProtection.PUBLIC);
+			plotProtection.setProtectedRadius(radius);
+			plotProtection.setKeepRadius(0);
+			plotProtection.setAdminRadius(Plot.DEFAULT_RADIUS);
+			plotProtection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
+			plotProtection.setCapturable(false);
+			plotProtection.setCaptureTime(0);
+
+			plot = new Plot(id, plotProtection);
+			plot.setWorldPoint(worldPoint);
 			plot.setName(name);
 			plot.setRadius(radius);
-			PlotProtection plotProtection = plot.getProtection();
 
 			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, ProtectedRadius, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, id);

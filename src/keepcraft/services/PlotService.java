@@ -28,7 +28,7 @@ public class PlotService {
 		return plots.stream().filter(plot -> plot.getName().equals(name)).findFirst().orElse(null);
 	}
 
-	public Plot getPlot(Integer id) {
+	public Plot getPlot(int id) {
 		return plots.stream().filter(plot -> plot.getId() == id).findFirst().orElse(null);
 	}
 
@@ -61,10 +61,10 @@ public class PlotService {
 		plotDataManager.updatePlot(plot);
 	}
 
-	public Plot createTeamPlot(Location location, int userFaction, int radius) {
+	public Plot createTeamPlot(WorldPoint worldPoint, int userFaction, int radius) {
 		String plotName = String.format("%s Base", UserFaction.asString(userFaction));
 
-		Plot plot = plotDataManager.createPlot(location, plotName, radius);
+		Plot plot = plotDataManager.createPlot(worldPoint, plotName, radius);
 		PlotProtection protection = plot.getProtection();
 		protection.setType(userFaction);
 		protection.setAdminRadius(3);
@@ -75,8 +75,8 @@ public class PlotService {
 		return getPlot(plotName);
 	}
 
-	public Plot createAdminPlot(Location location, String plotName, int radius) {
-		Plot plot = plotDataManager.createPlot(location, plotName, radius);
+	public Plot createAdminPlot(WorldPoint worldPoint, String plotName, int radius) {
+		Plot plot = plotDataManager.createPlot(worldPoint, plotName, radius);
 		PlotProtection protection = plot.getProtection();
 		protection.setType(PlotProtection.ADMIN);
 		protection.setAdminRadius(Plot.DEFAULT_RADIUS);
