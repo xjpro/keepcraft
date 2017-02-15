@@ -6,16 +6,12 @@ import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.WorldPoint;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PlotServiceTest {
 
@@ -24,7 +20,7 @@ class PlotServiceTest {
 
 	@BeforeEach
 	void beforeEach() {
-		deleteIfExists("keepcraft_test.db");
+		Database.deleteIfExists("keepcraft_test.db");
 		Database database = new Database("keepcraft_test.db");
 		plotDataManager = new PlotDataManager(database);
 
@@ -41,10 +37,6 @@ class PlotServiceTest {
 		plotDataManager.updatePlot(center);
 
 		plotService = new PlotService(plotDataManager);
-	}
-
-	@AfterEach
-	void tearDown() {
 	}
 
 	@Test
@@ -162,15 +154,6 @@ class PlotServiceTest {
 		Collection<Plot> allPlots = plotDataManager.getAllPlots();
 		assertEquals(2, allPlots.size());
 		assertTrue(allPlots.stream().noneMatch(plot -> plot.getName().equals("Center")));
-	}
-
-	private void deleteIfExists(String pathname) {
-		try {
-			File file = new File(pathname);
-			file.delete();
-		} catch (Exception e) {
-			// don't care
-		}
 	}
 
 }

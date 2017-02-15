@@ -2,7 +2,7 @@ package keepcraft.data;
 
 import keepcraft.Keepcraft;
 import keepcraft.data.models.FactionSpawn;
-import org.bukkit.Location;
+import keepcraft.data.models.WorldPoint;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,27 +30,6 @@ public class FactionSpawnDataManager {
 		}
 	}
 
-	public void updateData(FactionSpawn spawn) {
-		//Keepcraft.log("Updating record for " + faction.toString());
-		try {
-			PreparedStatement statement = database.createStatement("UPDATE factionSpawns SET LocX = ?, LocY = ?, LocZ = ? WHERE FactionValue = ?");
-			statement.setInt(1, spawn.getLocation().getBlockX());
-			statement.setInt(2, spawn.getLocation().getBlockY());
-			statement.setInt(3, spawn.getLocation().getBlockZ());
-			statement.setInt(4, spawn.getFactionValue());
-			int rowsAffected = statement.executeUpdate();
-
-			if (rowsAffected == 0) {
-				// a we'll have to create record
-				putData(spawn);
-			}
-		} catch (Exception e) {
-			Keepcraft.error("Error updating factionSpawn record: " + e.getMessage());
-		} finally {
-			database.close();
-		}
-	}
-
 	public Collection<FactionSpawn> getAllData() {
 		List<FactionSpawn> allData = new ArrayList<>();
 		Keepcraft.error("Updating factionSpawn data cache");
@@ -67,7 +46,7 @@ public class FactionSpawnDataManager {
 
 				Keepcraft.log(String.format("FactionSpawn for %s was found at at (%s, %s, %s)", factionValue, locX, locY, locZ));
 
-				FactionSpawn spawn = new FactionSpawn(factionValue, new Location(Keepcraft.getWorld(), locX, locY, locZ));
+				FactionSpawn spawn = new FactionSpawn(factionValue, new WorldPoint(locX, locY, locZ));
 				allData.add(spawn);
 			}
 
@@ -88,37 +67,12 @@ public class FactionSpawnDataManager {
 			PreparedStatement statement
 					= database.createStatement("INSERT INTO factionSpawns (FactionValue, LocX, LocY, LocZ) VALUES(?, ?, ?, ?)");
 			statement.setInt(1, spawn.getFactionValue());
-			statement.setInt(2, spawn.getLocation().getBlockX());
-			statement.setInt(3, spawn.getLocation().getBlockY());
-			statement.setInt(4, spawn.getLocation().getBlockZ());
+			statement.setInt(2, spawn.getWorldPoint().x);
+			statement.setInt(3, spawn.getWorldPoint().y);
+			statement.setInt(4, spawn.getWorldPoint().z);
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error creating factionSpawn record: " + e.getMessage());
-		} finally {
-			database.close();
-		}
-	}
-
-	public void deleteData(FactionSpawn spawn) {
-		//logger.log(Level.INFO, String.format("(KC) Deleting record for plot %s", plot.getName()));
-		try {
-			PreparedStatement statement = database.createStatement("DELETE FROM factionSpawns WHERE FactionValue = ?");
-			statement.setInt(1, spawn.getFactionValue());
-			statement.execute();
-		} catch (Exception e) {
-			Keepcraft.error("Error deleting plot record: " + e.getMessage());
-		} finally {
-			database.close();
-		}
-	}
-
-	public void truncate() {
-		Keepcraft.log("Truncating factionSpawns table");
-		try {
-			PreparedStatement statement = database.createStatement("DELETE FROM factionSpawns");
-			statement.execute();
-		} catch (Exception e) {
-			Keepcraft.error(String.format("Error truncating factionSpawns: %s", e.getMessage()));
 		} finally {
 			database.close();
 		}

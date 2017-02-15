@@ -2,6 +2,7 @@ package keepcraft.data;
 
 import keepcraft.Keepcraft;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -54,6 +55,15 @@ public class Database {
 			}
 		} catch (SQLException e) {
 			Keepcraft.error("Error while closing database: " + e.getMessage());
+		}
+	}
+
+	public static void deleteIfExists(String pathname) {
+		try {
+			File file = new File(pathname);
+			file.delete();
+		} catch (Exception e) {
+			// don't care
 		}
 	}
 }

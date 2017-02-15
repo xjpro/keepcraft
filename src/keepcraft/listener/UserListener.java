@@ -115,7 +115,7 @@ public class UserListener implements Listener {
 		User user = userService.getOnlineUser(p.getName());
 		FactionSpawn spawn = safelyGetFactionSpawn(user);
 
-		event.setRespawnLocation(spawn.getLocation());
+		event.setRespawnLocation(spawn.getWorldPoint().asLocation());
 
 		if (user.isAdmin()) {
 			setAdminEquipment(p);
@@ -175,7 +175,7 @@ public class UserListener implements Listener {
 
 	private void teleportHome(Player p, User user) {
 		FactionSpawn respawn = safelyGetFactionSpawn(user);
-		p.teleport(respawn.getLocation());
+		p.teleport(respawn.getWorldPoint().asLocation());
 	}
 
 	private FactionSpawn safelyGetFactionSpawn(User user) {

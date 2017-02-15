@@ -1,29 +1,30 @@
 package keepcraft;
 
-import keepcraft.data.models.FactionSpawn;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.WorldPoint;
 import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
 // -5036103636176790253 spawn in big ass canyons with small sky island near 175, 175, meanwhile -175,-175 is in ocean (a very bad spawn seed)
 // 794682861 huge floating island near 175, 175
-public class WorldSetter {
+class WorldSetter {
 
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
 	private final int TEAM_PLOT_RADIUS = 75;
 
-	public WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService) {
+	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService) {
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
 	}
 
-	public World setupWorld(World world) {
+	World setupWorld(World world) {
 		setBase(UserFaction.FactionRed, new Location(world, 175.5, 64, 175.5));
 		setBase(UserFaction.FactionBlue, new Location(world, -175.5, 64, -175.5));
 		return world;
@@ -47,8 +48,7 @@ public class WorldSetter {
 		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), faction, TEAM_PLOT_RADIUS);
 
 		// Go in air one block and center on block so spawn is not buried
-		FactionSpawn spawn = new FactionSpawn(faction, goodSpawnLocation.clone().add(0, 1, 0));
-		factionSpawnService.createFactionSpawn(spawn);
+		factionSpawnService.createFactionSpawn(faction, new WorldPoint(goodSpawnLocation.clone().add(0, 1, 0)));
 	}
 
 	private void prepareBaseArea(Location center, int radius) {
