@@ -133,21 +133,11 @@ public class PlotDataManager {
 			ResultSet resultSet = statement.executeQuery();
 			int id = resultSet.getInt("ROWID");
 
-			PlotProtection plotProtection = new PlotProtection(id);
-			plotProtection.setType(PlotProtection.PUBLIC);
-			plotProtection.setProtectedRadius(radius);
-			plotProtection.setKeepRadius(0);
-			plotProtection.setAdminRadius(Plot.DEFAULT_RADIUS);
-			plotProtection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
-			plotProtection.setCapturable(false);
-			plotProtection.setCaptureTime(0);
-
-			plot = new Plot(id, plotProtection);
+			plot = new Plot(id);
 			plot.setWorldPoint(new WorldPoint(location));
 			plot.setName(name);
 			plot.setRadius(radius);
-			plot.setOrderNumber(-1);
-			plot.setSetterId(-1);
+			PlotProtection plotProtection = plot.getProtection();
 
 			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, ProtectedRadius, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, id);

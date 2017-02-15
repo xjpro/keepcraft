@@ -21,7 +21,7 @@ public class Plot {
 	private double radius;
 	private String name;
 	private int orderNumber = -1;
-	private int setterId;
+	private int setterId = -1;
 
 	//private User setter;
 	//private Timestamp timestampSet;
@@ -30,6 +30,18 @@ public class Plot {
 	public Plot(int id, PlotProtection protection) {
 		this.id = id;
 		this.protection = protection;
+	}
+
+	public Plot(int id) {
+		this.id = id;
+		protection = new PlotProtection(id);
+		protection.setType(PlotProtection.PUBLIC);
+		protection.setProtectedRadius(radius);
+		protection.setKeepRadius(0);
+		protection.setAdminRadius(Plot.DEFAULT_RADIUS);
+		protection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
+		protection.setCapturable(false);
+		protection.setCaptureTime(0);
 	}
 
 	public Location getLocation() {
