@@ -11,19 +11,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PlotServiceTest {
 
 	private PlotService plotService;
+	private PlotDataManager plotDataManager;
 
 	@BeforeEach
 	void beforeEach() {
 		deleteIfExists("keepcraft_test.db");
 		Database database = new Database("keepcraft_test.db");
-		PlotDataManager plotDataManager = new PlotDataManager(database);
+		plotDataManager = new PlotDataManager(database);
 
 		Plot red = plotDataManager.createPlot(new WorldPoint(150, 66, 150), "Red", 75);
 		red.getProtection().setType(PlotProtection.FACTION_A);
@@ -123,6 +126,42 @@ class PlotServiceTest {
 		assertEquals("Test", plot.getName());
 		assertEquals(PlotProtection.ADMIN, plot.getProtection().getType());
 		assertEquals(27, plot.getRadius());
+	}
+
+	@Test
+	void updatePlot() {
+		Plot redPlot = plotService.getPlot("Red");
+		redPlot.setName("Changed name");
+		redPlot.setOrderNumber(2);
+		redPlot.setRadius(99);
+		redPlot.setWorldPoint(new WorldPoint(99, 87,  76));
+		redPlot.getProtection().setType(PlotProtection.PUBLIC);
+		redPlot.getProtection().setCapturable(true);
+		redPlot.getProtection().setCaptureTime(60);
+		plotService.updatePlot(redPlot);
+
+		Plot updated = plotDataManager.getAllPlots().stream().filter(plot -> plot.getId() == redPlot.getId()).findFirst().orElse(null);
+		assertNotNull(updated);
+		assertEquals(redPlot.getId(), updated.getId());
+		assertEquals("Changed name", updated.getName());
+		assertEquals(2, updated.getOrderNumber());
+		assertEquals(99, updated.getRadius());
+		assertEquals(new WorldPoint(99, 87,  76), updated.getWorldPoint());
+		assertEquals(PlotProtection.PUBLIC, updated.getProtection().getType());
+		assertEquals(true, updated.getProtection().getCapturable());
+		assertEquals(60, updated.getProtection().getCaptureTime());
+	}
+
+	@Test
+	void removePlot() {
+		Plot centerPlot = plotService.getPlot("Center");
+		plotService.removePlot(centerPlot);
+		Collection<Plot> plots = plotService.getPlots();
+		assertEquals(2, plots.size());
+
+		Collection<Plot> allPlots = plotDataManager.getAllPlots();
+		assertEquals(2, allPlots.size());
+		assertTrue(allPlots.stream().noneMatch(plot -> plot.getName().equals("Center")));
 	}
 
 	private void deleteIfExists(String pathname) {

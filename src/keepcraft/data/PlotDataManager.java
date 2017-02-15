@@ -70,7 +70,7 @@ public class PlotDataManager {
 
 	public Collection<Plot> getAllPlots() {
 		ArrayList<Plot> allData = new ArrayList<>();
-		Keepcraft.log("Updating plot data cache");
+		Keepcraft.log("Retrieving all plots");
 
 		try {
 			PreparedStatement statement = database.createStatement(
@@ -102,7 +102,7 @@ public class PlotDataManager {
 
 			result.close();
 		} catch (Exception e) {
-			Keepcraft.error(String.format("Error updating plot data cache: %s", e.getMessage()));
+			Keepcraft.error(String.format("Error retrieving all plots: %s", e.getMessage()));
 		} finally {
 			database.close();
 		}
