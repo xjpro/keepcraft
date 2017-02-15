@@ -81,7 +81,7 @@ public class BasicCommandListener extends CommandListener {
             message += this.getPlayersServerListing(redUsers);
             message += this.getPlayersServerListing(blueUsers);
             message += this.getPlayersServerListing(greenUsers);
-            message += this.getPlayersServerListing(adminUsers);
+            //message += this.getPlayersServerListing(adminUsers);
             message += this.getPlayersServerListing(otherUsers);
 
             String[] messages = message.split("\n");
