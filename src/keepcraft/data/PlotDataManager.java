@@ -74,13 +74,12 @@ public class PlotDataManager {
 		Keepcraft.log("Updating plot data cache");
 
 		try {
-			PreparedStatement statement = database.createStatement("SELECT plots.ROWID as PlotROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, Type, ProtectedRadius, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plots JOIN plotProtections ON PlotROWID = PlotId");
+			PreparedStatement statement = database.createStatement(
+					"SELECT plots.ROWID as PlotROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, Type, ProtectedRadius, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plots JOIN plotProtections ON PlotROWID = PlotId");
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-
 				int id = result.getInt("PlotROWID");
-
 				PlotProtection protection = new PlotProtection(id);
 				protection.setType(result.getInt("Type"));
 				protection.setProtectedRadius(result.getDouble("ProtectedRadius"));
