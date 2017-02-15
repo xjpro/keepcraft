@@ -2,6 +2,7 @@ package keepcraft.listener;
 
 import keepcraft.data.models.LootBlock;
 import keepcraft.data.models.User;
+import keepcraft.data.models.WorldPoint;
 import keepcraft.services.ChatService;
 import keepcraft.services.LootBlockService;
 import keepcraft.services.UserService;
@@ -44,7 +45,7 @@ public class LootBlockListener implements Listener {
 			if (player.isOp() || user.isAdmin()) {
 				// create a loot dispenser chest
 				placed.setType(Material.CHEST);
-				LootBlock lootBlock = lootBlockService.createLootBlock(placed);
+				LootBlock lootBlock = lootBlockService.createLootBlock(new WorldPoint(placed.getLocation()));
 				lootBlock.startDispensing();
 				chatService.sendSuccessMessage(user, "Loot block placed");
 			}
@@ -57,7 +58,7 @@ public class LootBlockListener implements Listener {
 
 		Block broken = event.getBlock();
 		if (broken.getType() == Material.CHEST) {
-			LootBlock lootBlock = lootBlockService.getLootBlock(broken);
+			LootBlock lootBlock = lootBlockService.getLootBlock(new WorldPoint(broken.getLocation()));
 			if (lootBlock == null) return;
 
 			Player player = event.getPlayer();
@@ -80,7 +81,7 @@ public class LootBlockListener implements Listener {
 
 		Block clickedBlock = event.getClickedBlock();
 		if (clickedBlock.getType() == Material.CHEST) {
-			LootBlock lootBlock = lootBlockService.getLootBlock(clickedBlock);
+			LootBlock lootBlock = lootBlockService.getLootBlock(new WorldPoint(clickedBlock.getLocation()));
 			if (lootBlock == null) return;
 
 			Player player = event.getPlayer();

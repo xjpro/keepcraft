@@ -29,12 +29,12 @@ public class LootBlock implements Runnable {
 		this.worldPoint = worldPoint;
 	}
 
-	public Block getBlock() {
-		return Keepcraft.getWorld().getBlockAt(getLocation());
+	public WorldPoint getWorldPoint() {
+		return worldPoint;
 	}
 
-	public Location getLocation() {
-		return worldPoint.asLocation();
+	public Block getBlock() {
+		return Keepcraft.getWorld().getBlockAt(worldPoint.asLocation());
 	}
 
 	public Chunk getChunk() {

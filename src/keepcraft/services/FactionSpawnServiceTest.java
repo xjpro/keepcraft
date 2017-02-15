@@ -2,11 +2,9 @@ package keepcraft.services;
 
 import keepcraft.data.Database;
 import keepcraft.data.FactionSpawnDataManager;
-import keepcraft.data.PlotDataManager;
 import keepcraft.data.models.FactionSpawn;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.WorldPoint;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,13 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class FactionSpawnServiceTest {
 
 	private FactionSpawnService factionSpawnService;
-	private FactionSpawnDataManager factionSpawnDataManager;
 
 	@BeforeEach
 	void setUp() {
 		Database.deleteIfExists("keepcraft_test.db");
 		Database database = new Database("keepcraft_test.db");
-		factionSpawnDataManager = new FactionSpawnDataManager(database);
+		FactionSpawnDataManager factionSpawnDataManager = new FactionSpawnDataManager(database);
 		FactionSpawn redTeamSpawn = new FactionSpawn(UserFaction.FactionRed, new WorldPoint(29, 30, -31));
 		factionSpawnDataManager.putData(redTeamSpawn);
 		factionSpawnService = new FactionSpawnService(factionSpawnDataManager);

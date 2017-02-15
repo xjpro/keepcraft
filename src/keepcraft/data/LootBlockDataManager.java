@@ -38,9 +38,9 @@ public class LootBlockDataManager {
 			statement.setInt(1, lootBlock.getStatus());
 			statement.setInt(2, lootBlock.getType());
 			statement.setDouble(3, lootBlock.getOutputPerHour());
-			statement.setInt(4, lootBlock.getLocation().getBlockX());
-			statement.setInt(5, lootBlock.getLocation().getBlockY());
-			statement.setInt(6, lootBlock.getLocation().getBlockZ());
+			statement.setInt(4, lootBlock.getWorldPoint().x);
+			statement.setInt(5, lootBlock.getWorldPoint().y);
+			statement.setInt(6, lootBlock.getWorldPoint().z);
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error setting lootBlocks data: " + e.getMessage());
@@ -90,9 +90,9 @@ public class LootBlockDataManager {
 		try {
 			PreparedStatement statement
 					= database.createStatement("INSERT INTO lootBlocks (LocX, LocY, LocZ, Status, Type, Output) VALUES(?, ?, ?, ?, ?, ?)");
-			statement.setInt(1, lootBlock.getLocation().getBlockX());
-			statement.setInt(2, lootBlock.getLocation().getBlockY());
-			statement.setInt(3, lootBlock.getLocation().getBlockZ());
+			statement.setInt(1, lootBlock.getWorldPoint().x);
+			statement.setInt(2, lootBlock.getWorldPoint().y);
+			statement.setInt(3, lootBlock.getWorldPoint().z);
 			statement.setInt(4, lootBlock.getStatus());
 			statement.setInt(5, lootBlock.getType());
 			statement.setInt(6, lootBlock.getOutputPerHour());
@@ -108,9 +108,9 @@ public class LootBlockDataManager {
 		Keepcraft.log("Deleting record for lootBlocks");
 		try {
 			PreparedStatement statement = database.createStatement("DELETE FROM lootBlocks WHERE LocX = ? AND LocY = ? AND LocZ = ?");
-			statement.setInt(1, lootBlock.getLocation().getBlockX());
-			statement.setInt(2, lootBlock.getLocation().getBlockY());
-			statement.setInt(3, lootBlock.getLocation().getBlockZ());
+			statement.setInt(1, lootBlock.getWorldPoint().x);
+			statement.setInt(2, lootBlock.getWorldPoint().y);
+			statement.setInt(3, lootBlock.getWorldPoint().z);
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error deleting lootBlocks data: " + e.getMessage());
