@@ -17,7 +17,7 @@ public class UserStatsDataManager {
 	private void init() {
 		try {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS userStats " +
-					"(UserName, WorldSeed, PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
+					"(RecordStart, UserName, WorldSeed, PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
 					"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests" +
 					"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
 					"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits)");
@@ -79,8 +79,8 @@ public class UserStatsDataManager {
 						"(PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
 						"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests" +
 						"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
-						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, UserName, WorldSeed) " +
-						"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, UserName, WorldSeed, RecordStart) " +
+						"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))");
 				statement.setInt(1, (int) stats.playSeconds);
 				statement.setInt(2, stats.blocksPlaced);
 				statement.setInt(3, stats.blocksRemoved);
