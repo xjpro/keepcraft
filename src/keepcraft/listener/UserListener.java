@@ -92,8 +92,8 @@ public class UserListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		event.setQuitMessage(null);
 
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
+		Player player = event.getPlayer();
+		User user = userService.getOnlineUser(player.getName());
 
 		Plot currentPlot = user.getCurrentPlot();
 		if (currentPlot != null && currentPlot.isFactionProtected(user.getFaction())) {
@@ -129,10 +129,10 @@ public class UserListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if(event.isCancelled()) return;
+		if (event.isCancelled()) return;
 
 		ItemStack inHand = event.getItem();
-		if(inHand == null) return;
+		if (inHand == null) return;
 
 		Player player = event.getPlayer();
 		User user = userService.getOnlineUser(player.getName());

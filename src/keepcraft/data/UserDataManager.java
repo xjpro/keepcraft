@@ -23,7 +23,7 @@ public class UserDataManager {
 					= database.createStatement("CREATE TABLE IF NOT EXISTS users (Name, Privilege, Faction, Money, LastPlotId, FirstOnline, LastOnline)");
 			statement.execute();
 		} catch (Exception e) {
-			Keepcraft.log("Error initializing table: " + e.getMessage());
+			Keepcraft.error("Error initializing table: " + e.getMessage());
 		} finally {
 			database.close();
 		}

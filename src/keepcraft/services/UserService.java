@@ -1,6 +1,8 @@
 package keepcraft.services;
 
+import keepcraft.Keepcraft;
 import keepcraft.data.UserDataManager;
+import keepcraft.data.UserStatsDataManager;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.UserPrivilege;
@@ -11,10 +13,12 @@ import java.util.HashMap;
 public class UserService {
 
 	private final UserDataManager userDataManager;
+	private final UserStatsDataManager userStatsDataManager;
 	private HashMap<String, User> onlineUsers = new HashMap<>();
 
-	public UserService(UserDataManager userDataManager) {
+	public UserService(UserDataManager userDataManager, UserStatsDataManager userStatisticsDataManager) {
 		this.userDataManager = userDataManager;
+		this.userStatsDataManager = userStatisticsDataManager;
 	}
 
 	public void refreshCache() {
@@ -48,12 +52,14 @@ public class UserService {
 
 	public User loadOfflineUser(String name) {
 		User user = userDataManager.exists(name) ? userDataManager.getData(name) : createUser(name);
+		user.setLogOnTime();
 		onlineUsers.put(user.getName(), user);
 		return user;
 	}
 
 	public void saveUserAndSetOffline(User user) {
 		userDataManager.updateData(user);
+		userStatsDataManager.saveData(user.getName(), Keepcraft.getWorld().getSeed(), user.getUserStats());
 		onlineUsers.remove(user.getName());
 	}
 

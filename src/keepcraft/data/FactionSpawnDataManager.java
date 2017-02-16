@@ -32,7 +32,7 @@ public class FactionSpawnDataManager {
 
 	public Collection<FactionSpawn> getAllData() {
 		List<FactionSpawn> allData = new ArrayList<>();
-		Keepcraft.error("Updating factionSpawn data cache");
+		Keepcraft.log("Updating factionSpawn data cache");
 
 		try {
 			PreparedStatement statement = database.createStatement("SELECT FactionValue, LocX, LocY, LocZ FROM factionSpawns");

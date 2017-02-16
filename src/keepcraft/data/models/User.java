@@ -3,6 +3,8 @@ package keepcraft.data.models;
 import keepcraft.services.ChatService;
 import org.bukkit.ChatColor;
 
+import java.util.Date;
+
 /**
  * Data for a player.
  */
@@ -16,10 +18,14 @@ public class User {
 	private int loggedOffFriendlyPlotId;
 
 	// Non persistent real time data
+	private Date logOnDateTime = null;
 	private Plot currentPlot = null;
 	private LootBlock targetLootBlock = null;
 	private boolean receiveGlobalMessages = true;
 	private String lastPrivateMessageSender = null;
+
+	// Stats (persisted on log off)
+	private UserStats userStats = new UserStats();
 
 	public User(String name) {
 		this.name = name;
@@ -132,5 +138,17 @@ public class User {
 
 	public void setLastPrivateMessageSender(String value) {
 		lastPrivateMessageSender = value;
+	}
+
+	public Date getLogOnTime() {
+		return logOnDateTime;
+	}
+
+	public void setLogOnTime() {
+		logOnDateTime = new Date();
+	}
+
+	public UserStats getUserStats() {
+		return userStats;
 	}
 }

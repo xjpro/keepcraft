@@ -14,9 +14,9 @@ public class Database {
 	private final String databasePath;
 
 	public Database(String path) {
+		Keepcraft.log("init database " + path);
 		databasePath = path;
 
-		Keepcraft.log("init database");
 		try {
 			// It's a SQLite database
 			Class.forName("org.sqlite.JDBC");

@@ -24,8 +24,11 @@ public class Keepcraft extends JavaPlugin {
 	private final FactionSpawnDataManager factionSpawnManager = new FactionSpawnDataManager(database);
 	private final LootBlockDataManager lootBlockDataManager = new LootBlockDataManager(database);
 
+	private final Database statsDatabase = new Database("keepcraft_stats.db");
+	private final UserStatsDataManager userStatsDataManager = new UserStatsDataManager(statsDatabase);
+
 	// Services
-	private final UserService userService = new UserService(userDataManager);
+	private final UserService userService = new UserService(userDataManager, userStatsDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
 	private final LootBlockService lootBlockService = new LootBlockService(lootBlockDataManager);
@@ -60,6 +63,7 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new LootBlockListener(userService, lootBlockService, chatService), this);
 		manager.registerEvents(new CraftItemListener(), this);
 		manager.registerEvents(new StormListener(), this);
+		manager.registerEvents(new StatsListener(userService, plotService), this);
 
 		// Basic commands
 		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService);
@@ -149,10 +153,10 @@ public class Keepcraft extends JavaPlugin {
 	}
 
 	public static void log(String text) {
-		logger.info(String.format("(KC) %s", text));
+		logger.info(String.format("[Keepcraft] %s", text));
 	}
 
 	public static void error(String text) {
-		logger.severe(String.format("(KC) %s", text));
+		logger.severe(String.format("[Keepcraft] %s", text));
 	}
 }
