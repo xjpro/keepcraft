@@ -1,25 +1,25 @@
 package keepcraft.command;
 
 import keepcraft.Keepcraft;
+import keepcraft.data.models.Plot;
+import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
-import keepcraft.services.PlotService;
+import keepcraft.services.SiegeService;
 import keepcraft.services.UserService;
+import keepcraft.tasks.Siege;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import keepcraft.data.models.Plot;
-import keepcraft.tasks.Siege;
-import keepcraft.data.models.User;
 
 public class SiegeCommandListener extends CommandListener {
 
 	private final UserService userService;
-	private final PlotService plotService;
+	private final SiegeService siegeService;
 	private final ChatService chatService;
 
-	public SiegeCommandListener(UserService userService, PlotService plotService, ChatService chatService) {
+	public SiegeCommandListener(UserService userService, SiegeService siegeService, ChatService chatService) {
 		this.userService = userService;
-		this.plotService = plotService;
+		this.siegeService = siegeService;
 		this.chatService = chatService;
 	}
 
@@ -77,7 +77,7 @@ public class SiegeCommandListener extends CommandListener {
 	}
 
 	private void startSiege(User sender, Plot plot) {
-		Siege siege = new Siege(userService, plotService, chatService, plot, sender);
+		Siege siege = siegeService.startSiege(plot, sender);
 
 		int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Keepcraft.getPlugin(), siege, 0, 600);
 		// 20 tick value = 1 second

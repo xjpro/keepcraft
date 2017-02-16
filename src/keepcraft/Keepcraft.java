@@ -30,6 +30,7 @@ public class Keepcraft extends JavaPlugin {
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
 	private final LootBlockService lootBlockService = new LootBlockService(lootBlockDataManager);
 	private final ChatService chatService = new ChatService(userService);
+	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 
 	@Override
 	public void onEnable() {
@@ -109,7 +110,7 @@ public class Keepcraft extends JavaPlugin {
 		}
 
 		// Siege commands
-		CommandListener siegeCommandListener = new SiegeCommandListener(userService, plotService, chatService);
+		CommandListener siegeCommandListener = new SiegeCommandListener(userService, siegeService, chatService);
 		String[] siegeCommands = {"cap", "capture"};
 		for (String siegeCommand : siegeCommands) {
 			getCommand(siegeCommand).setExecutor(siegeCommandListener);
