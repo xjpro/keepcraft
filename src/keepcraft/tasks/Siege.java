@@ -30,7 +30,6 @@ public class Siege implements Runnable {
 	private final int attackingFaction;
 	private final int defendingFaction;
 
-	// TODO refactor this into a siegeService
 	public Siege(UserService userService, PlotService plotService, ChatService chatService, Plot plot, User initiatingUser) {
 		this.userService = userService;
 		this.plotService = plotService;
@@ -44,6 +43,10 @@ public class Siege implements Runnable {
 
 	public void setTaskId(int value) {
 		taskId = value;
+	}
+
+	public Plot getPlot() {
+		return plot;
 	}
 
 	public int getAttackingFaction() {
@@ -73,14 +76,11 @@ public class Siege implements Runnable {
 			//attackerBonus = Math.max(1, attackerBonus); // 1 is minimum value (no bonus)
 			remainingTime -= 30 * attackerBonus;
 
-			if (attackers.isEmpty()) // No attackers are in the area anymore
-			{
+			if (attackers.isEmpty()) { // No attackers are in the area anymore
 				cancel();
-			} else if (remainingTime <= 0) // Siege is over and we can switch control
-			{
+			} else if (remainingTime <= 0) { // Siege is over and we can switch control
 				finish();
-			} else // Carry on
-			{
+			} else { // Carry on
 				for (User attacker : attackers) {
 					chatService.sendAlertMessage(attacker, "Capture will complete in " + timeLeft(remainingTime) + " (" + (int) Math.round((attackerBonus - CAPTURE_BONUS_MODIFIER) * 100) + "% force bonus)");
 				}

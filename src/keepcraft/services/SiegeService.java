@@ -1,8 +1,10 @@
 package keepcraft.services;
 
+import keepcraft.Keepcraft;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.tasks.Siege;
+import org.bukkit.Bukkit;
 
 public class SiegeService {
 
@@ -17,6 +19,10 @@ public class SiegeService {
 	}
 
 	public Siege startSiege(Plot plot, User initiatingUser) {
-		return new Siege(userService, plotService, chatService, plot, initiatingUser);
+		Siege siege = new Siege(userService, plotService, chatService, plot, initiatingUser);
+		// Run every 30 seconds
+		int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Keepcraft.getPlugin(), siege, 0, 600);
+		siege.setTaskId(taskId);
+		return siege;
 	}
 }

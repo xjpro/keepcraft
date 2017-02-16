@@ -1,13 +1,11 @@
 package keepcraft.command;
 
-import keepcraft.Keepcraft;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
 import keepcraft.services.SiegeService;
 import keepcraft.services.UserService;
 import keepcraft.tasks.Siege;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -61,13 +59,13 @@ public class SiegeCommandListener extends CommandListener {
 					} else { // A third faction is attacking
 						existingSiege.cancel();
 						chatService.sendSuccessMessage(sender, "You begin capturing " + currentPlot.getName());
-						startSiege(sender, currentPlot);
+						siegeService.startSiege(currentPlot, sender);
 						return true;
 					}
 				} else {
 					// begin siege?
 					chatService.sendSuccessMessage(sender, "You begin capturing " + currentPlot.getName());
-					startSiege(sender, currentPlot);
+					siegeService.startSiege(currentPlot, sender);
 					return true;
 				}
 			}
@@ -75,14 +73,4 @@ public class SiegeCommandListener extends CommandListener {
 
 		return false;
 	}
-
-	private void startSiege(User sender, Plot plot) {
-		Siege siege = siegeService.startSiege(plot, sender);
-
-		int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Keepcraft.getPlugin(), siege, 0, 600);
-		// 20 tick value = 1 second
-		// 1200 tick value = 1 minute
-		siege.setTaskId(taskId);
-	}
-
 }
