@@ -32,6 +32,14 @@ public class Plot {
 		this.protection = protection;
 	}
 
+	public boolean isBasePlot() {
+		return isFactionProtected() && !protection.isCapturable();
+	}
+
+	public boolean canBeRalliedTo() {
+		return isBasePlot() || (protection.isCapturable() && !protection.isCaptureInProgress());
+	}
+
 	public Location getLocation() {
 		return worldPoint.asLocation();
 	}
