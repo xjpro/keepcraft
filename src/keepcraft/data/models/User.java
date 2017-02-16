@@ -114,8 +114,8 @@ public class User {
 		return targetLootBlock;
 	}
 
-	public void setTargetLootBlock(LootBlock value) {
-		targetLootBlock = value;
+	public void setTargetLootBlock(LootBlock lootBlock) {
+		targetLootBlock = lootBlock;
 	}
 
 	public boolean getReceiveGlobalMessages() {

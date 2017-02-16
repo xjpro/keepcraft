@@ -47,7 +47,8 @@ public class LootBlockListener implements Listener {
 				placed.setType(Material.CHEST);
 				LootBlock lootBlock = lootBlockService.createLootBlock(new WorldPoint(placed.getLocation()));
 				lootBlock.startDispensing();
-				chatService.sendSuccessMessage(user, "Loot block placed");
+				user.setTargetLootBlock(lootBlock);
+				chatService.sendSuccessMessage(user, "Loot block placed & targeted");
 			}
 		}
 	}
