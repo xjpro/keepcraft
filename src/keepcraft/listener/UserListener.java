@@ -80,13 +80,11 @@ public class UserListener implements Listener {
 
 		Plot loggedOffFriendlyPlot = plotService.getPlot(user.getLoggedOffFriendlyPlotId());
 		if (loggedOffFriendlyPlot != null && !loggedOffFriendlyPlot.isFactionProtected(user.getFaction())) {
-			// Last plot id only stored when we logged off in an owned plot.
-			// This plot is now longer secured so teleport home.
-
-			// todo check that this still works
-			//Keepcraft.log(String.format("Player %s logged into a formerly secured area, teleporting home", player.getName()));
-			//teleportHome(player, user);
-			//player.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returning home");
+			// loggedOffFriendlyPlot is only stored when we logged off in an owned plot
+			// This plot is now longer secured so teleport home
+			Keepcraft.log(String.format("%s logged into a formerly secured area, teleporting home", player.getName()));
+			teleportHome(player, user);
+			player.sendMessage(ChatService.Info + "The area you logged into is no longer secure, returning home");
 		}
 	}
 
@@ -103,7 +101,7 @@ public class UserListener implements Listener {
 			// we can later warp them home if the territory switches control
 			user.setLoggedOffFriendlyPlotId(currentPlot.getId());
 		} else {
-			user.setLoggedOffFriendlyPlotId(0);
+			user.setLoggedOffFriendlyPlotId(-1);
 		}
 
 		userService.saveUserAndSetOffline(user);
