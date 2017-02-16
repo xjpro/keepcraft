@@ -15,8 +15,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -32,10 +30,10 @@ public class StatsListener implements Listener {
 		this.plotService = plotService;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		User user = userService.getOnlineUser(event.getPlayer().getName());
-		user.getUserStats().playSeconds = (user.getLogOnTime().getTime() - (new Date()).getTime()) / 1000;
+		user.getUserStats().playSeconds = ((new Date()).getTime() - user.getLogOnTime().getTime()) / 1000;
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -52,32 +50,38 @@ public class StatsListener implements Listener {
 		user.getUserStats().blocksRemoved++;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onInventoriedChests(InventoryMoveItemEvent event) {
-		if (event.isCancelled()) return;
-		if (!(event.getInitiator().getHolder() instanceof Player)) return; // Not a player moving things
-
-		Player player = (Player) event.getInitiator();
-		User user = userService.getOnlineUser(player.getName());
-
-		if (event.getDestination().getType() == InventoryType.CHEST) {
-			// Moving from player inventory to a chest
-			user.getUserStats().blocksAddedToChests += event.getItem().getAmount();
-
-			Plot plot = plotService.getIntersectedPlot(event.getDestination().getLocation());
-			if (plot != null && plot.isFactionProtected(user.getFaction())) {
-				user.getUserStats().blocksAddedToTeamChests += event.getItem().getAmount();
-			}
-		} else if (event.getSource().getType() == InventoryType.CHEST) {
-			// Taking from a chest and putting into player inventory
-			user.getUserStats().blocksRemovedFromChests += event.getItem().getAmount();
-
-			Plot plot = plotService.getIntersectedPlot(event.getDestination().getLocation());
-			if (plot != null && plot.isFactionProtected(user.getFaction())) {
-				user.getUserStats().blocksRemovedFromTeamChests += event.getItem().getAmount();
-			}
-		}
-	}
+	//@EventHandler(priority = EventPriority.HIGHEST)
+//	public void onInventoriedChests(InventoryClickEvent event) {
+//		if (event.isCancelled()) return;
+//		if (!(event.getWhoClicked() instanceof Player)) return; // Not a player moving things
+//
+//		Player player = (Player) event.getWhoClicked();
+//		User user = userService.getOnlineUser(player.getName());
+//
+//		//System.out.println(event.getClickedInventory());
+//		//System.out.println(event.getSource().getType());
+//
+//		if (event.getClickedInventory().getType() == InventoryType.CHEST) {
+//			if(event.getCurrentItem() != null) {
+//				// Moving from player inventory to a chest
+//				user.getUserStats().blocksAddedToChests += event.getCurrentItem().getAmount();
+//
+//				Plot plot = plotService.getIntersectedPlot(event.getAction() == InvegetDestination().getLocation());
+//				if (plot != null && plot.isFactionProtected(user.getFaction())) {
+//					user.getUserStats().blocksAddedToTeamChests += event.getItem().getAmount();
+//				}
+//			}
+//			else {
+//				// Taking from a chest and putting into player inventory
+//				user.getUserStats().blocksRemovedFromChests += event.getItem().getAmount();
+//
+//				Plot plot = plotService.getIntersectedPlot(event.getDestination().getLocation());
+//				if (plot != null && plot.isFactionProtected(user.getFaction())) {
+//					user.getUserStats().blocksRemovedFromTeamChests += event.getItem().getAmount();
+//				}
+//			}
+//		}
+//	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDeath(PlayerDeathEvent event) {
@@ -137,7 +141,7 @@ public class StatsListener implements Listener {
 
 		if (hitWith == null || player == null) return;
 
-		User damagerUser = userService.getUser(player.getName());
+		User damagerUser = userService.getOnlineUser(player.getName());
 
 		if (hitWith == Material.ARROW) {
 			damagerUser.getUserStats().arrowHits++;

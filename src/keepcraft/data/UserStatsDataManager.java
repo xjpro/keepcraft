@@ -18,7 +18,7 @@ public class UserStatsDataManager {
 		try {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS userStats " +
 					"(RecordStart, UserName, WorldSeed, PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
-					"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests" +
+					"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests, " +
 					"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
 					"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits)");
 			statement.execute();
@@ -77,7 +77,7 @@ public class UserStatsDataManager {
 			if (rowsAffected == 0) {
 				statement = database.createStatement("INSERT INTO userStats " +
 						"(PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
-						"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests" +
+						"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests, " +
 						"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
 						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, UserName, WorldSeed, RecordStart) " +
 						"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))");

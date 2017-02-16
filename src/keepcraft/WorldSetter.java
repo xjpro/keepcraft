@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 // -5036103636176790253 spawn in big ass canyons with small sky island near 175, 175, meanwhile -175,-175 is in ocean (a very bad spawn seed)
 // 794682861 huge floating island near 175, 175
+// -476567279232347522 horrible spawn for blue with base deep inside a mountain
 class WorldSetter {
 
 	private final PlotService plotService;
