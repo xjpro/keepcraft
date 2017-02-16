@@ -101,9 +101,9 @@ class PlotServiceTest {
 	@Test
 	void createTeamPlot() {
 		plotService.createTeamPlot(new WorldPoint(1000, 100, -1000), UserFaction.FactionGold, 99);
-		Plot plot = plotService.getPlot("Gold Base");
+		Plot plot = plotService.getPlot("Gold Castle");
 		assertTrue(plot.getId() > 0);
-		assertEquals("Gold Base", plot.getName());
+		assertEquals("Gold Castle", plot.getName());
 		assertEquals(PlotProtection.FACTION_E, plot.getProtection().getType());
 		assertEquals(99, plot.getRadius());
 		assertEquals(99, plot.getProtection().getProtectedRadius());

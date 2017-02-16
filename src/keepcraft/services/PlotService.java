@@ -62,7 +62,7 @@ public class PlotService {
 	}
 
 	public Plot createTeamPlot(WorldPoint worldPoint, int userFaction, int radius) {
-		String plotName = String.format("%s Base", UserFaction.asString(userFaction));
+		String plotName = String.format("%s Castle", UserFaction.asString(userFaction));
 
 		Plot plot = plotDataManager.createPlot(worldPoint, plotName, radius);
 		PlotProtection protection = plot.getProtection();
