@@ -176,14 +176,14 @@ public class PlotProtectionListener implements Listener {
 			chatService.sendFailureMessage(user, "Cannot place attack blocks in your own base");
 			cancelPlacement = true;
 		}
-		// Plot is immune to attack
-		else if (plot.isImmuneToAttack()) {
-			chatService.sendFailureMessage(user, "Area can only be attacked from 8pm to 11pm CST");
-			cancelPlacement = true;
-		}
 		// Admin protected
 		else if (plot.isAdminProtected()/* || plot.isInAdminProtectedRadius(block.getLocation()) || plot.isEventProtected()*/) {
 			chatService.sendFailureMessage(user, "This area is protected");
+			cancelPlacement = true;
+		}
+		// Plot is immune to attack
+		else if (plot.isImmuneToAttack()) {
+			chatService.sendFailureMessage(user, "Area can only be attacked from 8pm to 11pm CST");
 			cancelPlacement = true;
 		}
 

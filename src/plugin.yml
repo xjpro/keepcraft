@@ -43,7 +43,7 @@ commands:
         usage: /setfaction <username> [faction #]
     plottp:
         description: Teleport to a plot name
-        usage: /plottop <plot name>
+        usage: /plottp <plot name>
     lootblock:
         description: Edit a lootblock
         usage: /lootblock

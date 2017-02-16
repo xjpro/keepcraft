@@ -58,9 +58,7 @@ public class MovementListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		User user = userService.getOnlineUser(event.getPlayer().getName());
-		user.setCurrentPlot(null);
-		handleMovement(user, event.getTo(), event.getFrom());
+		handleMovement(userService.getOnlineUser(event.getPlayer().getName()), event.getTo(), event.getFrom());
 	}
 
 	private void handleMovement(User user, Location to, Location from) {
