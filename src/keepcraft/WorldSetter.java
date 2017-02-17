@@ -149,16 +149,20 @@ class WorldSetter {
 	private boolean isAcceptableBiome(Biome biome) {
 		switch (biome) {
 			case FOREST:
-			case BIRCH_FOREST:
 			case FOREST_HILLS:
+			case BIRCH_FOREST:
 			case BIRCH_FOREST_HILLS:
+			case ROOFED_FOREST:
 			case DESERT:
 			case DESERT_HILLS:
 			case SAVANNA:
 			case PLAINS:
+			case ICE_FLATS: // ice plains
 			case TAIGA:
+			case REDWOOD_TAIGA:
+			case TAIGA_COLD:
 			case TAIGA_HILLS:
-			//case RIVER:
+			case MESA:
 				return true;
 		}
 		return false;
