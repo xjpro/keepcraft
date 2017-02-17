@@ -7,6 +7,7 @@ import keepcraft.services.PlotService;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
@@ -26,8 +27,25 @@ class WorldSetter {
 	}
 
 	World setupWorld(World world) {
-		setBase(UserFaction.FactionRed, new Location(world, 175.5, 64, 175.5));
-		setBase(UserFaction.FactionBlue, new Location(world, -175.5, 64, -175.5));
+		boolean found = false;
+		Location center = new Location(world, 0, 64, 0);
+		Location redBase;
+		Location blueBase;
+		do {
+			redBase = center.clone().add(175.5, 0, 175.5);
+			blueBase = center.clone().add(-175.5, 0, -175.5);
+
+			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) &&
+					isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ()))) {
+				found = true;
+			} else {
+				Keepcraft.log("Unacceptable base biomes, going north");
+				center.add(500, 0, 0);
+			}
+		} while (!found);
+
+		setBase(UserFaction.FactionRed, redBase);
+		setBase(UserFaction.FactionBlue, blueBase);
 		return world;
 	}
 
@@ -126,5 +144,23 @@ class WorldSetter {
 
 		center.getRelative(BlockFace.DOWN).setType(Material.BEACON);
 		world.dropItem(center.getLocation().add(0, 1, 0), new ItemStack(Material.WOOD_PICKAXE, 1));
+	}
+
+	private boolean isAcceptableBiome(Biome biome) {
+		switch (biome) {
+			case FOREST:
+			case BIRCH_FOREST:
+			case FOREST_HILLS:
+			case BIRCH_FOREST_HILLS:
+			case DESERT:
+			case DESERT_HILLS:
+			case SAVANNA:
+			case PLAINS:
+			case TAIGA:
+			case TAIGA_HILLS:
+			//case RIVER:
+				return true;
+		}
+		return false;
 	}
 }
