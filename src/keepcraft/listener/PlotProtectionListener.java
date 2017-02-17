@@ -17,8 +17,6 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import java.util.List;
-
 public class PlotProtectionListener implements Listener {
 
 	private final UserService userService;
@@ -134,7 +132,8 @@ public class PlotProtectionListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockDispense(BlockDispenseEvent event) {
-		if (event.getItem().getType() == Material.TNT) {
+		Material material = event.getItem().getType();
+		if (material == Material.TNT) {
 			// Do not allow TNT to dispense in protected plots
 			// This could only really happen if a team member was dispensing TNT into their own plot
 
@@ -142,6 +141,8 @@ public class PlotProtectionListener implements Listener {
 			if (plot != null && plot.isFactionProtected()) {
 				event.setCancelled(true);
 			}
+		} else if (material == Material.LAVA_BUCKET) {
+			event.setCancelled(true);
 		}
 	}
 
