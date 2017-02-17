@@ -140,11 +140,11 @@ public class User {
 		lastPrivateMessageSender = value;
 	}
 
-	public Date getLogOnTime() {
-		return logOnDateTime;
+	public long getPlayedSeconds() {
+		return ((new Date()).getTime() - logOnDateTime.getTime()) / 1000;
 	}
 
-	public void setLogOnTime() {
+	public void startPlayTime() {
 		logOnDateTime = new Date();
 	}
 

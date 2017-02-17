@@ -52,7 +52,7 @@ public class UserService {
 
 	public User loadOfflineUser(String name) {
 		User user = userDataManager.exists(name) ? userDataManager.getData(name) : createUser(name);
-		user.setLogOnTime();
+		user.startPlayTime();
 		onlineUsers.put(user.getName(), user);
 		return user;
 	}

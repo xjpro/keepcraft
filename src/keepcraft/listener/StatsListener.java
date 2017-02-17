@@ -18,8 +18,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Date;
-
 public class StatsListener implements Listener {
 
 	private final UserService userService;
@@ -33,7 +31,7 @@ public class StatsListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		User user = userService.getOnlineUser(event.getPlayer().getName());
-		user.getUserStats().playSeconds = ((new Date()).getTime() - user.getLogOnTime().getTime()) / 1000;
+		user.getUserStats().playSeconds = user.getPlayedSeconds();
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
