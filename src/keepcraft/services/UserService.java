@@ -81,9 +81,16 @@ public class UserService {
 		int blueCount = userDataManager.getFactionCount(UserFaction.FactionBlue);
 		int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
 
+		int faction;
+		if (redCount == blueCount) {
+			faction = UserFaction.getRandomFaction();
+		} else {
+			faction = UserFaction.getSmallestFaction(redCount, blueCount, greenCount);
+		}
+
 		User user = new User(name);
 		user.setPrivilege(UserPrivilege.MEMBER);
-		user.setFaction(UserFaction.getSmallestFaction(redCount, blueCount, greenCount));
+		user.setFaction(faction);
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(0);
 		userDataManager.putData(user);
