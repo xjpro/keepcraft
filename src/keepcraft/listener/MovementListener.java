@@ -10,12 +10,14 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class MovementListener implements Listener {
 
@@ -59,6 +61,15 @@ public class MovementListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		handleMovement(userService.getOnlineUser(event.getPlayer().getName()), event.getTo(), event.getFrom());
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerLeaveVehicle(VehicleExitEvent event) {
+		if (event.getExited() instanceof Player && event.getVehicle().getType() == EntityType.MINECART) {
+			Location location = event.getExited().getLocation();
+			// todo just zero out x,y,z and not pitch, yaw, etc.
+			event.getExited().teleport(new Location(location.getWorld(), location.getBlockY(), location.getBlockY(), location.getBlockZ()));
+		}
 	}
 
 	private void handleMovement(User user, Location to, Location from) {
