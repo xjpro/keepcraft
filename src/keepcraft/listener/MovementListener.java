@@ -10,11 +10,15 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftBoat;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftMinecart;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
@@ -66,9 +70,23 @@ public class MovementListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerLeaveVehicle(VehicleExitEvent event) {
 		if (event.getExited() instanceof Player && event.getVehicle().getType() == EntityType.MINECART) {
-			Location location = event.getExited().getLocation();
-			// todo just zero out x,y,z and not pitch, yaw, etc.
-			event.getExited().teleport(new Location(location.getWorld(), location.getBlockY(), location.getBlockY(), location.getBlockZ()));
+			Location exitLocation = event.getExited().getLocation().clone();
+			exitLocation.setX(Math.floor(exitLocation.getX()) + 0.5);
+			exitLocation.setX(Math.floor(exitLocation.getY()));
+			exitLocation.setZ(Math.floor(exitLocation.getZ()) + 0.5);
+			event.getExited().teleport(exitLocation);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerEnteringVehicle(PlayerInteractEntityEvent event) {
+		Entity entity = event.getRightClicked();
+		if (entity instanceof CraftBoat || entity instanceof CraftMinecart) {
+			if (event.getPlayer().getLocation().distance(entity.getLocation()) > 1.3f) {
+				// Impose a lower than normal maximum distance on entering a vehicle
+				// This prevents players from using boats to get over short walls
+				event.setCancelled(true);
+			}
 		}
 	}
 
