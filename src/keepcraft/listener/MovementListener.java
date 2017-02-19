@@ -64,7 +64,11 @@ public class MovementListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		handleMovement(userService.getOnlineUser(event.getPlayer().getName()), event.getTo(), event.getFrom());
+		User user = userService.getOnlineUser(event.getPlayer().getName());
+		// User can be null if the player logs off while in a boat, no idea why
+		if (user != null) {
+			handleMovement(user, event.getTo(), event.getFrom());
+		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
