@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -27,69 +28,89 @@ public class CombatListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityDamage(EntityDamageByEntityEvent event) {
-		DamageCause cause = event.getCause();
-		if (cause.equals(DamageCause.ENTITY_ATTACK) || cause.equals(DamageCause.PROJECTILE)) {
-			Entity damager = event.getDamager();
-			Entity damaged = event.getEntity();
+		if (!(event.getEntity() instanceof Player)) return; // entity being hit not a player
 
-			if (damaged instanceof Player) {
-				boolean arrowHit = false;
-				Player attacker = null;
+		System.out.println("pre : " + event.getDamage());
+		System.out.println("origi damag1: " + event.getOriginalDamage(EntityDamageEvent.DamageModifier.BASE));
+		System.out.println("origi damag2: " + event.getDamage(EntityDamageEvent.DamageModifier.BASE));
+		System.out.println("armor reduc1: " + event.getOriginalDamage(EntityDamageEvent.DamageModifier.ARMOR));
+		System.out.println("armor reduc2: " + event.getDamage(EntityDamageEvent.DamageModifier.ARMOR));
+		System.out.println("magic reduc1: " + event.getOriginalDamage(EntityDamageEvent.DamageModifier.MAGIC));
+		System.out.println("magic reduc2: " + event.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
+		System.out.println("final: " + event.getFinalDamage());
 
-				if (damager instanceof Player) {
-					attacker = (Player) damager;
-				} else if (damager instanceof Arrow) {
-					Arrow projectile = (Arrow) damager;
-					LivingEntity shooter = (LivingEntity) projectile.getShooter();
+		// Determine damager and base damage based on type of attack
+		Player damager;
+		double originalDamage = event.getDamage(); // todo get from one of the above places
+		double baseDamage;
+		boolean isArrowHit;
 
-					if (shooter instanceof Player) {
-						attacker = (Player) shooter;
-						arrowHit = true;
-					}
-				} else if (damager instanceof ThrownPotion) {
-					// todo I think we need this to prevent team killing via potions
-//					ThrownPotion potion = (ThrownPotion) damager;
-//					LivingEntity shooter = (LivingEntity) potion.getShooter();
-//					if (shooter instanceof Player) {
-//						attacker = (Player) shooter;
-//					}
-				}
+		// todo do we need to reset damage reduction by protection enchantments?
 
-				if (attacker != null) {
-					User attackingUser = userService.getOnlineUser(attacker.getName());
-					Player defender = (Player) damaged;
-					User defendingUser = userService.getOnlineUser(defender.getName());
+		if (event.getCause().equals(DamageCause.ENTITY_ATTACK)) {
+			if (!(event.getDamager() instanceof Player)) return; // entity hitting not a player
+			damager = (Player) event.getDamager();
+			isArrowHit = false;
 
-					if (attackingUser.getFaction() == defendingUser.getFaction()) {
-						// Team members cannot damage each other
-						event.setCancelled(true);
-						return;
-					}
+			baseDamage = getUnenchantedDamageByWeapon(originalDamage, damager.getEquipment().getItemInMainHand()); // todo is this needed?
+			// todo reapply damage enchantments with reduced formula
 
-					// Remove food from bar when hit by an arrow
-					if (arrowHit && defender.getFoodLevel() > 0) {
-						defender.setFoodLevel(defender.getFoodLevel() - 2);
-					}
+		} else if (event.getCause().equals(DamageCause.PROJECTILE)) {
+			Arrow projectile = (Arrow) event.getDamager();
+			if (!(projectile.getShooter() instanceof Player)) return; // entity hitting not a player
+			damager = (Player) projectile.getShooter();
+			isArrowHit = true;
 
-					// event.getDamage() is damage INCLUDING enchantment power but BEFORE armor mitigation
-					// event.getFinalDamage() is damage AFTER enchantment power AND armor mitigation
+			baseDamage = getUnenchantedDamageByBow(originalDamage, damager.getEquipment().getItemInMainHand()); // todo is this needed?
+			baseDamage *= 0.5; // reduce overall damage by some amount todo tweak amount
+			// todo reapply damage enchantments with a reduced formula
 
-					//System.out.println("original damage " + event.getDamage());
-					//System.out.println("original final damage " + event.getFinalDamage());
-
-					double damageAdditionToBalanceArmor = calcDamageAdditionToBalanceArmor(event, defender);
-					double damageAdditionToBalanceProtectionEnchantments = calcDamageAdditionToBalanceProtectionEnchantments(event, defender);
-					double damageReductionToBalanceAttackEnchantments = calcDamageReductionToBalanceAttackEnchantments(event, attacker);
-					//System.out.println("damageAdditionToBalanceArmor: " + damageAdditionToBalanceArmor);
-					//System.out.println("damageAdditionToBalanceProtectionEnchantments: " + damageAdditionToBalanceProtectionEnchantments);
-					//System.out.println("damageReductionToBalanceAttackEnchantments: " + damageReductionToBalanceAttackEnchantments);
-
-					event.setDamage(event.getDamage() + damageAdditionToBalanceArmor + damageAdditionToBalanceProtectionEnchantments - damageReductionToBalanceAttackEnchantments);
-					//System.out.println("changed damage " + event.getDamage());
-					//System.out.println("changed final damage " + event.getFinalDamage());
-				}
-			}
+		} else {
+			return; // other damage types
 		}
+
+		Player damaged = (Player) event.getEntity();
+		User damagerUser = userService.getOnlineUser(damager.getName());
+		User damagedUser = userService.getOnlineUser(damaged.getName());
+		if (damagerUser.getFaction() == damagedUser.getFaction()) {
+			// Team members cannot damage each other
+			event.setCancelled(true);
+			return;
+		}
+
+		if (isArrowHit) {
+			// Remove food from bar when hit by an arrow
+			if (damaged.getFoodLevel() >= 2) {
+				damaged.setFoodLevel(damaged.getFoodLevel() - 2);
+			}
+
+			// todo buff shields vs arrows via event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, ) ?
+		}
+
+		// We assume at this point we've arrived at a good damage amount pre armor and prot ench mitigation
+		// todo assumption: this allows change to base damage
+		event.setDamage(EntityDamageEvent.DamageModifier.BASE, baseDamage);
+
+		// Apply damage reduction for wearing armor
+		int defensePoints = Armor.getDefensePoints(damaged);
+		defensePoints *= defensePoints / 89.0; // Reduce defense points on sliding scale of 0-22.5% (more armor gets more nerf)
+
+		// Calculate the damage mitigation using the original damage formula but with our reduced armor values
+		// Original formula: damage = damage * ( 1 - min( 20, max( defensePoints / 5, defensePoints - damage / ( 2 + toughness / 4 ) ) ) / 25 )
+		// Note: "toughness" is ignored, further nerfing diamond armor
+		// todo assumption: this allows change to armor modifier
+		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, originalDamage - (originalDamage * (1 - Math.min(20, Math.max(defensePoints / 5, defensePoints - originalDamage / 2)) / 25)));
+
+		// Apply damage reduction for wearing enchantments
+		double enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged);
+		enchantmentProtectionFactor *= 0.6666; // Reduce protection factor by x% todo tweak this amount
+
+		// Calculate the damage mitigation using the original EPF formula but with our reduced EPF
+		// Original formula: damage = damage * ( 1 - epf / 25 )
+		// todo assumption: this allows change to prot ench modifier
+		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, originalDamage - (originalDamage * (1 - enchantmentProtectionFactor / 25)));
+
+		System.out.println("post: " + event.getFinalDamage());
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -146,12 +167,12 @@ public class CombatListener implements Listener {
 	}
 
 	private double calcDamageAdditionToBalanceArmor(EntityDamageByEntityEvent event, Player defender) {
-		int armorValue = Armor.getArmorValue(defender.getInventory());
+		int armorValue = Armor.getDefensePoints(defender);
 		return event.getDamage() * (armorValue / 75.0);
 	}
 
 	private double calcDamageAdditionToBalanceProtectionEnchantments(EntityDamageByEntityEvent event, Player defender) {
-		double enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(defender.getInventory());
+		double enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(defender);
 		return event.getDamage() * (enchantmentProtectionFactor / 35.0);
 	}
 
@@ -200,6 +221,30 @@ public class CombatListener implements Listener {
 		}
 
 		return 0;
+	}
+
+	private double getUnenchantedDamageByWeapon(double damage, ItemStack weapon) {
+		if (weapon.getEnchantments().containsKey(Enchantment.DAMAGE_ALL)) { // all non-bow, but we can assume a sword
+			int enchantmentLevel = weapon.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+			return damage - (0.5 * (enchantmentLevel - 1)) - 1;
+		}
+		return damage;
+	}
+
+	private double getUnenchantedDamageByBow(double damage, ItemStack bow) {
+		if (bow == null || bow.getType() != Material.BOW) {
+			// todo investigate possibility of switching off quickly (probably applies only to bows)
+			return damage;
+
+		}
+
+		// Damage enchanted bow
+		if (bow.getEnchantments().containsKey(Enchantment.ARROW_DAMAGE)) {
+			int enchantmentLevel = bow.getEnchantmentLevel(Enchantment.ARROW_DAMAGE);
+			// undo original formula: Increases arrow damage by 25% × (level + 1), rounded up to nearest half-heart
+			return Math.round(damage / (1 + (0.25 * (enchantmentLevel + 1))) * 2) / 2.0;
+		}
+		return damage;
 	}
 
 }

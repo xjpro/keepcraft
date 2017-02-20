@@ -1,6 +1,7 @@
 package keepcraft.data.models;
 
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -33,7 +34,8 @@ public class Armor {
 		static short DiamondBoots = 3;
 	}
 
-	public static int getArmorValue(PlayerInventory inventory) {
+	public static int getDefensePoints(Player player) {
+		PlayerInventory inventory = player.getInventory();
 		int totalArmor = 0;
 
 		ItemStack helmet = inventory.getHelmet();
@@ -123,7 +125,8 @@ public class Armor {
 		return totalArmor;
 	}
 
-	public static double getEnchantmentProtectionFactor(PlayerInventory inventory) {
+	public static int getEnchantmentProtectionFactor(Player player) {
+		PlayerInventory inventory = player.getInventory();
 		int enchantmentProtectionFactor = 0;
 
 		ItemStack helmet = inventory.getHelmet();
