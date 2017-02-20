@@ -12,28 +12,30 @@ import org.bukkit.event.entity.EntityInteractEvent;
 
 public class WorldEntityListener implements Listener {
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onEndermanPickup(EntityChangeBlockEvent event) {
-        if(event.getEntityType() == EntityType.ENDERMAN) {
-            // This is annoying
-            event.setCancelled(true);
-        }
-    }
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onEndermanPickup(EntityChangeBlockEvent event) {
+		if (event.getEntityType() == EntityType.ENDERMAN) {
+			// This is annoying
+			event.setCancelled(true);
+		}
+	}
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onEntityInteract(EntityInteractEvent event) {
-        if (event.getEntity() instanceof Creature) {
-            Block clicked = event.getBlock();
-            Material blockType = clicked.getType();
-            switch (blockType) {
-                // Just stop creatures from activating stone switches
-                case STONE_BUTTON:
-                case STONE_PLATE:
-                case LEVER:
-                    event.setCancelled(true);
-                    break;
-            }
-        }
-    }
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onEntityInteract(EntityInteractEvent event) {
+		if (event.getEntity() instanceof Creature) {
+			Block clicked = event.getBlock();
+			Material blockType = clicked.getType();
+			switch (blockType) {
+				// Just stop creatures from activating stone switches
+				case STONE_BUTTON:
+				case STONE_PLATE:
+				case IRON_PLATE:
+				case GOLD_PLATE:
+				case LEVER:
+					event.setCancelled(true);
+					break;
+			}
+		}
+	}
 
 }

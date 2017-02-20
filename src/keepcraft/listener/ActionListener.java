@@ -50,6 +50,8 @@ public class ActionListener implements Listener {
 			// will check those.
 			case STONE_BUTTON:
 			case STONE_PLATE:
+			case IRON_PLATE:
+			case GOLD_PLATE:
 			case LEVER:
 			case TORCH:
 			case REDSTONE_TORCH_ON:
