@@ -11,11 +11,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class CombatListener implements Listener {
@@ -58,7 +55,6 @@ public class CombatListener implements Listener {
 			baseDamage *= 1 + (enchantmentLevel * 0.05); // Each level gives +5%
 
 			// todo sweeping edge attack
-			// todo fire enchantment
 
 		} else if (event.getCause().equals(DamageCause.PROJECTILE)) {
 			// give SummitMC bow 1 0 {ench:[{id:48,lvl:5}]}
@@ -74,9 +70,6 @@ public class CombatListener implements Listener {
 			// Reapply damage enchantments with reduced formula
 			int enchantmentLevel = damager.getEquipment().getItemInMainHand().getEnchantmentLevel(Enchantment.ARROW_DAMAGE);
 			baseDamage *= 1 + (enchantmentLevel * 0.05); // Each level gives +5%
-
-			// todo fire enchantment
-
 		} else {
 			return; // other damage types
 		}
@@ -122,6 +115,24 @@ public class CombatListener implements Listener {
 		// todo thorns
 
 		System.out.println("post: " + event.getFinalDamage());
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onEntityCombustByEnchantedWeapon(EntityCombustByEntityEvent event) {
+		if (event.isCancelled()) return;
+		System.out.println(event.getEntityType() + " " + event.getEntity());
+
+		if (event.getEntityType().equals(EntityType.ARROW)) {
+			// Flame arrows, by default burn target for 5 seconds (100 tick time)
+			// Reduce duration to 2 seconds
+			event.setDuration(40);
+		} else if (event.getEntityType().equals(EntityType.PLAYER)) {
+			// Fire Aspect weapons, by default burn target for 4 seconds (80 time tick) per level
+			int enchantmentLevel = ((Player) event.getEntity()).getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.FIRE_ASPECT);
+
+			// Reduce duration to 2 seconds per level
+			event.setDuration(enchantmentLevel * 40);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

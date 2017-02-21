@@ -13,7 +13,6 @@ public class Armor {
 		static short IronHelm = 2;
 		static short GoldHelm = 2;
 		static short DiamondHelm = 3;
-		static short PumpkinHelm = 0;
 
 		static short LeatherChest = 3;
 		static short ChainChest = 5;
