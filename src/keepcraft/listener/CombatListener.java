@@ -5,17 +5,24 @@ import keepcraft.data.models.Armor;
 import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class CombatListener implements Listener {
+
+	private static float PowerDamageBonusPerLevel = 0.05f; // each level of Power (bows) gives 5% damage bonus
+	private static float SharpnessDamageBonusPerLevel = 0.05f; // each level of Sharpness (swords & axes) gives 5% damage bonus
+	private static float ArrowDamageReduction = 0.25f; // arrow damage reduced by 25%
+	private static int FoodRemovedOnArrowHit = 2; // food removed when hit by an arrow
+	private static float ProtectionDamageReductionPerPoint = 0.01f; // damage reduction by point of Protection (armor)
 
 	private final UserService userService;
 
@@ -48,28 +55,29 @@ public class CombatListener implements Listener {
 			damager = (Player) event.getDamager();
 			isArrowHit = false;
 
-			baseDamage = getUnenchantedDamageByWeapon(originalDamage, damager.getEquipment().getItemInMainHand());
+			int enchantmentLevel = damager.getEquipment().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+			baseDamage = getUnenchantedDamageByWeapon(originalDamage, enchantmentLevel);
 
 			// Reapply damage enchantments with reduced formula
-			int enchantmentLevel = damager.getEquipment().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-			baseDamage *= 1 + (enchantmentLevel * 0.05); // Each level gives +5%
+			baseDamage *= 1 + (enchantmentLevel * SharpnessDamageBonusPerLevel); // Each level gives +5%
 
 			// todo sweeping edge attack
 
-		} else if (event.getCause().equals(DamageCause.PROJECTILE)) {
+		} else if (event.getCause().equals(DamageCause.PROJECTILE) && event.getDamager() instanceof Arrow) {
 			// give SummitMC bow 1 0 {ench:[{id:48,lvl:5}]}
-			Arrow projectile = (Arrow) event.getDamager();
-			if (!(projectile.getShooter() instanceof Player)) return; // entity hitting not a player
-			damager = (Player) projectile.getShooter();
+			Arrow arrow = (Arrow) event.getDamager();
+			if (!(arrow.getShooter() instanceof Player)) return; // entity hitting not a player
+			damager = (Player) arrow.getShooter();
 			isArrowHit = true;
 
-			baseDamage = getUnenchantedDamageByBow(originalDamage, damager.getEquipment().getItemInMainHand());
+			int powerEnchantmentLevel = arrow.hasMetadata("power") ? arrow.getMetadata("power").get(0).asInt() : 0;
+			System.out.println("power encahnt level: " + powerEnchantmentLevel);
+			baseDamage = getUnenchantedDamageByBow(originalDamage, powerEnchantmentLevel);
 			System.out.println("base damage without ench: " + baseDamage);
-			baseDamage *= 0.75; // reduce base damage of archery overall
+			baseDamage *= 1 - ArrowDamageReduction; // reduce base damage of archery overall
 
 			// Reapply damage enchantments with reduced formula
-			int enchantmentLevel = damager.getEquipment().getItemInMainHand().getEnchantmentLevel(Enchantment.ARROW_DAMAGE);
-			baseDamage *= 1 + (enchantmentLevel * 0.05); // Each level gives +5%
+			baseDamage *= 1 + (powerEnchantmentLevel * PowerDamageBonusPerLevel); // Each level gives +5%
 		} else {
 			return; // other damage types
 		}
@@ -85,10 +93,7 @@ public class CombatListener implements Listener {
 
 		if (isArrowHit) {
 			// Remove food from bar when hit by an arrow
-			if (damaged.getFoodLevel() >= 2) {
-				damaged.setFoodLevel(damaged.getFoodLevel() - 2);
-			}
-
+			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FoodRemovedOnArrowHit));
 			// todo buff shields vs arrows via event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, ) ?
 		}
 
@@ -109,12 +114,20 @@ public class CombatListener implements Listener {
 		// Apply damage reduction for wearing enchantments
 		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged);
 		// Each point of enchantment protection provides 1% (vanilla is 4%) damage reduction, maxing out at 20%
-		double magicalArmorReduction = originalDamage * (1 - enchantmentProtectionFactor / 100);
+		double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
 		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
 
 		// todo thorns
 
 		System.out.println("post: " + event.getFinalDamage());
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onShootBow(EntityShootBowEvent event) {
+		if (event.isCancelled()) return;
+		if (event.getEntity() instanceof Player && event.getProjectile() instanceof Arrow) {
+			event.getProjectile().setMetadata("power", new FixedMetadataValue(Keepcraft.getPlugin(), event.getBow().getEnchantmentLevel(Enchantment.ARROW_DAMAGE)));
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -124,6 +137,7 @@ public class CombatListener implements Listener {
 
 		if (event.getEntityType().equals(EntityType.ARROW)) {
 			// Flame arrows, by default burn target for 5 seconds (100 tick time)
+			// There's only one level to this so we don't need to check
 			// Reduce duration to 2 seconds
 			event.setDuration(40);
 		} else if (event.getEntityType().equals(EntityType.PLAYER)) {
@@ -188,19 +202,12 @@ public class CombatListener implements Listener {
 //        }
 	}
 
-	private double getUnenchantedDamageByWeapon(double damage, ItemStack weapon) {
-		int enchantmentLevel = weapon.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-		return damage - (0.5 * (enchantmentLevel - 1)) - 1;
+	private double getUnenchantedDamageByWeapon(double damage, int sharpnessEnchantmentLevel) {
+		return damage - (0.5 * (sharpnessEnchantmentLevel - 1)) - 1;
 	}
 
-	private double getUnenchantedDamageByBow(double damage, ItemStack bow) {
-		if (bow == null || bow.getType() != Material.BOW) {
-			// todo investigate possibility of switching off quickly (probably applies only to bows)
-			return damage;
-		}
-
-		int enchantmentLevel = bow.getEnchantmentLevel(Enchantment.ARROW_DAMAGE);
-		return enchantmentLevel > 0 ? Math.round(damage / (1 + (0.25 * (enchantmentLevel + 1))) * 2) / 2.0 : damage;
+	private double getUnenchantedDamageByBow(double damage, int powerEnchantmentLevel) {
+		return powerEnchantmentLevel > 0 ? Math.round(damage / (1 + (0.25 * (powerEnchantmentLevel + 1))) * 2) / 2.0 : damage;
 	}
 
 }
