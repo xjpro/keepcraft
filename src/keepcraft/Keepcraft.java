@@ -66,7 +66,7 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new StatsListener(userService, plotService), this);
 
 		// Basic commands
-		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService);
+		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, chatService);
 		String[] basicCommands = {"die", "who", "map", "rally", "global"};
 		for (String basicCommand : basicCommands) {
 			getCommand(basicCommand).setExecutor(basicCommandListener);

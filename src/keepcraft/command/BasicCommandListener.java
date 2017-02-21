@@ -18,10 +18,12 @@ public class BasicCommandListener extends CommandListener {
 
 	private final UserService userService;
 	private final PlotService plotService;
+	private final ChatService chatService;
 
-	public BasicCommandListener(UserService userService, PlotService plotService) {
+	public BasicCommandListener(UserService userService, PlotService plotService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
+		this.chatService = chatService;
 	}
 
 	@Override
@@ -36,19 +38,19 @@ public class BasicCommandListener extends CommandListener {
 			User target = userService.getOnlineUser(targetName);
 
 			if (target == null) {
-				commandSender.sendMessage(ChatService.Failure + "That user does not exist"); // no user
+				chatService.sendFailureMessage(sender, "That user does not exist"); // no user
 				return true;
 			}
 
 			if (privilege == UserPrivilege.ADMIN) {
 				String[] messages = target.getPrivateInfo().split("\n");
 				for (String message : messages) {
-					commandSender.sendMessage(ChatService.RequestedInfo + message); // all info
+					chatService.sendInfoMessage(sender, message); // all info
 				}
 			} else {
 				String[] messages = target.getInfo().split("\n");
 				for (String message : messages) {
-					commandSender.sendMessage(ChatService.RequestedInfo + message); // all info
+					chatService.sendInfoMessage(sender, message); // all info
 				}
 			}
 
@@ -82,7 +84,7 @@ public class BasicCommandListener extends CommandListener {
 
 			String[] messages = message.split("\n");
 			for (String message1 : messages) {
-				commandSender.sendMessage(ChatService.RequestedInfo + message1); // all info
+				chatService.sendInfoMessage(sender, message1); // all info
 			}
 			return true;
 		} else if (commandName.equalsIgnoreCase("die") && args.length == 0) {
@@ -109,7 +111,7 @@ public class BasicCommandListener extends CommandListener {
 					String orderNumber;
 					if (plot.isBasePlot()) {
 						status = "Base";
-						orderNumber = "H";
+						orderNumber = "B";
 //						if (plot.isImmuneToAttack()) {
 //							status += " (Not capturable, immune to attack outside of siege hours)";
 //						}
@@ -125,7 +127,7 @@ public class BasicCommandListener extends CommandListener {
 
 				String[] messages = message.split("\n");
 				for (String message1 : messages) {
-					commandSender.sendMessage(ChatService.RequestedInfo + message1);
+					chatService.sendInfoMessage(sender, message1);
 				}
 
 				return true;
@@ -134,58 +136,53 @@ public class BasicCommandListener extends CommandListener {
 
 				// Ensure requester is in a plot that can be rallied from
 				if (currentPlot == null || !currentPlot.canBeRalliedTo() || !currentPlot.isFactionProtected(sender.getFaction())) {
-					commandSender.sendMessage(ChatService.Failure + "You can only rally from a secured rally point");
+					chatService.sendFailureMessage(sender, "You can only rally from a secured rally point");
 					return true;
 				} else if (!currentPlot.isInTriggerRadius(p.getLocation())) {
-					commandSender.sendMessage(ChatService.Failure + "Move closer to center of point to rally");
+					chatService.sendFailureMessage(sender, "Move closer to center of point to rally");
 					return true;
 				}
 
 				// Requester is in the trigger radius of a plot that can be rallied from
 				// Parse their destination
 
-				// /rally h or /rally home or /rally base
-				if (args[0].equalsIgnoreCase("h") || args[0].equalsIgnoreCase("home") || args[0].equalsIgnoreCase("base")) {
+				// /rally #?
+				int orderNumber = 0;
+				try {
+					orderNumber = Integer.parseInt(args[0]);
+				} catch (Exception e) {
+					// Leave as 0
+				}
+
+				// Could not parse into a number, we'll just assume it's a request to base because all points except base require numbers
+				if (orderNumber < 1) {
 					Plot base = plotService.getPlots().stream().filter(plot -> plot.isBasePlot() && plot.isFactionProtected(sender.getFaction())).findFirst().orElse(null);
 					if (base == null) {
-						commandSender.sendMessage(ChatService.Failure + "Your team does not have a base to rally to");
+						chatService.sendFailureMessage(sender, "Your team does not have a base to rally to");
 					} else {
 						p.teleport(base.getLocation());
 					}
 					return true;
 				}
 
-				// /rally #
-				int orderNumber;
-				try {
-					orderNumber = Integer.parseInt(args[0]);
-				} catch (Exception e) {
-					commandSender.sendMessage(ChatService.Failure + "Use /map to find the number of the point you wish to rally to");
-					return true;
-				}
-
-				if (orderNumber < 1) { // numbers below 1 don't make sense
-					commandSender.sendMessage(ChatService.Failure + "Use /map to find the number of the point you wish to rally to");
-					return true;
-				}
-
 				// /rally # with a good number, try to find the plot with that order number
 
-				Plot requestedPlot = plotService.getPlots().stream().filter(plot -> plot.getOrderNumber() == orderNumber).findFirst().orElse(null);
+				int finalOrderNumber = orderNumber;
+				Plot requestedPlot = plotService.getPlots().stream().filter(plot -> plot.getOrderNumber() == finalOrderNumber).findFirst().orElse(null);
 
 				// Doesn't exist
 				if (requestedPlot == null) {
-					commandSender.sendMessage(ChatService.Failure + "Use /map to find the number of the area you wish to rally to");
+					chatService.sendFailureMessage(sender, "Use /map to find the number of the area you wish to rally to");
 					return true;
 				}
 				// Exists but is either not owned by requester's team or is currently being contested
 				else if (!requestedPlot.isFactionProtected(sender.getFaction()) || requestedPlot.getProtection().isCaptureInProgress()) {
-					commandSender.sendMessage(ChatService.Failure + "That rally point has not been secured");
+					chatService.sendFailureMessage(sender, "That rally point has not been secured");
 					return true;
 				}
 				// Exists but requester is already in the plot
 				else if (requestedPlot == currentPlot) {
-					commandSender.sendMessage(ChatService.Failure + "You are already at that rally point");
+					chatService.sendFailureMessage(sender, "You are already at that rally point");
 					return true;
 				}
 
@@ -195,11 +192,11 @@ public class BasicCommandListener extends CommandListener {
 		} else if (commandName.equalsIgnoreCase("global") && args.length == 1) {
 			if (args[0].equalsIgnoreCase("on")) {
 				sender.setReceiveGlobalMessages(true);
-				commandSender.sendMessage(ChatService.Success + "Global chat enabled");
+				chatService.sendSuccessMessage(sender, "Global chat enabled");
 				return true;
 			} else if (args[0].equalsIgnoreCase("off")) {
 				sender.setReceiveGlobalMessages(false);
-				commandSender.sendMessage(ChatService.Success + "Global chat disabled");
+				chatService.sendSuccessMessage(sender, "Global chat disabled");
 				return true;
 			}
 		}
