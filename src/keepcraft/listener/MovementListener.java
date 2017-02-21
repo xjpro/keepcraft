@@ -1,6 +1,7 @@
 package keepcraft.listener;
 
 import keepcraft.Keepcraft;
+import keepcraft.data.models.Armor;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
@@ -38,6 +39,14 @@ public class MovementListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
+
+		if (Armor.getDefensePoints(player) < 8) {
+			player.setSneaking(true);
+			player.setWalkSpeed(0.4f); // double walk speed to offset perma sneak
+		} else {
+			player.setWalkSpeed(0.2f);
+		}
+
 		User user = userService.getOnlineUser(player.getName());
 		handleMovement(user, event.getTo(), event.getFrom());
 
@@ -75,6 +84,8 @@ public class MovementListener implements Listener {
 	public void onPlayerLeaveVehicle(VehicleExitEvent event) {
 		// todo check if we even need to do this: i.e. if user is in line of sight of the vehicle we can probably not bother
 		if (event.getExited() instanceof Player && event.getVehicle().getType() == EntityType.MINECART) {
+			// The point of this is to prevent a player leaving a vehicle from warping through a wall due to
+			// the odd way Minecraft handles vehicle exits
 			Location playerLocation = event.getExited().getLocation();
 			Location exitingLocation = event.getVehicle().getLocation().clone();
 			exitingLocation.setDirection(playerLocation.getDirection());
