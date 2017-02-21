@@ -5,19 +5,24 @@ import keepcraft.data.models.Armor;
 import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class CombatListener implements Listener {
+
+	private static float PowerDamageBonusPerLevel = 0.05f; // each level of Power (bows) gives 5% damage bonus
+	private static float SharpnessDamageBonusPerLevel = 0.05f; // each level of Sharpness (swords & axes) gives 5% damage bonus
+	private static float ArrowDamageReduction = 0.15f; // arrow damage reduced by 15%
+	private static int FoodRemovedOnArrowHit = 2; // food removed when hit by an arrow
+	private static float ProtectionDamageReductionPerPoint = 0.01f; // damage reduction by point of Protection (armor)
 
 	private final UserService userService;
 
@@ -27,68 +32,120 @@ public class CombatListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityDamage(EntityDamageByEntityEvent event) {
-		DamageCause cause = event.getCause();
-		if (cause.equals(DamageCause.ENTITY_ATTACK) || cause.equals(DamageCause.PROJECTILE)) {
-			Entity damager = event.getDamager();
-			Entity damaged = event.getEntity();
+		if (!(event.getEntity() instanceof Player)) return; // entity being hit not a player
 
-			if (damaged instanceof Player) {
-				boolean arrowHit = false;
-				Player attacker = null;
+//		System.out.println("----start----");
+//		System.out.println("base: " + event.getDamage(EntityDamageEvent.DamageModifier.BASE));
+//		System.out.println("armor: " + event.getDamage(EntityDamageEvent.DamageModifier.ARMOR));
+//		System.out.println("magic: " + event.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
+//		System.out.println("final: " + event.getFinalDamage());
 
-				if (damager instanceof Player) {
-					attacker = (Player) damager;
-				} else if (damager instanceof Arrow) {
-					Arrow projectile = (Arrow) damager;
-					LivingEntity shooter = (LivingEntity) projectile.getShooter();
+		// Determine damager and base damage based on type of attack
+		Player damager;
+		double originalDamage = event.getDamage();
+		double baseDamage;
+		boolean isArrowHit;
 
-					if (shooter instanceof Player) {
-						attacker = (Player) shooter;
-						arrowHit = true;
-					}
-				} else if (damager instanceof ThrownPotion) {
-					// todo I think we need this to prevent team killing via potions
-//					ThrownPotion potion = (ThrownPotion) damager;
-//					LivingEntity shooter = (LivingEntity) potion.getShooter();
-//					if (shooter instanceof Player) {
-//						attacker = (Player) shooter;
-//					}
-				}
+		if (event.getCause().equals(DamageCause.ENTITY_ATTACK)) {
+			// give SummitMC iron_sword 1 0 {ench:[{id:16,lvl:5}]}
+			if (!(event.getDamager() instanceof Player)) return; // entity hitting not a player
+			damager = (Player) event.getDamager();
+			isArrowHit = false;
 
-				if (attacker != null) {
-					User attackingUser = userService.getOnlineUser(attacker.getName());
-					Player defender = (Player) damaged;
-					User defendingUser = userService.getOnlineUser(defender.getName());
+			int enchantmentLevel = damager.getEquipment().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+			baseDamage = getUnenchantedDamageByWeapon(originalDamage, enchantmentLevel);
 
-					if (attackingUser.getFaction() == defendingUser.getFaction()) {
-						// Team members cannot damage each other
-						event.setCancelled(true);
-						return;
-					}
+			// Reapply damage enchantments with reduced formula
+			baseDamage *= 1 + (enchantmentLevel * SharpnessDamageBonusPerLevel); // Each level gives +5%
 
-					// Remove food from bar when hit by an arrow
-					if (arrowHit && defender.getFoodLevel() > 0) {
-						defender.setFoodLevel(defender.getFoodLevel() - 2);
-					}
+			// todo sweeping edge attack
 
-					// event.getDamage() is damage INCLUDING enchantment power but BEFORE armor mitigation
-					// event.getFinalDamage() is damage AFTER enchantment power AND armor mitigation
+		} else if (event.getCause().equals(DamageCause.PROJECTILE) && event.getDamager() instanceof Arrow) {
+			// give SummitMC bow 1 0 {ench:[{id:48,lvl:5}]}
+			Arrow arrow = (Arrow) event.getDamager();
+			if (!(arrow.getShooter() instanceof Player)) return; // entity hitting not a player
+			damager = (Player) arrow.getShooter();
+			isArrowHit = true;
 
-					//System.out.println("original damage " + event.getDamage());
-					//System.out.println("original final damage " + event.getFinalDamage());
+			int powerEnchantmentLevel = arrow.hasMetadata("power") ? arrow.getMetadata("power").get(0).asInt() : 0;
+			baseDamage = getUnenchantedDamageByBow(originalDamage, powerEnchantmentLevel);
 
-					double damageAdditionToBalanceArmor = calcDamageAdditionToBalanceArmor(event, defender);
-					double damageAdditionToBalanceProtectionEnchantments = calcDamageAdditionToBalanceProtectionEnchantments(event, defender);
-					double damageReductionToBalanceAttackEnchantments = calcDamageReductionToBalanceAttackEnchantments(event, attacker);
-					//System.out.println("damageAdditionToBalanceArmor: " + damageAdditionToBalanceArmor);
-					//System.out.println("damageAdditionToBalanceProtectionEnchantments: " + damageAdditionToBalanceProtectionEnchantments);
-					//System.out.println("damageReductionToBalanceAttackEnchantments: " + damageReductionToBalanceAttackEnchantments);
+			// Reduce base damage of archery overall
+			baseDamage *= 1 - ArrowDamageReduction;
 
-					event.setDamage(event.getDamage() + damageAdditionToBalanceArmor + damageAdditionToBalanceProtectionEnchantments - damageReductionToBalanceAttackEnchantments);
-					//System.out.println("changed damage " + event.getDamage());
-					//System.out.println("changed final damage " + event.getFinalDamage());
-				}
-			}
+			// Reapply damage enchantments with reduced formula
+			baseDamage *= 1 + (powerEnchantmentLevel * PowerDamageBonusPerLevel); // Each level gives +5%
+		} else {
+			return; // other damage types
+		}
+
+		Player damaged = (Player) event.getEntity();
+		User damagerUser = userService.getOnlineUser(damager.getName());
+		User damagedUser = userService.getOnlineUser(damaged.getName());
+		if (damagerUser.getFaction() == damagedUser.getFaction()) {
+			// Team members cannot damage each other
+			event.setCancelled(true);
+			return;
+		}
+
+		if (isArrowHit) {
+			// Remove food from bar when hit by an arrow
+			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FoodRemovedOnArrowHit));
+			// todo buff shields vs arrows via event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, ) ?
+		}
+
+		// We assume at this point we've arrived at a good damage amount pre armor and magical protection
+		event.setDamage(EntityDamageEvent.DamageModifier.BASE, baseDamage);
+
+		// Note: DamageModifiers other than BASE are mitigation and thus should have negative values
+
+		// Apply damage reduction for wearing armor
+		double defensePoints = Armor.getDefensePoints(damaged);
+		// Reduction of armor on a sliding scale where more reduction is applied when more armor is present
+		// Diamond armor (20 points) = 25% less effective than vanilla
+		// Iron armor (15 points) = 18.75% less effective than vanilla
+		// Leather armor (7 points) = 8.75% less effective than vanilla
+		double armorReduction = defensePoints / 80;
+		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, event.getDamage(EntityDamageEvent.DamageModifier.ARMOR) * (1 - armorReduction));
+
+		// Apply damage reduction for wearing enchantments
+		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged);
+		// Each point of enchantment protection provides 1% (vanilla is 4%) damage reduction, maxing out at 20%
+		double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
+		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
+
+		// todo thorns
+//		System.out.println("----end----");
+//		System.out.println("base: " + event.getDamage(EntityDamageEvent.DamageModifier.BASE));
+//		System.out.println("armor: " + event.getDamage(EntityDamageEvent.DamageModifier.ARMOR));
+//		System.out.println("magic: " + event.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
+//		System.out.println("final: " + event.getFinalDamage());
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onShootBow(EntityShootBowEvent event) {
+		if (event.isCancelled()) return;
+		if (event.getEntity() instanceof Player && event.getProjectile() instanceof Arrow) {
+			event.getProjectile().setMetadata("power", new FixedMetadataValue(Keepcraft.getPlugin(), event.getBow().getEnchantmentLevel(Enchantment.ARROW_DAMAGE)));
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onEntityCombustByEnchantedWeapon(EntityCombustByEntityEvent event) {
+		if (event.isCancelled()) return;
+		System.out.println(event.getEntityType() + " " + event.getEntity());
+
+		if (event.getEntityType().equals(EntityType.ARROW)) {
+			// Flame arrows, by default burn target for 5 seconds (100 tick time)
+			// There's only one level to this so we don't need to check
+			// Reduce duration to 2 seconds
+			event.setDuration(40);
+		} else if (event.getEntityType().equals(EntityType.PLAYER)) {
+			// Fire Aspect weapons, by default burn target for 4 seconds (80 time tick) per level
+			int enchantmentLevel = ((Player) event.getEntity()).getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.FIRE_ASPECT);
+
+			// Reduce duration to 2 seconds per level
+			event.setDuration(enchantmentLevel * 40);
 		}
 	}
 
@@ -145,61 +202,12 @@ public class CombatListener implements Listener {
 //        }
 	}
 
-	private double calcDamageAdditionToBalanceArmor(EntityDamageByEntityEvent event, Player defender) {
-		int armorValue = Armor.getArmorValue(defender.getInventory());
-		return event.getDamage() * (armorValue / 75.0);
+	private double getUnenchantedDamageByWeapon(double damage, int sharpnessEnchantmentLevel) {
+		return sharpnessEnchantmentLevel > 0 ? damage - (0.5 * (sharpnessEnchantmentLevel - 1)) - 1 : damage;
 	}
 
-	private double calcDamageAdditionToBalanceProtectionEnchantments(EntityDamageByEntityEvent event, Player defender) {
-		double enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(defender.getInventory());
-		return event.getDamage() * (enchantmentProtectionFactor / 35.0);
-	}
-
-	private double calcDamageReductionToBalanceAttackEnchantments(EntityDamageByEntityEvent event, Player attacker) {
-		ItemStack weapon = attacker.getEquipment().getItemInMainHand();
-		if (weapon == null) {
-			// todo investigate possibility of switching off quickly (probably applies only to bows)
-		} else {
-			Material weaponType = weapon.getType();
-			if (event.getDamager() instanceof Arrow && weaponType != Material.BOW) {
-				// todo investigate possibility of switching off quickly (probably applies only to bows)
-			}
-			// Damage enchanted bow
-			else if (weaponType == Material.BOW && weapon.getEnchantments().containsKey(Enchantment.ARROW_DAMAGE)) {
-				int enchantmentLevel = weapon.getEnchantmentLevel(Enchantment.ARROW_DAMAGE);
-
-				// Default: Increases arrow damage by 25% × (level + 1), rounded up to nearest half-heart
-				double originalModifier = 0.25 * (enchantmentLevel + 1);
-				// Adjusted: Run log10(enchantment level + 0.2) to get an adjusted increase that has diminishing returns
-				double adjustedModifier = Math.log10(enchantmentLevel + 0.2);
-
-				// level 1 = +50% adjusted to +8%
-				// level 2 = +75% adjusted to +34%
-				// level 3 = +100% adjusted to +51%
-				// level 4 = +125% adjusted to +62%
-				// level 5 = +150% adjusted to +72.0%
-
-				double damageWithoutEnchantment = event.getDamage() / (1 + originalModifier);
-				return event.getDamage() - (damageWithoutEnchantment * (1 + adjustedModifier));
-			}
-			// Damage enchanted anything else
-			else if (weapon.getEnchantments().containsKey(Enchantment.DAMAGE_ALL)) { // all non-bow, but we can assume a sword
-				int enchantmentLevel = weapon.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-
-				// Adds 1 extra damage for the first level, and 0.5 (Heart.svg × 1⁄4) for each additional level.
-				// level 1 = 1 adjusted to .223
-				// level 2 = 1.5 adjusted to 0.811
-				// level 3 = 2 adjusted to 1.18
-				// level 4 = 2.5 adjusted to 1.45
-				// level 5 = 3 adjusted to 1.66
-
-				double originalIncreasedDamageFromEnchantment = 1 + ((enchantmentLevel - 1) * .5);
-				double adjustedIncreaseDamageFromEnchantment = Math.log(enchantmentLevel + 0.25);
-				return originalIncreasedDamageFromEnchantment - adjustedIncreaseDamageFromEnchantment;
-			}
-		}
-
-		return 0;
+	private double getUnenchantedDamageByBow(double damage, int powerEnchantmentLevel) {
+		return powerEnchantmentLevel > 0 ? Math.round(damage / (1 + (0.25 * (powerEnchantmentLevel + 1))) * 2) / 2.0 : damage;
 	}
 
 }
