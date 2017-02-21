@@ -1,9 +1,9 @@
 package keepcraft.data.models;
 
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 public class Armor {
 
@@ -33,11 +33,11 @@ public class Armor {
 		static short DiamondBoots = 3;
 	}
 
-	public static int getDefensePoints(Player player) {
-		PlayerInventory inventory = player.getInventory();
+	public static int getDefensePoints(LivingEntity entity) {
+		EntityEquipment equipment = entity.getEquipment();
 		int totalArmor = 0;
 
-		ItemStack helmet = inventory.getHelmet();
+		ItemStack helmet = equipment.getHelmet();
 		if (helmet != null) {
 			switch (helmet.getType()) {
 				case LEATHER_HELMET:
@@ -58,7 +58,7 @@ public class Armor {
 			}
 		}
 
-		ItemStack chestPlate = inventory.getChestplate();
+		ItemStack chestPlate = equipment.getChestplate();
 		if (chestPlate != null) {
 			switch (chestPlate.getType()) {
 				case LEATHER_CHESTPLATE:
@@ -79,7 +79,7 @@ public class Armor {
 			}
 		}
 
-		ItemStack leggings = inventory.getLeggings();
+		ItemStack leggings = equipment.getLeggings();
 		if (leggings != null) {
 			switch (leggings.getType()) {
 				case LEATHER_LEGGINGS:
@@ -100,7 +100,7 @@ public class Armor {
 			}
 		}
 
-		ItemStack boots = inventory.getBoots();
+		ItemStack boots = equipment.getBoots();
 		if (boots != null) {
 			switch (boots.getType()) {
 				case LEATHER_BOOTS:
@@ -124,26 +124,26 @@ public class Armor {
 		return totalArmor;
 	}
 
-	public static int getEnchantmentProtectionFactor(Player player) {
-		PlayerInventory inventory = player.getInventory();
+	public static int getEnchantmentProtectionFactor(LivingEntity entity) {
+		EntityEquipment equipment = entity.getEquipment();
 		int enchantmentProtectionFactor = 0;
 
-		ItemStack helmet = inventory.getHelmet();
+		ItemStack helmet = equipment.getHelmet();
 		if (helmet != null) {
 			enchantmentProtectionFactor += helmet.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
 		}
 
-		ItemStack chestPlate = inventory.getChestplate();
+		ItemStack chestPlate = equipment.getChestplate();
 		if (chestPlate != null) {
 			enchantmentProtectionFactor += chestPlate.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
 		}
 
-		ItemStack leggings = inventory.getLeggings();
+		ItemStack leggings = equipment.getLeggings();
 		if (leggings != null) {
 			enchantmentProtectionFactor += leggings.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
 		}
 
-		ItemStack boots = inventory.getBoots();
+		ItemStack boots = equipment.getBoots();
 		if (boots != null) {
 			enchantmentProtectionFactor += boots.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
 		}
