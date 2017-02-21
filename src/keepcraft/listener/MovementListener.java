@@ -75,11 +75,13 @@ public class MovementListener implements Listener {
 	public void onPlayerLeaveVehicle(VehicleExitEvent event) {
 		// todo check if we even need to do this: i.e. if user is in line of sight of the vehicle we can probably not bother
 		if (event.getExited() instanceof Player && event.getVehicle().getType() == EntityType.MINECART) {
-			Location vehicleLocation = event.getVehicle().getLocation().clone();
-			vehicleLocation.setX(Math.floor(vehicleLocation.getX()) + 0.5);
-			vehicleLocation.setY(Math.floor(vehicleLocation.getY()));
-			vehicleLocation.setZ(Math.floor(vehicleLocation.getZ()) + 0.5);
-			event.getExited().teleport(vehicleLocation);
+			Location playerLocation = event.getExited().getLocation();
+			Location exitingLocation = event.getVehicle().getLocation().clone();
+			exitingLocation.setDirection(playerLocation.getDirection());
+			exitingLocation.setPitch(playerLocation.getPitch());
+			exitingLocation.setYaw(playerLocation.getYaw());
+			exitingLocation.add(0, 1, 0);
+			event.getExited().teleport(exitingLocation);
 		}
 	}
 
