@@ -20,7 +20,7 @@ public class CombatListener implements Listener {
 
 	private static float PowerDamageBonusPerLevel = 0.05f; // each level of Power (bows) gives 5% damage bonus
 	private static float SharpnessDamageBonusPerLevel = 0.05f; // each level of Sharpness (swords & axes) gives 5% damage bonus
-	private static float ArrowDamageReduction = 0.25f; // arrow damage reduced by 25%
+	private static float ArrowDamageReduction = 0.15f; // arrow damage reduced by 15%
 	private static int FoodRemovedOnArrowHit = 2; // food removed when hit by an arrow
 	private static float ProtectionDamageReductionPerPoint = 0.01f; // damage reduction by point of Protection (armor)
 
@@ -34,14 +34,11 @@ public class CombatListener implements Listener {
 	public void onEntityDamage(EntityDamageByEntityEvent event) {
 		if (!(event.getEntity() instanceof Player)) return; // entity being hit not a player
 
-		System.out.println("pre : " + event.getDamage());
-		System.out.println("origi damag1: " + event.getOriginalDamage(EntityDamageEvent.DamageModifier.BASE));
-		System.out.println("origi damag2: " + event.getDamage(EntityDamageEvent.DamageModifier.BASE));
-		System.out.println("armor reduc1: " + event.getOriginalDamage(EntityDamageEvent.DamageModifier.ARMOR));
-		System.out.println("armor reduc2: " + event.getDamage(EntityDamageEvent.DamageModifier.ARMOR));
-		System.out.println("magic reduc1: " + event.getOriginalDamage(EntityDamageEvent.DamageModifier.MAGIC));
-		System.out.println("magic reduc2: " + event.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
-		System.out.println("final: " + event.getFinalDamage());
+//		System.out.println("----start----");
+//		System.out.println("base: " + event.getDamage(EntityDamageEvent.DamageModifier.BASE));
+//		System.out.println("armor: " + event.getDamage(EntityDamageEvent.DamageModifier.ARMOR));
+//		System.out.println("magic: " + event.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
+//		System.out.println("final: " + event.getFinalDamage());
 
 		// Determine damager and base damage based on type of attack
 		Player damager;
@@ -71,10 +68,10 @@ public class CombatListener implements Listener {
 			isArrowHit = true;
 
 			int powerEnchantmentLevel = arrow.hasMetadata("power") ? arrow.getMetadata("power").get(0).asInt() : 0;
-			System.out.println("power encahnt level: " + powerEnchantmentLevel);
 			baseDamage = getUnenchantedDamageByBow(originalDamage, powerEnchantmentLevel);
-			System.out.println("base damage without ench: " + baseDamage);
-			baseDamage *= 1 - ArrowDamageReduction; // reduce base damage of archery overall
+
+			// Reduce base damage of archery overall
+			baseDamage *= 1 - ArrowDamageReduction;
 
 			// Reapply damage enchantments with reduced formula
 			baseDamage *= 1 + (powerEnchantmentLevel * PowerDamageBonusPerLevel); // Each level gives +5%
@@ -118,8 +115,11 @@ public class CombatListener implements Listener {
 		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
 
 		// todo thorns
-
-		System.out.println("post: " + event.getFinalDamage());
+//		System.out.println("----end----");
+//		System.out.println("base: " + event.getDamage(EntityDamageEvent.DamageModifier.BASE));
+//		System.out.println("armor: " + event.getDamage(EntityDamageEvent.DamageModifier.ARMOR));
+//		System.out.println("magic: " + event.getDamage(EntityDamageEvent.DamageModifier.MAGIC));
+//		System.out.println("final: " + event.getFinalDamage());
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -203,7 +203,7 @@ public class CombatListener implements Listener {
 	}
 
 	private double getUnenchantedDamageByWeapon(double damage, int sharpnessEnchantmentLevel) {
-		return damage - (0.5 * (sharpnessEnchantmentLevel - 1)) - 1;
+		return sharpnessEnchantmentLevel > 0 ? damage - (0.5 * (sharpnessEnchantmentLevel - 1)) - 1 : damage;
 	}
 
 	private double getUnenchantedDamageByBow(double damage, int powerEnchantmentLevel) {
