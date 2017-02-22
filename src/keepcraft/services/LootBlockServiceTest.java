@@ -20,7 +20,7 @@ class LootBlockServiceTest {
 		Database database = new Database("keepcraft_test.db");
 		lootBlockDataManager = new LootBlockDataManager(database);
 		lootBlockDataManager.putData(new LootBlock(new WorldPoint(238, 4, -239)));
-		lootBlockService = new LootBlockService(lootBlockDataManager);
+		lootBlockService = new LootBlockService(null, lootBlockDataManager);
 	}
 
 	@Test

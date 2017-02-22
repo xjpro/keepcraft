@@ -3,17 +3,22 @@ package keepcraft.services;
 import keepcraft.data.LootBlockDataManager;
 import keepcraft.data.models.LootBlock;
 import keepcraft.data.models.WorldPoint;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 
 public class LootBlockService {
 
+	private final Plugin plugin;
 	private final LootBlockDataManager lootBlockDataManager;
 	private Collection<LootBlock> lootBlocks;
 
-	public LootBlockService(LootBlockDataManager lootBlockDataManager) {
+	public LootBlockService(Plugin plugin, LootBlockDataManager lootBlockDataManager) {
+		this.plugin = plugin;
 		this.lootBlockDataManager = lootBlockDataManager;
 		refreshCache();
+		setupDispenseSchedule();
 	}
 
 	public void refreshCache() {
@@ -47,5 +52,15 @@ public class LootBlockService {
 	public void removeLootBlock(LootBlock lootBlock) {
 		lootBlockDataManager.deleteData(lootBlock);
 		lootBlocks.remove(lootBlock);
+	}
+
+	private void setupDispenseSchedule() {
+		if (plugin == null) return;
+
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+			for (LootBlock lootBlock : getLootBlocks()) {
+				lootBlock.dispense();
+			}
+		}, 1200, 0);
 	}
 }

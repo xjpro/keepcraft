@@ -40,10 +40,8 @@ public class LootBlockCommandListener extends CommandListener {
                     // invalid input
                     return false;
                 }
-                lootBlock.stopDispensing();
                 lootBlock.setOutputPerHour(output);
 				lootBlockService.updateLootBlock(lootBlock);
-                lootBlock.startDispensing();
                 chatService.sendSuccessMessage(sender, String.format("Loot block output set to %s per hour", output));
                 return true;
             } else if (args[0].equalsIgnoreCase("type") && args.length == 2) {
@@ -54,10 +52,8 @@ public class LootBlockCommandListener extends CommandListener {
                     // invalid input
                     return false;
                 }
-                lootBlock.stopDispensing();
                 lootBlock.setType(type);
 				lootBlockService.updateLootBlock(lootBlock);
-                lootBlock.startDispensing();
                 chatService.sendSuccessMessage(sender, "Loot block type set to " + type);
                 return true;
             } else if (args[0].equalsIgnoreCase("status") && args.length == 2) {
@@ -68,10 +64,8 @@ public class LootBlockCommandListener extends CommandListener {
                     // invalid input
                     return false;
                 }
-                lootBlock.stopDispensing();
                 lootBlock.setStatus(status);
 				lootBlockService.updateLootBlock(lootBlock);
-                lootBlock.startDispensing();
                 chatService.sendSuccessMessage(sender, "Loot block status set to " + status);
                 return true;
             }

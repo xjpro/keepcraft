@@ -29,8 +29,6 @@ public class LootBlockListener implements Listener {
 		this.userService = userService;
 		this.lootBlockService = lootBlockService;
 		this.chatService = chatService;
-
-		lootBlockService.getLootBlocks().forEach(LootBlock::startDispensing);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -46,7 +44,6 @@ public class LootBlockListener implements Listener {
 				// create a loot dispenser chest
 				placed.setType(Material.CHEST);
 				LootBlock lootBlock = lootBlockService.createLootBlock(new WorldPoint(placed.getLocation()));
-				lootBlock.startDispensing();
 				user.setTargetLootBlock(lootBlock);
 				chatService.sendSuccessMessage(user, "Loot block placed & targeted");
 			}
@@ -66,7 +63,6 @@ public class LootBlockListener implements Listener {
 			User user = userService.getOnlineUser(player.getName());
 
 			if (player.isOp() || user.isAdmin()) {
-				lootBlock.stopDispensing();
 				lootBlockService.removeLootBlock(lootBlock);
 				chatService.sendSuccessMessage(user, "Loot block destroyed");
 			} else {

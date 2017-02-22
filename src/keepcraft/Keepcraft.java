@@ -31,7 +31,7 @@ public class Keepcraft extends JavaPlugin {
 	private final UserService userService = new UserService(userDataManager, userStatsDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
-	private final LootBlockService lootBlockService = new LootBlockService(lootBlockDataManager);
+	private final LootBlockService lootBlockService = new LootBlockService(this, lootBlockDataManager);
 	private final ChatService chatService = new ChatService(userService);
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 

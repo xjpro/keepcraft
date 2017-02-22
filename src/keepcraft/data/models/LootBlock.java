@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 
-public class LootBlock implements Runnable {
+public class LootBlock {
 
 	private static Random Random = new Random();
 
@@ -22,8 +22,6 @@ public class LootBlock implements Runnable {
 	private int outputPerHour = 60;
 	// Fractional output from previous run
 	private double leftoverOutput = 0;
-	// Id of the Bukkit repeating task performing output
-	private int dispenseTaskId = 0;
 
 	public LootBlock(WorldPoint worldPoint) {
 		this.worldPoint = worldPoint;
@@ -65,9 +63,7 @@ public class LootBlock implements Runnable {
 		outputPerHour = value;
 	}
 
-	@Override
-	// Runs every minute
-	public void run() {
+	public void dispense() {
 		Block block = getBlock();
 		if (block == null || block.getType() != Material.CHEST || outputPerHour == 0) return;
 
@@ -136,17 +132,5 @@ public class LootBlock implements Runnable {
 		// Make a little smoke effect
 		block.getWorld().playEffect(block.getRelative(BlockFace.UP).getLocation(), Effect.SMOKE, 4);
 		block.getWorld().playEffect(block.getLocation(), Effect.CLICK1, 0);
-	}
-
-	public void startDispensing() {
-		stopDispensing();
-		dispenseTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Keepcraft.getPlugin(), this, 1200, 1200);
-	}
-
-	public void stopDispensing() {
-		if (dispenseTaskId != 0) {
-			Bukkit.getScheduler().cancelTask(dispenseTaskId);
-			dispenseTaskId = 0;
-		}
 	}
 }
