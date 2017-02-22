@@ -19,7 +19,7 @@ class WorldSetter {
 
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
-	private final int TEAM_PLOT_RADIUS = 75;
+	private final int TEAM_PLOT_RADIUS = 70;
 
 	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService) {
 		this.plotService = plotService;
@@ -32,15 +32,15 @@ class WorldSetter {
 		Location redBase;
 		Location blueBase;
 		do {
-			redBase = center.clone().add(175.5, 0, 175.5);
-			blueBase = center.clone().add(-175.5, 0, -175.5);
+			redBase = center.clone().add(-250, 0, 0);
+			blueBase = center.clone().add(250, 0, 0);
 
 			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) &&
 					isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ()))) {
 				found = true;
 			} else {
-				Keepcraft.log("Unacceptable base biomes, going north");
-				center.add(500, 0, 0);
+				Keepcraft.log("Unacceptable base biomes, going up +250 z units");
+				center.add(0, 0, 250);
 			}
 		} while (!found);
 
