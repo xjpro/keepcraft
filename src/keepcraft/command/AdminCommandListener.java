@@ -138,7 +138,7 @@ public class AdminCommandListener extends CommandListener {
 
 			return true;
 		} // teleport to a plot
-		else if (commandName.equals("plottp") && args.length > 0) {
+		else if (commandName.equals("ptp") && args.length > 0) {
 			Plot plot = null;
 			try {
 				int orderNumber = Integer.parseInt(args[0]);
