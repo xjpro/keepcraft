@@ -22,12 +22,12 @@ public abstract class Privilege {
 
 		// match with our user wrapper players
 		switch (user.getPrivilege()) {
-			case UserPrivilege.ADMIN:
+			case ADMIN:
 				return true;
-			case UserPrivilege.SUPER:
-			case UserPrivilege.MEMBER_VETERAN:
-			case UserPrivilege.MEMBER_NORMAL:
-			case UserPrivilege.MEMBER_START:
+			case SUPER:
+			case MEMBER_VETERAN:
+			case MEMBER_NORMAL:
+			case MEMBER_START:
 				// More conditions apply
 				int protectionType = plot.getProtection().getType();
 				switch (protectionType) {

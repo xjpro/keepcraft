@@ -30,7 +30,7 @@ public class BasicCommandListener extends CommandListener {
 	protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
 		Player p = (Player) commandSender;
 		User sender = userService.getOnlineUser(commandSender.getName());
-		int privilege = sender.getPrivilege();
+		UserPrivilege privilege = sender.getPrivilege();
 
 		// Char info
 		if ((commandName.equalsIgnoreCase("who")) && args.length == 1) {

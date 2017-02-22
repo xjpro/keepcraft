@@ -12,7 +12,7 @@ public class User {
 
 	// Persistent data, from database
 	private final String name;
-	private int privilege;
+	private UserPrivilege privilege;
 	private int faction;
 	private int money;
 	private int loggedOffFriendlyPlotId;
@@ -59,7 +59,7 @@ public class User {
 		return getChatTag();
 	}
 
-	public int getPrivilege() {
+	public UserPrivilege getPrivilege() {
 		return privilege;
 	}
 
@@ -67,7 +67,7 @@ public class User {
 		return privilege == UserPrivilege.ADMIN;
 	}
 
-	public void setPrivilege(int value) {
+	public void setPrivilege(UserPrivilege value) {
 		privilege = value;
 	}
 
@@ -85,11 +85,11 @@ public class User {
 	}
 
 	public String getInfo() {
-		return getColoredName() + ChatService.RequestedInfo + " (" + UserPrivilege.asString(privilege) + ")";
+		return getColoredName() + ChatService.RequestedInfo + " (" + privilege + ")";
 	}
 
 	public String getPrivateInfo() {
-		return getColoredName() + ChatService.RequestedInfo + " (" + UserPrivilege.asString(privilege) + ")";
+		return getColoredName() + ChatService.RequestedInfo + " (" + privilege + ")";
 	}
 
 	public int getMoney() {

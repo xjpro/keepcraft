@@ -28,7 +28,7 @@ public class PlotCommandListener extends CommandListener {
 	@Override
 	protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
 		User sender = userService.getOnlineUser(commandSender.getName());
-		int privilege = sender.getPrivilege();
+		UserPrivilege privilege = sender.getPrivilege();
 
 		Plot currentPlot = sender.getCurrentPlot();
 
