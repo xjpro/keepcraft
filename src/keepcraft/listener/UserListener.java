@@ -58,7 +58,7 @@ public class UserListener implements Listener {
 				user.setPrivilege(UserPrivilege.ADMIN);
 				//user.setFaction(UserFaction.FactionGold);
 			} else {
-				user.setPrivilege(UserPrivilege.MEMBER);
+				user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 			}
 
 			userService.updateUser(user);

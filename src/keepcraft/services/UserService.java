@@ -89,7 +89,7 @@ public class UserService {
 		}
 
 		User user = new User(name);
-		user.setPrivilege(UserPrivilege.MEMBER);
+		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 		user.setFaction(faction);
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(0);

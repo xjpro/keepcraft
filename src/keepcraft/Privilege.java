@@ -25,7 +25,9 @@ public abstract class Privilege {
 			case UserPrivilege.ADMIN:
 				return true;
 			case UserPrivilege.SUPER:
-			case UserPrivilege.MEMBER:
+			case UserPrivilege.MEMBER_VETERAN:
+			case UserPrivilege.MEMBER_NORMAL:
+			case UserPrivilege.MEMBER_START:
 				// More conditions apply
 				int protectionType = plot.getProtection().getType();
 				switch (protectionType) {

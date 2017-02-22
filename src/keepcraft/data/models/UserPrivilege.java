@@ -4,8 +4,10 @@ public abstract class UserPrivilege {
 
 	public final static int ADMIN = 400;
 	public final static int SUPER = 300;
-	public final static int MEMBER = 200;
-	public final static int VISITOR = 100;
+	public final static int MEMBER_VETERAN = 200;
+	public final static int MEMBER_NORMAL = 150;
+	public final static int MEMBER_START = 100;
+	public final static int NONMEMBER = 50;
 	public final static int INIT = 0;
 
 	public static String asString(int privilege) {
@@ -14,10 +16,14 @@ public abstract class UserPrivilege {
 				return "Admin";
 			case SUPER:
 				return "VIP";
-			case MEMBER:
-				return "Member";
-			case VISITOR:
-				return "Visitor";
+			case MEMBER_VETERAN:
+				return "Knight";
+			case MEMBER_NORMAL:
+				return "Squire";
+			case MEMBER_START:
+				return "Soldier";
+			case NONMEMBER:
+				return "Wildling";
 			case INIT:
 				return "Init";
 			default:
