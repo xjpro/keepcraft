@@ -109,13 +109,16 @@ public class LootBlock implements Runnable {
 			} else if (value <= 0.91) { // 2%
 				// Makes night vision & invis potions
 				item = new ItemStack(Material.BROWN_MUSHROOM, 1); // used for creating fermented spider eyes
+			} else if (value <= 0.92) { // 1%
+				// Makes lingering potions
+				item = new ItemStack(Material.DRAGONS_BREATH, 1);
 			}
 			// Items that come in grinders
-			else if (value <= 0.92) { // 1%
+			else if (value <= 0.93) { // 1%
 				item = new ItemStack(Material.BONE, 1);
-			} else if (value <= 0.93) { // 1%
+			} else if (value <= 0.94) { // 1%
 				item = new ItemStack(Material.STRING, 1);
-			} else if (value <= 0.95) { // 2%
+			} else if (value <= 0.95) { // 1%
 				item = new ItemStack(Material.SLIME_BALL, 1);
 			}
 			// Items that allow building with nether materials

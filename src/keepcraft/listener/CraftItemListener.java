@@ -16,6 +16,7 @@ public class CraftItemListener implements Listener {
 
 			case NETHER_STALK: // makes the base "awkward" potion
 			case SULPHUR: // allows throwing variants
+			case DRAGONS_BREATH: // allows lingering variants
 
 			case GHAST_TEAR: // regen
 			case SPIDER_EYE: // poison
