@@ -44,7 +44,7 @@ public class PlotCommandListener extends CommandListener {
                         name += args[i] + " ";
                     }
 
-                    plotService.createAdminPlot(new WorldPoint(location), name, Plot.DEFAULT_RADIUS);
+                    plotService.createAdminPlot(new WorldPoint(location), name.trim(), Plot.DEFAULT_RADIUS);
                     commandSender.sendMessage(ChatService.Success + "A new plot has been created");
                     return true;
                 }
@@ -250,6 +250,8 @@ public class PlotCommandListener extends CommandListener {
             else if (args[0].equals("order") && args.length == 2) {
                 if (Privilege.canModifyPlotData(sender, currentPlot)) {
                     int orderNumber;
+
+                    // todo check for existing order #
                     try {
                         orderNumber = Integer.parseInt(args[1]);
                     } catch (Exception e) {
