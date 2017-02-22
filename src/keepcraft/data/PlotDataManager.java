@@ -24,7 +24,7 @@ public class PlotDataManager {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, DateTimeSet)");
 			statement.execute();
 
-			statement = database.createStatement("CREATE TABLE IF NOT EXISTS plotProtections (PlotId, Type, ProtectedRadius, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId)");
+			statement = database.createStatement("CREATE TABLE IF NOT EXISTS plotProtections (PlotId, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId)");
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error(String.format("Error initializing tables: %s", e.getMessage()));
@@ -48,17 +48,16 @@ public class PlotDataManager {
 
 			if (rowsAffected > 0) {
 				PlotProtection protection = plot.getProtection();
-				statement = database.createStatement("UPDATE plotProtections SET Type = ?, ProtectedRadius = ?, KeepRadius = ?, AdminRadius = ?, TriggerRadius = ?, Capturable = ?, CaptureTime = ?, CaptureEffect = ?, SpawnId = ? WHERE PlotId = ?");
+				statement = database.createStatement("UPDATE plotProtections SET Type = ?, KeepRadius = ?, AdminRadius = ?, TriggerRadius = ?, Capturable = ?, CaptureTime = ?, CaptureEffect = ?, SpawnId = ? WHERE PlotId = ?");
 				statement.setInt(1, protection.getType());
-				statement.setDouble(2, protection.getProtectedRadius());
-				statement.setDouble(3, protection.getKeepRadius());
-				statement.setDouble(4, protection.getAdminRadius());
-				statement.setDouble(5, protection.getTriggerRadius());
-				statement.setBoolean(6, protection.getCapturable());
-				statement.setInt(7, protection.getCaptureTime());
-				statement.setInt(8, 0); // Capture effect
-				statement.setInt(9, 0); // spawn
-				statement.setInt(10, plot.getId());
+				statement.setDouble(2, protection.getKeepRadius());
+				statement.setDouble(3, protection.getAdminRadius());
+				statement.setDouble(4, protection.getTriggerRadius());
+				statement.setBoolean(5, protection.getCapturable());
+				statement.setInt(6, protection.getCaptureTime());
+				statement.setInt(7, 0); // Capture effect
+				statement.setInt(8, 0); // spawn
+				statement.setInt(9, plot.getId());
 				statement.executeUpdate();
 			}
 		} catch (Exception e) {
@@ -74,14 +73,13 @@ public class PlotDataManager {
 
 		try {
 			PreparedStatement statement = database.createStatement(
-					"SELECT plots.ROWID as PlotROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, Type, ProtectedRadius, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plots JOIN plotProtections ON PlotROWID = PlotId");
+					"SELECT plots.ROWID as PlotROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plots JOIN plotProtections ON PlotROWID = PlotId");
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
 				int id = result.getInt("PlotROWID");
 				PlotProtection protection = new PlotProtection(id);
 				protection.setType(result.getInt("Type"));
-				protection.setProtectedRadius(result.getDouble("ProtectedRadius"));
 				protection.setKeepRadius(result.getDouble("KeepRadius"));
 				protection.setAdminRadius(result.getDouble("AdminRadius"));
 				protection.setTriggerRadius(result.getDouble("TriggerRadius"));
@@ -133,7 +131,6 @@ public class PlotDataManager {
 
 			PlotProtection plotProtection = new PlotProtection(id);
 			plotProtection.setType(PlotProtection.PUBLIC);
-			plotProtection.setProtectedRadius(radius);
 			plotProtection.setKeepRadius(0);
 			plotProtection.setAdminRadius(Plot.DEFAULT_RADIUS);
 			plotProtection.setTriggerRadius(Plot.DEFAULT_TRIGGER_RADIUS);
@@ -145,17 +142,16 @@ public class PlotDataManager {
 			plot.setName(name);
 			plot.setRadius(radius);
 
-			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, ProtectedRadius, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, id);
 			statement.setInt(2, plotProtection.getType());
-			statement.setDouble(3, plotProtection.getProtectedRadius());
-			statement.setDouble(4, plotProtection.getKeepRadius());
-			statement.setDouble(5, plotProtection.getAdminRadius());
-			statement.setDouble(6, plotProtection.getTriggerRadius());
-			statement.setBoolean(7, plotProtection.getCapturable());
-			statement.setInt(8, plotProtection.getCaptureTime());
-			statement.setInt(9, 0); // Capture effect
-			statement.setInt(10, 0); // spawn
+			statement.setDouble(3, plotProtection.getKeepRadius());
+			statement.setDouble(4, plotProtection.getAdminRadius());
+			statement.setDouble(5, plotProtection.getTriggerRadius());
+			statement.setBoolean(6, plotProtection.getCapturable());
+			statement.setInt(7, plotProtection.getCaptureTime());
+			statement.setInt(8, 0); // Capture effect
+			statement.setInt(9, 0); // spawn
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error(String.format("Error creating plot record: %s", e.getMessage()));

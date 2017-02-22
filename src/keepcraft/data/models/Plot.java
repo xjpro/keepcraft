@@ -89,7 +89,7 @@ public class Plot {
 	}
 
 	public boolean isInTeamProtectedRadius(Location loc) {
-		return protection != null && intersectsIgnoreY(new WorldPoint(loc), protection.getProtectedRadius());
+		return isInRadius(loc);
 	}
 
 	public boolean isInKeepRadius(Location loc) {
@@ -209,7 +209,6 @@ public class Plot {
 	public String getInfo() {
 		String info = name + ChatService.RequestedInfo + " (Protection: " + protection.asString() + ChatService.RequestedInfo + ")\n";
 		info += "Radius: " + radius + "\n";
-		info += "Protected Radius: " + protection.getProtectedRadius() + "\n";
 		if (protection.getKeepRadius() > 0) {
 			info += "Keep protected radius: " + protection.getKeepRadius() + "\n";
 		}
