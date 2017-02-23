@@ -109,6 +109,8 @@ public class UserListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		// todo timer
+
 		Player p = event.getPlayer();
 		User user = userService.getOnlineUser(p.getName());
 		FactionSpawn spawn = safelyGetFactionSpawn(user);
