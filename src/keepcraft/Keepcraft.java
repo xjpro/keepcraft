@@ -130,7 +130,7 @@ public class Keepcraft extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		// Stop any tasks
-		lootBlockService.startDispensing();
+		lootBlockService.stopDispensing();
 
 		// Save everybody's user data
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {

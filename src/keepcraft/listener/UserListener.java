@@ -7,6 +7,7 @@ import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -104,20 +105,20 @@ public class UserListener implements Listener {
 
 		// If user died while in combat they must wait to respawn...
 		if (user.isInCombat()) {
-			float flySpeed = player.getFlySpeed();
+			GameMode originalGameMode = player.getGameMode();
 
-			// Place user in the sky unable to move
+			// Place user in the sky above their base in spectator mode
 			respawnLocation.setY(192);
-			player.setFlying(true);
-			player.setFlySpeed(0);
-			player.setInvulnerable(true);
+			player.setGameMode(GameMode.SPECTATOR);
 
-			chatService.sendAlertMessage(user, String.format("Respawning in %s seconds", RespawnSeconds));
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
-				// Undo flying and send home
-				player.setFlying(false);
-				player.setFlySpeed(flySpeed);
-				player.setInvulnerable(false);
+				// Have to put this on a delayed task or it will throw a null exception when trying to find the player
+				chatService.sendAlertMessage(user, String.format("Respawning in %s seconds", RespawnSeconds));
+			}, 0);
+
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
+				// Respawn player: set their game mode back and move them home
+				player.setGameMode(originalGameMode);
 				teleportHome(player, user);
 			}, 20 * RespawnSeconds);
 		}
@@ -165,6 +166,10 @@ public class UserListener implements Listener {
 		FactionSpawn spawn = factionSpawnService.getFactionSpawn(user.getFaction());
 
 		if (spawn == null) {
+			if (user.getFaction() == UserFaction.FactionGold) {
+				return factionSpawnService.getFactionSpawn(UserFaction.FactionRed);
+			}
+
 			// A very bad thing has happened and we apparently have no spawn data, refresh cache in an attempt to recover
 			Keepcraft.error(String.format("Could not find spawn for %s of faction %s", user.getName(), user.getFaction()));
 			factionSpawnService.refreshCache(); // Attempt to restore things as they should be
