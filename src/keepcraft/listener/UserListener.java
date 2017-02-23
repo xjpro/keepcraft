@@ -7,6 +7,7 @@ import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,33 +15,21 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 public class UserListener implements Listener {
+
+	public static int RespawnSeconds = 10;
 
 	private final UserService userService;
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
+	private final ChatService chatService;
 
-	public UserListener(UserService userService, PlotService plotService, FactionSpawnService factionSpawnService) {
+	public UserListener(UserService userService, PlotService plotService, FactionSpawnService factionSpawnService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
-	}
-
-	private static class StartingValueSetter implements Runnable {
-
-		private final Player p;
-
-		public StartingValueSetter(Player player) {
-			this.p = player;
-		}
-
-		@Override
-		public void run() {
-			p.setHealth(10);
-			p.setFoodLevel(20);
-		}
+		this.chatService = chatService;
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -63,7 +52,6 @@ public class UserListener implements Listener {
 
 			userService.updateUser(user);
 
-			setBasicEquipment(player);
 			teleportHome(player, user);
 		} else if (player.getLocation().getWorld() != Keepcraft.getWorld()) {
 			Keepcraft.log("Player " + player.getName() + " was on the wrong world, moving to " + Keepcraft.getWorld().getName());
@@ -109,24 +97,38 @@ public class UserListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		// todo timer
-
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
+		Player player = event.getPlayer();
+		User user = userService.getOnlineUser(player.getName());
 		FactionSpawn spawn = safelyGetFactionSpawn(user);
+		Location respawnLocation = spawn.getWorldPoint().asLocation();
 
-		event.setRespawnLocation(spawn.getWorldPoint().asLocation());
+		// If user died while in combat they must wait to respawn...
+		if (user.isInCombat()) {
+			float flySpeed = player.getFlySpeed();
 
-		if (user.isAdmin()) {
-			setAdminEquipment(p);
-		} else {
-			setBasicEquipment(p);
+			// Place user in the sky unable to move
+			respawnLocation.setY(192);
+			player.setFlying(true);
+			player.setFlySpeed(0);
+			player.setInvulnerable(true);
+
+			chatService.sendAlertMessage(user, String.format("Respawning in %s seconds", RespawnSeconds));
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
+				// Undo flying and send home
+				player.setFlying(false);
+				player.setFlySpeed(flySpeed);
+				player.setInvulnerable(false);
+				teleportHome(player, user);
+			}, 20 * RespawnSeconds);
 		}
+
+		user.setInCombat(false); // Clear combat flag
+		event.setRespawnLocation(respawnLocation);
 
 		// Want to set the player's starting health and food values but the server will not respond to
 		// those changes in this method body. So we'll set a slightly delayed task to do it.
 		//Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), new StartingValueSetter(p), 40);
-		Keepcraft.log(String.format("%s respawning", p.getName()));
+		Keepcraft.log(String.format("%s respawning", player.getName()));
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -152,25 +154,6 @@ public class UserListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerPortal(PlayerPortalEvent event) {
 		event.setCancelled(true);
-	}
-
-	private void setBasicEquipment(Player p) {
-		//PlayerInventory inventory = p.getInventory();
-		//inventory.addItem(new ItemStack(Material.WOOD_SWORD, 1));
-		//inventory.addItem(new ItemStack(Material.BREAD, 1));
-		//inventory.setHelmet(new ItemStack(Material.LEATHER_HELMET, 1));
-	}
-
-	private void setAdminEquipment(Player p) {
-		PlayerInventory inventory = p.getInventory();
-		inventory.addItem(new ItemStack(Material.DIAMOND_SWORD, 1));
-		inventory.addItem(new ItemStack(Material.BOW, 1));
-		inventory.addItem(new ItemStack(Material.ARROW, 32));
-		inventory.addItem(new ItemStack(Material.GOLDEN_APPLE, 4));
-		inventory.setHelmet(new ItemStack(Material.DIAMOND_HELMET, 1));
-		inventory.setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE, 1));
-		inventory.setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS, 1));
-		inventory.setBoots(new ItemStack(Material.DIAMOND_BOOTS, 1));
 	}
 
 	private void teleportHome(Player p, User user) {

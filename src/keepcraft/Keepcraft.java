@@ -51,7 +51,7 @@ public class Keepcraft extends JavaPlugin {
 
 		PluginManager manager = this.getServer().getPluginManager();
 
-		manager.registerEvents(new UserListener(userService, plotService, factionSpawnService), this);
+		manager.registerEvents(new UserListener(userService, plotService, factionSpawnService, chatService), this);
 		manager.registerEvents(new ActionListener(userService, plotService), this);
 		manager.registerEvents(new MovementListener(userService, plotService, chatService), this);
 		manager.registerEvents(new ChatListener(userService, chatService), this);

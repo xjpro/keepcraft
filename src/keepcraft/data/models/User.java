@@ -1,6 +1,8 @@
 package keepcraft.data.models;
 
+import keepcraft.Keepcraft;
 import keepcraft.services.ChatService;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.Date;
@@ -9,6 +11,8 @@ import java.util.Date;
  * Data for a player.
  */
 public class User {
+
+	public static int InCombatTimeoutSeconds = 10;
 
 	// Persistent data, from database
 	private final String name;
@@ -23,6 +27,10 @@ public class User {
 	private LootBlock targetLootBlock = null;
 	private boolean receiveGlobalMessages = true;
 	private String lastPrivateMessageSender = null;
+	private boolean inCombat = false;
+
+	// Tasks
+	private int inCombatTaskId = 0;
 
 	// Stats (persisted on log off)
 	private UserStats userStats = new UserStats();
@@ -122,6 +130,25 @@ public class User {
 
 	public void setTargetLootBlock(LootBlock lootBlock) {
 		targetLootBlock = lootBlock;
+	}
+
+	public boolean isInCombat() {
+		return inCombat;
+	}
+
+	public void setInCombat(boolean value) {
+		inCombat = value;
+
+		if (inCombatTaskId != 0) {
+			// Clear old task no matter what
+			Bukkit.getScheduler().cancelTask(inCombatTaskId);
+			inCombatTaskId = 0;
+		}
+
+		if (inCombat) {
+			// Setup a timer to clear this flag
+			inCombatTaskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> inCombat = false, 20 * InCombatTimeoutSeconds);
+		}
 	}
 
 	public boolean getReceiveGlobalMessages() {

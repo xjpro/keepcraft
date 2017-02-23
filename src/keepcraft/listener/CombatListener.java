@@ -88,6 +88,9 @@ public class CombatListener implements Listener {
 			return;
 		}
 
+		// When damaged by an enemy player, set user as 'in combat'
+		damagedUser.setInCombat(true);
+
 		if (isArrowHit) {
 			// Remove food from bar when hit by an arrow
 			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FoodRemovedOnArrowHit));
