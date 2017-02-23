@@ -13,12 +13,12 @@ public class LootBlockService {
 	private final Plugin plugin;
 	private final LootBlockDataManager lootBlockDataManager;
 	private Collection<LootBlock> lootBlocks;
+	private int taskId = 0;
 
 	public LootBlockService(Plugin plugin, LootBlockDataManager lootBlockDataManager) {
 		this.plugin = plugin;
 		this.lootBlockDataManager = lootBlockDataManager;
 		refreshCache();
-		setupDispenseSchedule();
 	}
 
 	public void refreshCache() {
@@ -54,13 +54,17 @@ public class LootBlockService {
 		lootBlocks.remove(lootBlock);
 	}
 
-	private void setupDispenseSchedule() {
+	public void startDispensing() {
 		if (plugin == null) return;
 
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 			for (LootBlock lootBlock : getLootBlocks()) {
 				lootBlock.dispense();
 			}
 		}, 1200, 0);
+	}
+
+	public void stopDispensing() {
+		Bukkit.getScheduler().cancelTask(taskId);
 	}
 }

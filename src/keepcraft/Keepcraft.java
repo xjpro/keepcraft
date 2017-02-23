@@ -65,6 +65,9 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new StormListener(), this);
 		manager.registerEvents(new StatsListener(userService, plotService), this);
 
+		// Start any tasks
+		lootBlockService.startDispensing();
+
 		// Basic commands
 		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, chatService);
 		String[] basicCommands = {"die", "who", "map", "rally", "global"};
@@ -125,6 +128,9 @@ public class Keepcraft extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		// Stop any tasks
+		lootBlockService.startDispensing();
+
 		// Save everybody's user data
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
 			User user = userService.getOnlineUser(player.getName());
