@@ -17,8 +17,12 @@ public class RallyService {
 	}
 
 	public void rallyToPlot(User user, Player player, Plot rallyingTo) {
+		if (rallyingTo == null) {
+			chatService.sendFailureMessage(user, "Use /map to find number you wish to rally to");
+			return;
+		}
 		if (user.getRallyingTo() != null) {
-			chatService.sendFailureMessage(user, String.format("You are already rallying to %s", user.getRallyingTo().getLocation()));
+			chatService.sendFailureMessage(user, String.format("You are already rallying to %s", user.getRallyingTo().getName()));
 			return;
 		}
 
@@ -30,7 +34,7 @@ public class RallyService {
 
 		// Rally start successful
 		user.setRallyingTo(rallyingTo);
-		chatService.sendSuccessMessage(user, String.format("Rallying to %s in %s seconds", rallyingTo.getName(), RallyTimeoutSeconds));
+		chatService.sendSuccessMessage(user, String.format("Rallying to %s in %s seconds, stay nearby", rallyingTo.getName(), RallyTimeoutSeconds));
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
 			String finishRallyErrorMessage = canRally(user, player, rallyingTo);
@@ -57,7 +61,7 @@ public class RallyService {
 		} else if (rallyingFrom == rallyingTo) {
 			return "You are already at that rally point";
 		} else if (!rallyingFrom.isInTriggerRadius(player.getLocation())) {
-			return "Move closer to center of point to rally";
+			return "Move closer to center of area to rally";
 		}
 
 		return null;

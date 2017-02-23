@@ -70,7 +70,7 @@ public class Keepcraft extends JavaPlugin {
 		lootBlockService.startDispensing();
 
 		// Basic commands
-		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, chatService);
+		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, chatService);
 		String[] basicCommands = {"die", "who", "map", "rally", "global"};
 		for (String basicCommand : basicCommands) {
 			getCommand(basicCommand).setExecutor(basicCommandListener);

@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class User {
 
-	public static int InCombatTimeoutSeconds = 10;
+	public static int InCombatTimeoutSeconds = 15;
 
 	// Persistent data, from database
 	private final String name;
