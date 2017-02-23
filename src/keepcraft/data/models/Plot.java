@@ -36,8 +36,8 @@ public class Plot {
 		return isFactionProtected() && !protection.isCapturable();
 	}
 
-	public boolean canBeRalliedTo() {
-		return isBasePlot() || (protection.isCapturable() && !protection.isCaptureInProgress());
+	public boolean canBeRalliedTo(User user) {
+		return isFactionProtected(user.getFaction()) && !protection.isCaptureInProgress();
 	}
 
 	public Location getLocation() {

@@ -28,6 +28,7 @@ public class User {
 	private boolean receiveGlobalMessages = true;
 	private String lastPrivateMessageSender = null;
 	private boolean inCombat = false;
+	private Plot rallyingTo = null;
 
 	// Tasks
 	private int inCombatTaskId = 0;
@@ -149,6 +150,14 @@ public class User {
 			// Setup a timer to clear this flag
 			inCombatTaskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> inCombat = false, 20 * InCombatTimeoutSeconds);
 		}
+	}
+
+	public Plot getRallyingTo() {
+		return rallyingTo;
+	}
+
+	public void setRallyingTo(Plot value) {
+		rallyingTo = value;
 	}
 
 	public boolean getReceiveGlobalMessages() {

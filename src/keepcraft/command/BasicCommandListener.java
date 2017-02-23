@@ -115,7 +115,7 @@ public class BasicCommandListener extends CommandListener {
 //						if (plot.isImmuneToAttack()) {
 //							status += " (Not capturable, immune to attack outside of siege hours)";
 //						}
-					} else if (plot.canBeRalliedTo()) {
+					} else if (plot.getProtection().isCapturable()) {
 						status = plot.getProtection().isCaptureInProgress() ? "Under attack" : "Secured";
 						orderNumber = Integer.toString(plot.getOrderNumber());
 					} else {
@@ -135,7 +135,7 @@ public class BasicCommandListener extends CommandListener {
 				Plot currentPlot = sender.getCurrentPlot();
 
 				// Ensure requester is in a plot that can be rallied from
-				if (currentPlot == null || !currentPlot.canBeRalliedTo() || !currentPlot.isFactionProtected(sender.getFaction())) {
+				if (currentPlot == null || !currentPlot.canBeRalliedTo(sender)) {
 					chatService.sendFailureMessage(sender, "You can only rally from a secured rally point");
 					return true;
 				} else if (!currentPlot.isInTriggerRadius(p.getLocation())) {

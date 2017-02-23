@@ -34,6 +34,7 @@ public class Keepcraft extends JavaPlugin {
 	private final LootBlockService lootBlockService = new LootBlockService(this, lootBlockDataManager);
 	private final ChatService chatService = new ChatService(userService);
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
+	private final RallyService rallyService = new RallyService(chatService);
 
 	@Override
 	public void onEnable() {
