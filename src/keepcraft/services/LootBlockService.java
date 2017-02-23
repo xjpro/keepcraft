@@ -61,7 +61,7 @@ public class LootBlockService {
 			for (LootBlock lootBlock : getLootBlocks()) {
 				lootBlock.dispense();
 			}
-		}, 1200, 0);
+		}, 1200, 1200);
 	}
 
 	public void stopDispensing() {
