@@ -4,7 +4,10 @@ import keepcraft.Keepcraft;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class RallyService {
 
@@ -34,6 +37,13 @@ public class RallyService {
 
 		// Rally start successful
 		user.setRallyingTo(rallyingTo);
+		Plot rallyingFrom = user.getCurrentPlot();
+
+		// Spawn some portal travelling effects
+		player.getWorld().playEffect(rallyingFrom.getLocation(), Effect.PORTAL_TRAVEL, 0);
+		player.getWorld().playEffect(rallyingFrom.getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
+		player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0)); // Makes view all wobbly
+
 		chatService.sendSuccessMessage(user, String.format("Rallying to %s in %s seconds, stay nearby", rallyingTo.getName(), RallyTimeoutSeconds));
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {

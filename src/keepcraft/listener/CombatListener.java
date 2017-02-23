@@ -88,7 +88,8 @@ public class CombatListener implements Listener {
 			return;
 		}
 
-		// When damaged by an enemy player, set user as 'in combat'
+		// When two players damage each other, set both in combat
+		damagerUser.setInCombat();
 		damagedUser.setInCombat();
 
 		if (isArrowHit) {
