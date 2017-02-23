@@ -123,7 +123,6 @@ public class UserListener implements Listener {
 			}, 20 * RespawnSeconds);
 		}
 
-		user.setInCombat(false); // Clear combat flag
 		event.setRespawnLocation(respawnLocation);
 
 		// Want to set the player's starting health and food values but the server will not respond to

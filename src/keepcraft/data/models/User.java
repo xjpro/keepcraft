@@ -1,8 +1,6 @@
 package keepcraft.data.models;
 
-import keepcraft.Keepcraft;
 import keepcraft.services.ChatService;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.Date;
@@ -27,7 +25,7 @@ public class User {
 	private LootBlock targetLootBlock = null;
 	private boolean receiveGlobalMessages = true;
 	private String lastPrivateMessageSender = null;
-	private boolean inCombat = false;
+	private Date lastCombat = null;
 	private Plot rallyingTo = null;
 
 	// Tasks
@@ -134,22 +132,11 @@ public class User {
 	}
 
 	public boolean isInCombat() {
-		return inCombat;
+		return lastCombat != null && ((new Date()).getTime() - lastCombat.getTime()) / 1000 < InCombatTimeoutSeconds;
 	}
 
-	public void setInCombat(boolean value) {
-		inCombat = value;
-
-		if (inCombatTaskId != 0) {
-			// Clear old task no matter what
-			Bukkit.getScheduler().cancelTask(inCombatTaskId);
-			inCombatTaskId = 0;
-		}
-
-		if (inCombat) {
-			// Setup a timer to clear this flag
-			inCombatTaskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> inCombat = false, 20 * InCombatTimeoutSeconds);
-		}
+	public void setInCombat() {
+		lastCombat = new Date();
 	}
 
 	public Plot getRallyingTo() {

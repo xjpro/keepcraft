@@ -89,7 +89,7 @@ public class CombatListener implements Listener {
 		}
 
 		// When damaged by an enemy player, set user as 'in combat'
-		damagedUser.setInCombat(true);
+		damagedUser.setInCombat();
 
 		if (isArrowHit) {
 			// Remove food from bar when hit by an arrow
@@ -178,6 +178,8 @@ public class CombatListener implements Listener {
 			User attackerUser = userService.getOnlineUser(attackerName);
 
 			if (attackerUser != null) {
+				target.setInCombat();
+
 				String causeSection = "";
 				for (int i = 1; i < parts.length - 1; i++) {
 					causeSection += parts[i] + " ";
