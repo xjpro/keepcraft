@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.Random;
 
-public class LootBlock {
+public class Container {
 
 	public enum ContainerType {
 		PUBLIC(0),
@@ -49,7 +49,7 @@ public class LootBlock {
 	// Fractional output from previous run
 	private double leftoverOutput = 0;
 
-	public LootBlock(WorldPoint worldPoint) {
+	public Container(WorldPoint worldPoint) {
 		this.worldPoint = worldPoint;
 	}
 

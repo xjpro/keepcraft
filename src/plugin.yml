@@ -44,9 +44,9 @@ commands:
     ptp:
         description: Teleport to a plot by name
         usage: /ptp <plot name>
-    lootblock:
-        description: Edit a lootblock
-        usage: /lootblock
+    chest:
+        description: Edit a chest
+        usage: /chest
     dawn:
         description: Let there be light!
         usage: /dawn

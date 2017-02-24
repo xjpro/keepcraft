@@ -110,11 +110,11 @@ public class Keepcraft extends JavaPlugin {
 			getCommand(plotCommand).setExecutor(plotCommandListener);
 		}
 
-		// LootBlock commands
-		CommandListener lootBlockCommandListener = new LootBlockCommandListener(userService, containerService, chatService);
-		String[] lootBlockCommands = {"lootblock"};
-		for (String lootBlockCommand : lootBlockCommands) {
-			getCommand(lootBlockCommand).setExecutor(lootBlockCommandListener);
+		// Container commands
+		CommandListener containerCommandListener = new ContainerCommandListener(userService, containerService, chatService);
+		String[] containerCommands = {"chest"};
+		for (String command : containerCommands) {
+			getCommand(command).setExecutor(containerCommandListener);
 		}
 
 		// Siege commands

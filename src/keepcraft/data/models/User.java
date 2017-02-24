@@ -22,7 +22,7 @@ public class User {
 	// Non persistent real time data
 	private Date logOnDateTime = null;
 	private Plot currentPlot = null;
-	private LootBlock targetLootBlock = null;
+	private Container targetContainer = null;
 	private boolean receiveGlobalMessages = true;
 	private String lastPrivateMessageSender = null;
 	private Date lastCombat = null;
@@ -123,12 +123,12 @@ public class User {
 		currentPlot = plot;
 	}
 
-	public LootBlock getTargetContainer() {
-		return targetLootBlock;
+	public Container getTargetContainer() {
+		return targetContainer;
 	}
 
-	public void setTargetContainer(LootBlock lootBlock) {
-		targetLootBlock = lootBlock;
+	public void setTargetContainer(Container container) {
+		targetContainer = container;
 	}
 
 	public boolean isInCombat() {

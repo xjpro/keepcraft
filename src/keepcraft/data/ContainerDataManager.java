@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import keepcraft.Keepcraft;
-import keepcraft.data.models.LootBlock;
+import keepcraft.data.models.Container;
 import keepcraft.data.models.WorldPoint;
 
 public class ContainerDataManager {
@@ -30,17 +30,17 @@ public class ContainerDataManager {
 		}
 	}
 
-	public void updateData(LootBlock lootBlock) {
+	public void updateData(Container container) {
 		Keepcraft.log("Updating data for lootBlocks");
 		try {
 			PreparedStatement statement
 					= database.createStatement("UPDATE lootBlocks SET Status = ?, Type = ?, Output = ? WHERE LocX = ? AND LocY = ? AND LocZ = ?");
-			statement.setInt(1, lootBlock.getStatus());
-			statement.setInt(2, lootBlock.getType().getId());
-			statement.setDouble(3, lootBlock.getOutputPerHour());
-			statement.setInt(4, lootBlock.getWorldPoint().x);
-			statement.setInt(5, lootBlock.getWorldPoint().y);
-			statement.setInt(6, lootBlock.getWorldPoint().z);
+			statement.setInt(1, container.getStatus());
+			statement.setInt(2, container.getType().getId());
+			statement.setDouble(3, container.getOutputPerHour());
+			statement.setInt(4, container.getWorldPoint().x);
+			statement.setInt(5, container.getWorldPoint().y);
+			statement.setInt(6, container.getWorldPoint().z);
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error setting lootBlocks data: " + e.getMessage());
@@ -49,8 +49,8 @@ public class ContainerDataManager {
 		}
 	}
 
-	public Collection<LootBlock> getAllData() {
-		ArrayList<LootBlock> allData = new ArrayList<>();
+	public Collection<Container> getAllData() {
+		ArrayList<Container> allData = new ArrayList<>();
 
 		Keepcraft.log("Beginning lookup of all lootBlocks");
 
@@ -66,12 +66,12 @@ public class ContainerDataManager {
 				int typeId = result.getInt("Type");
 				int output = result.getInt("Output");
 
-				LootBlock lootBlock = new LootBlock(new WorldPoint(locX, locY, locZ));
-				lootBlock.setStatus(status);
-				lootBlock.setType(LootBlock.ContainerType.getContainerType(typeId));
-				lootBlock.setOutputPerHour(output);
+				Container container = new Container(new WorldPoint(locX, locY, locZ));
+				container.setStatus(status);
+				container.setType(Container.ContainerType.getContainerType(typeId));
+				container.setOutputPerHour(output);
 
-				allData.add(lootBlock);
+				allData.add(container);
 			}
 
 			result.close();
@@ -84,18 +84,18 @@ public class ContainerDataManager {
 		return allData;
 	}
 
-	public void putData(LootBlock lootBlock) {
+	public void putData(Container container) {
 
 		Keepcraft.log("Creating record for new lootBlocks");
 		try {
 			PreparedStatement statement
 					= database.createStatement("INSERT INTO lootBlocks (LocX, LocY, LocZ, Status, Type, Output) VALUES(?, ?, ?, ?, ?, ?)");
-			statement.setInt(1, lootBlock.getWorldPoint().x);
-			statement.setInt(2, lootBlock.getWorldPoint().y);
-			statement.setInt(3, lootBlock.getWorldPoint().z);
-			statement.setInt(4, lootBlock.getStatus());
-			statement.setInt(5, lootBlock.getType().getId());
-			statement.setInt(6, lootBlock.getOutputPerHour());
+			statement.setInt(1, container.getWorldPoint().x);
+			statement.setInt(2, container.getWorldPoint().y);
+			statement.setInt(3, container.getWorldPoint().z);
+			statement.setInt(4, container.getStatus());
+			statement.setInt(5, container.getType().getId());
+			statement.setInt(6, container.getOutputPerHour());
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error creating lootBlocks data: " + e.getMessage());
@@ -104,13 +104,13 @@ public class ContainerDataManager {
 		}
 	}
 
-	public void deleteData(LootBlock lootBlock) {
+	public void deleteData(Container container) {
 		Keepcraft.log("Deleting record for lootBlocks");
 		try {
 			PreparedStatement statement = database.createStatement("DELETE FROM lootBlocks WHERE LocX = ? AND LocY = ? AND LocZ = ?");
-			statement.setInt(1, lootBlock.getWorldPoint().x);
-			statement.setInt(2, lootBlock.getWorldPoint().y);
-			statement.setInt(3, lootBlock.getWorldPoint().z);
+			statement.setInt(1, container.getWorldPoint().x);
+			statement.setInt(2, container.getWorldPoint().y);
+			statement.setInt(3, container.getWorldPoint().z);
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error deleting lootBlocks data: " + e.getMessage());

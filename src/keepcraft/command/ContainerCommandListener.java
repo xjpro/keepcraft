@@ -1,19 +1,19 @@
 package keepcraft.command;
 
+import keepcraft.data.models.Container;
 import keepcraft.services.ContainerService;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import keepcraft.services.ChatService;
-import keepcraft.data.models.LootBlock;
 import keepcraft.data.models.User;
 
-public class LootBlockCommandListener extends CommandListener {
+public class ContainerCommandListener extends CommandListener {
 
     private final UserService userService;
     private final ContainerService containerService;
     private final ChatService chatService;
 
-    public LootBlockCommandListener(UserService userService, ContainerService containerService, ChatService chatService) {
+    public ContainerCommandListener(UserService userService, ContainerService containerService, ChatService chatService) {
     	this.userService = userService;
     	this.containerService = containerService;
     	this.chatService = chatService;
@@ -24,14 +24,14 @@ public class LootBlockCommandListener extends CommandListener {
 		if (!commandSender.isOp()) return false;
 
         User sender = userService.getOnlineUser(commandSender.getName());
-        LootBlock lootBlock = sender.getTargetContainer();
+        Container container = sender.getTargetContainer();
 
-        if (lootBlock == null) {
+        if (container == null) {
         	chatService.sendFailureMessage(sender, "No target - open a container to target it");
             return true;
         }
 
-        if (commandName.equalsIgnoreCase("lootblock") && args.length > 1) {
+        if (commandName.equalsIgnoreCase("chest") && args.length > 1) {
             if (args[0].equalsIgnoreCase("output") && args.length == 2) {
                 int output;
                 try {
@@ -40,8 +40,8 @@ public class LootBlockCommandListener extends CommandListener {
                     // invalid input
                     return false;
                 }
-                lootBlock.setOutputPerHour(output);
-				containerService.updateContainer(lootBlock);
+                container.setOutputPerHour(output);
+				containerService.updateContainer(container);
                 chatService.sendSuccessMessage(sender, String.format("Container output set to %s per hour", output));
                 return true;
             } else if (args[0].equalsIgnoreCase("type") && args.length == 2) {
@@ -52,8 +52,8 @@ public class LootBlockCommandListener extends CommandListener {
                     // invalid input
                     return false;
                 }
-                lootBlock.setType(LootBlock.ContainerType.getContainerType(typeId));
-				containerService.updateContainer(lootBlock);
+                container.setType(Container.ContainerType.getContainerType(typeId));
+				containerService.updateContainer(container);
                 chatService.sendSuccessMessage(sender, "Container type set to " + typeId);
                 return true;
             } else if (args[0].equalsIgnoreCase("status") && args.length == 2) {
@@ -64,8 +64,8 @@ public class LootBlockCommandListener extends CommandListener {
                     // invalid input
                     return false;
                 }
-                lootBlock.setStatus(status);
-				containerService.updateContainer(lootBlock);
+                container.setStatus(status);
+				containerService.updateContainer(container);
                 chatService.sendSuccessMessage(sender, "Container status set to " + status);
                 return true;
             }

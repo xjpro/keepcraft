@@ -2,7 +2,7 @@ package keepcraft.services;
 
 import keepcraft.data.Database;
 import keepcraft.data.ContainerDataManager;
-import keepcraft.data.models.LootBlock;
+import keepcraft.data.models.Container;
 import keepcraft.data.models.WorldPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,75 +19,75 @@ class ContainerServiceTest {
 		Database.deleteIfExists("keepcraft_test.db");
 		Database database = new Database("keepcraft_test.db");
 		containerDataManager = new ContainerDataManager(database);
-		containerDataManager.putData(new LootBlock(new WorldPoint(238, 4, -239)));
+		containerDataManager.putData(new Container(new WorldPoint(238, 4, -239)));
 		containerService = new ContainerService(null, containerDataManager);
 	}
 
 	@Test
-	void getLootBlocks() {
-		LootBlock[] lootBlocks = containerService.getContainers().stream().toArray(LootBlock[]::new);
-		assertEquals(1, lootBlocks.length);
-		assertNotNull(lootBlocks[0]);
+	void getContainers() {
+		Container[] containers = containerService.getContainers().stream().toArray(Container[]::new);
+		assertEquals(1, containers.length);
+		assertNotNull(containers[0]);
 	}
 
 	@Test
-	void getLootBlockExists() {
-		LootBlock lootBlock = containerService.getContainer(new WorldPoint(238, 4, -239));
-		assertNotNull(lootBlock);
-		assertEquals(238, lootBlock.getWorldPoint().x);
-		assertEquals(4, lootBlock.getWorldPoint().y);
-		assertEquals(-239, lootBlock.getWorldPoint().z);
+	void getContainerExists() {
+		Container container = containerService.getContainer(new WorldPoint(238, 4, -239));
+		assertNotNull(container);
+		assertEquals(238, container.getWorldPoint().x);
+		assertEquals(4, container.getWorldPoint().y);
+		assertEquals(-239, container.getWorldPoint().z);
 	}
 
 	@Test
-	void getLootBlockNotExists() {
-		LootBlock lootBlock = containerService.getContainer(new WorldPoint(0, 0, 0));
-		assertNull(lootBlock);
+	void getContainerNotExists() {
+		Container container = containerService.getContainer(new WorldPoint(0, 0, 0));
+		assertNull(container);
 	}
 
 	@Test
-	void updateLootBlock() {
-		LootBlock lootBlock = containerService.getContainer(new WorldPoint(238, 4, -239));
-		lootBlock.setType(LootBlock.ContainerType.TEAM_VETERAN);
-		lootBlock.setOutputPerHour(99);
-		lootBlock.setStatus(2);
-		containerService.updateContainer(lootBlock);
+	void updateContainer() {
+		Container container = containerService.getContainer(new WorldPoint(238, 4, -239));
+		container.setType(Container.ContainerType.TEAM_VETERAN);
+		container.setOutputPerHour(99);
+		container.setStatus(2);
+		containerService.updateContainer(container);
 
-		LootBlock[] lootBlocks = containerDataManager.getAllData().stream().toArray(LootBlock[]::new);
-		assertEquals(1, lootBlocks.length);
-		assertNotNull(lootBlocks[0]);
-		assertEquals(LootBlock.ContainerType.TEAM_VETERAN, lootBlocks[0].getType());
-		assertEquals(99, lootBlocks[0].getOutputPerHour());
-		assertEquals(2, lootBlocks[0].getStatus());
+		Container[] containers = containerDataManager.getAllData().stream().toArray(Container[]::new);
+		assertEquals(1, containers.length);
+		assertNotNull(containers[0]);
+		assertEquals(Container.ContainerType.TEAM_VETERAN, containers[0].getType());
+		assertEquals(99, containers[0].getOutputPerHour());
+		assertEquals(2, containers[0].getStatus());
 	}
 
 	@Test
-	void createLootBlock() {
-		LootBlock lootBlock = containerService.createContainer(new WorldPoint(-140, 54, 399));
-		assertNotNull(lootBlock);
-		assertEquals(-140, lootBlock.getWorldPoint().x);
-		assertEquals(54, lootBlock.getWorldPoint().y);
-		assertEquals(399, lootBlock.getWorldPoint().z);
+	void createContainer() {
+		Container container = containerService.createContainer(new WorldPoint(-140, 54, 399));
+		assertNotNull(container);
+		assertEquals(-140, container.getWorldPoint().x);
+		assertEquals(54, container.getWorldPoint().y);
+		assertEquals(399, container.getWorldPoint().z);
 
 		// Check both service and data manager have stored the new loot block
-		LootBlock[] lootBlocksFromService = containerService.getContainers().stream().toArray(LootBlock[]::new);
-		assertEquals(2, lootBlocksFromService.length);
-		assertEquals(lootBlocksFromService[1].getWorldPoint(), lootBlock.getWorldPoint());
-		LootBlock[] lootBlocksFromDatabase = containerDataManager.getAllData().stream().toArray(LootBlock[]::new);
-		assertEquals(2, lootBlocksFromDatabase.length);
-		assertEquals(lootBlocksFromDatabase[1].getWorldPoint(), lootBlock.getWorldPoint());
+		Container[] containersFromService = containerService.getContainers().stream().toArray(Container[]::new);
+		assertEquals(2, containersFromService.length);
+		assertEquals(containersFromService[1].getWorldPoint(), container.getWorldPoint());
+		Container[] containersFromDatabase = containerDataManager.getAllData().stream().toArray(Container[]::new);
+		assertEquals(2, containersFromDatabase.length);
+		assertEquals(containersFromDatabase[1].getWorldPoint(), container.getWorldPoint());
 	}
 
 	@Test
-	void removeLootBlock() {
-		LootBlock lootBlock = containerService.getContainer(new WorldPoint(238, 4, -239));
-		containerService.removeContainer(lootBlock);
+	void removeContainer() {
+		Container container = containerService.getContainer(new WorldPoint(238, 4, -239));
+		containerService.removeContainer(container);
 
 		// Check both service and data manager have removed the loot block
-		LootBlock[] lootBlocksFromService = containerService.getContainers().stream().toArray(LootBlock[]::new);
-		assertEquals(0, lootBlocksFromService.length);
-		LootBlock[] lootBlocksFromDatabase = containerDataManager.getAllData().stream().toArray(LootBlock[]::new);
-		assertEquals(0, lootBlocksFromDatabase.length);
+		Container[] containersFromService = containerService.getContainers().stream().toArray(Container[]::new);
+		assertEquals(0, containersFromService.length);
+		Container[] containersFromDatabase = containerDataManager.getAllData().stream().toArray(Container[]::new);
+		assertEquals(0, containersFromDatabase.length);
 	}
 
 }

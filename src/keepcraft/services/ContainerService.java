@@ -1,7 +1,7 @@
 package keepcraft.services;
 
 import keepcraft.data.ContainerDataManager;
-import keepcraft.data.models.LootBlock;
+import keepcraft.data.models.Container;
 import keepcraft.data.models.WorldPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -13,7 +13,7 @@ public class ContainerService {
 
 	private final Plugin plugin;
 	private final ContainerDataManager containerDataManager;
-	private Collection<LootBlock> containers;
+	private Collection<Container> containers;
 	private int taskId = 0;
 
 	public ContainerService(Plugin plugin, ContainerDataManager containerDataManager) {
@@ -26,16 +26,16 @@ public class ContainerService {
 		containers = containerDataManager.getAllData();
 	}
 
-	public Collection<LootBlock> getContainers() {
+	public Collection<Container> getContainers() {
 		return containers;
 	}
 
-	public Collection<LootBlock> getOutputtingContainers() {
+	public Collection<Container> getOutputtingContainers() {
 		return containers.stream().filter(container -> container.getOutputPerHour() > 0).collect(Collectors.toList());
 	}
 
-	public LootBlock getContainer(WorldPoint worldPoint) {
-		for (LootBlock container : getContainers()) {
+	public Container getContainer(WorldPoint worldPoint) {
+		for (Container container : getContainers()) {
 			if (container.getWorldPoint().equals(worldPoint)) {
 				return container;
 			}
@@ -43,18 +43,18 @@ public class ContainerService {
 		return null;
 	}
 
-	public void updateContainer(LootBlock container) {
+	public void updateContainer(Container container) {
 		containerDataManager.updateData(container);
 	}
 
-	public LootBlock createContainer(WorldPoint worldPoint) {
-		LootBlock container = new LootBlock(worldPoint);
+	public Container createContainer(WorldPoint worldPoint) {
+		Container container = new Container(worldPoint);
 		containerDataManager.putData(container);
 		containers.add(container);
 		return container;
 	}
 
-	public void removeContainer(LootBlock container) {
+	public void removeContainer(Container container) {
 		containerDataManager.deleteData(container);
 		containers.remove(container);
 	}
@@ -63,7 +63,7 @@ public class ContainerService {
 		if (plugin == null) return;
 
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-			for (LootBlock container : getOutputtingContainers()) {
+			for (Container container : getOutputtingContainers()) {
 				container.dispense();
 			}
 		}, 1200, 1200);
