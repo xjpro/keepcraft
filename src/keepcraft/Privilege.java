@@ -24,7 +24,6 @@ public abstract class Privilege {
 		switch (user.getPrivilege()) {
 			case ADMIN:
 				return true;
-			case SUPER:
 			case MEMBER_VETERAN:
 			case MEMBER_NORMAL:
 			case MEMBER_START:

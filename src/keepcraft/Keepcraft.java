@@ -111,7 +111,7 @@ public class Keepcraft extends JavaPlugin {
 		}
 
 		// Container commands
-		CommandListener containerCommandListener = new ContainerCommandListener(userService, containerService, chatService);
+		CommandListener containerCommandListener = new ContainerCommandListener(userService, plotService, containerService, chatService);
 		String[] containerCommands = {"chest"};
 		for (String command : containerCommands) {
 			getCommand(command).setExecutor(containerCommandListener);

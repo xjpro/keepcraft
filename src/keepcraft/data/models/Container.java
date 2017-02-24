@@ -73,6 +73,21 @@ public class Container {
 		status = value;
 	}
 
+	public boolean canAccess(User user) {
+		if (type.equals(ContainerType.TEAM_VETERAN)) {
+			return user.getPrivilege().getId() > UserPrivilege.MEMBER_NORMAL.getId();
+		}
+		if (type.equals(ContainerType.TEAM_NORMAL)) {
+			return user.getPrivilege().getId() > UserPrivilege.MEMBER_START.getId();
+		}
+		if (type.equals(ContainerType.TEAM_STARTER)) {
+			return user.getPrivilege().getId() > UserPrivilege.NONMEMBER.getId();
+		}
+
+		// Otherwise, public, anyone can modify
+		return true;
+	}
+
 	public ContainerType getType() {
 		return type;
 	}
