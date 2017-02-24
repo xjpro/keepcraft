@@ -7,15 +7,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
-public class LootBlockService {
+public class ContainerService {
 
 	private final Plugin plugin;
 	private final LootBlockDataManager lootBlockDataManager;
 	private Collection<LootBlock> lootBlocks;
 	private int taskId = 0;
 
-	public LootBlockService(Plugin plugin, LootBlockDataManager lootBlockDataManager) {
+	public ContainerService(Plugin plugin, LootBlockDataManager lootBlockDataManager) {
 		this.plugin = plugin;
 		this.lootBlockDataManager = lootBlockDataManager;
 		refreshCache();
@@ -25,12 +26,16 @@ public class LootBlockService {
 		lootBlocks = lootBlockDataManager.getAllData();
 	}
 
-	public Collection<LootBlock> getLootBlocks() {
+	public Collection<LootBlock> getContainers() {
 		return lootBlocks;
 	}
 
+	public Collection<LootBlock> getOutputtingContainers() {
+		return lootBlocks.stream().filter(container -> container.getOutputPerHour() > 0).collect(Collectors.toList());
+	}
+
 	public LootBlock getLootBlock(WorldPoint worldPoint) {
-		for (LootBlock lootBlock : getLootBlocks()) {
+		for (LootBlock lootBlock : getContainers()) {
 			if (lootBlock.getWorldPoint().equals(worldPoint)) {
 				return lootBlock;
 			}
@@ -58,7 +63,7 @@ public class LootBlockService {
 		if (plugin == null) return;
 
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-			for (LootBlock lootBlock : getLootBlocks()) {
+			for (LootBlock lootBlock : getOutputtingContainers()) {
 				lootBlock.dispense();
 			}
 		}, 1200, 1200);

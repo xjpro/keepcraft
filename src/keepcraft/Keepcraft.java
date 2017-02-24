@@ -31,7 +31,7 @@ public class Keepcraft extends JavaPlugin {
 	private final UserService userService = new UserService(userDataManager, userStatsDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
-	private final LootBlockService lootBlockService = new LootBlockService(this, lootBlockDataManager);
+	private final ContainerService containerService = new ContainerService(this, lootBlockDataManager);
 	private final ChatService chatService = new ChatService(userService);
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 	private final RallyService rallyService = new RallyService(chatService);
@@ -61,13 +61,13 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new ExplosionListener(plotService, chatService), this);
 		manager.registerEvents(new PlotAttackListener(userService, plotService, chatService), this);
 		manager.registerEvents(new PlotProtectionListener(userService, plotService, chatService), this);
-		manager.registerEvents(new LootBlockListener(userService, lootBlockService, chatService), this);
+		manager.registerEvents(new LootBlockListener(userService, containerService, chatService), this);
 		manager.registerEvents(new CraftItemListener(), this);
 		manager.registerEvents(new StormListener(), this);
 		manager.registerEvents(new StatsListener(userService, plotService), this);
 
 		// Start any tasks
-		lootBlockService.startDispensing();
+		containerService.startDispensing();
 
 		// Basic commands
 		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, chatService);
@@ -111,7 +111,7 @@ public class Keepcraft extends JavaPlugin {
 		}
 
 		// LootBlock commands
-		CommandListener lootBlockCommandListener = new LootBlockCommandListener(userService, lootBlockService, chatService);
+		CommandListener lootBlockCommandListener = new LootBlockCommandListener(userService, containerService, chatService);
 		String[] lootBlockCommands = {"lootblock"};
 		for (String lootBlockCommand : lootBlockCommands) {
 			getCommand(lootBlockCommand).setExecutor(lootBlockCommandListener);
@@ -130,7 +130,7 @@ public class Keepcraft extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		// Stop any tasks
-		lootBlockService.stopDispensing();
+		containerService.stopDispensing();
 
 		// Save everybody's user data
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
@@ -155,7 +155,7 @@ public class Keepcraft extends JavaPlugin {
 		userService.refreshCache();
 		plotService.refreshCache();
 		factionSpawnService.refreshCache();
-		lootBlockService.refreshCache();
+		containerService.refreshCache();
 		log(String.format("Successfully setup map on '%s'", world.getName()));
 	}
 

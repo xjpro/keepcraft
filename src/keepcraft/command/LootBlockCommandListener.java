@@ -1,6 +1,6 @@
 package keepcraft.command;
 
-import keepcraft.services.LootBlockService;
+import keepcraft.services.ContainerService;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import keepcraft.services.ChatService;
@@ -10,12 +10,12 @@ import keepcraft.data.models.User;
 public class LootBlockCommandListener extends CommandListener {
 
     private final UserService userService;
-    private final LootBlockService lootBlockService;
+    private final ContainerService containerService;
     private final ChatService chatService;
 
-    public LootBlockCommandListener(UserService userService, LootBlockService lootBlockService, ChatService chatService) {
+    public LootBlockCommandListener(UserService userService, ContainerService containerService, ChatService chatService) {
     	this.userService = userService;
-    	this.lootBlockService = lootBlockService;
+    	this.containerService = containerService;
     	this.chatService = chatService;
 	}
 
@@ -41,7 +41,7 @@ public class LootBlockCommandListener extends CommandListener {
                     return false;
                 }
                 lootBlock.setOutputPerHour(output);
-				lootBlockService.updateLootBlock(lootBlock);
+				containerService.updateLootBlock(lootBlock);
                 chatService.sendSuccessMessage(sender, String.format("Container output set to %s per hour", output));
                 return true;
             } else if (args[0].equalsIgnoreCase("type") && args.length == 2) {
@@ -53,7 +53,7 @@ public class LootBlockCommandListener extends CommandListener {
                     return false;
                 }
                 lootBlock.setType(LootBlock.ContainerType.getContainerType(typeId));
-				lootBlockService.updateLootBlock(lootBlock);
+				containerService.updateLootBlock(lootBlock);
                 chatService.sendSuccessMessage(sender, "Container type set to " + typeId);
                 return true;
             } else if (args[0].equalsIgnoreCase("status") && args.length == 2) {
@@ -65,7 +65,7 @@ public class LootBlockCommandListener extends CommandListener {
                     return false;
                 }
                 lootBlock.setStatus(status);
-				lootBlockService.updateLootBlock(lootBlock);
+				containerService.updateLootBlock(lootBlock);
                 chatService.sendSuccessMessage(sender, "Container status set to " + status);
                 return true;
             }
