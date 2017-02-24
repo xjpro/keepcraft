@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 public class LootBlockListener implements Listener {
 
@@ -44,7 +45,7 @@ public class LootBlockListener implements Listener {
 				// create a loot dispenser chest
 				placed.setType(Material.CHEST);
 				LootBlock lootBlock = lootBlockService.createLootBlock(new WorldPoint(placed.getLocation()));
-				user.setTargetLootBlock(lootBlock);
+				user.setTargetContainer(lootBlock);
 				chatService.sendSuccessMessage(user, "Loot block placed & targeted");
 			}
 		}
@@ -55,7 +56,7 @@ public class LootBlockListener implements Listener {
 		if (event.isCancelled()) return;
 
 		Block broken = event.getBlock();
-		if (broken.getType() == Material.CHEST) {
+		if (broken.getState() instanceof InventoryHolder) {
 			LootBlock lootBlock = lootBlockService.getLootBlock(new WorldPoint(broken.getLocation()));
 			if (lootBlock == null) return;
 
@@ -77,7 +78,7 @@ public class LootBlockListener implements Listener {
 		if (!event.hasBlock() || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
 		Block clickedBlock = event.getClickedBlock();
-		if (clickedBlock.getType() == Material.CHEST) {
+		if (clickedBlock.getState() instanceof InventoryHolder) {
 			LootBlock lootBlock = lootBlockService.getLootBlock(new WorldPoint(clickedBlock.getLocation()));
 			if (lootBlock == null) return;
 
@@ -85,7 +86,7 @@ public class LootBlockListener implements Listener {
 			User user = userService.getOnlineUser(player.getName());
 
 			if (player.isOp() || user.isAdmin()) {
-				user.setTargetLootBlock(lootBlock);
+				user.setTargetContainer(lootBlock);
 				chatService.sendSuccessMessage(user, "Loot block targeted");
 			}
 		}

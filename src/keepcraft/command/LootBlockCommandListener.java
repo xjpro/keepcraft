@@ -24,10 +24,10 @@ public class LootBlockCommandListener extends CommandListener {
 		if (!commandSender.isOp()) return false;
 
         User sender = userService.getOnlineUser(commandSender.getName());
-        LootBlock lootBlock = sender.getTargetLootBlock();
+        LootBlock lootBlock = sender.getTargetContainer();
 
         if (lootBlock == null) {
-        	chatService.sendFailureMessage(sender, "No target - right click a loot block to target it");
+        	chatService.sendFailureMessage(sender, "No target - open a container to target it");
             return true;
         }
 
@@ -42,19 +42,19 @@ public class LootBlockCommandListener extends CommandListener {
                 }
                 lootBlock.setOutputPerHour(output);
 				lootBlockService.updateLootBlock(lootBlock);
-                chatService.sendSuccessMessage(sender, String.format("Loot block output set to %s per hour", output));
+                chatService.sendSuccessMessage(sender, String.format("Container output set to %s per hour", output));
                 return true;
             } else if (args[0].equalsIgnoreCase("type") && args.length == 2) {
-                int type;
+                int typeId;
                 try {
-                    type = Integer.parseInt(args[1]);
+                    typeId = Integer.parseInt(args[1]);
                 } catch (Exception e) {
                     // invalid input
                     return false;
                 }
-                lootBlock.setType(type);
+                lootBlock.setType(LootBlock.ContainerType.getContainerType(typeId));
 				lootBlockService.updateLootBlock(lootBlock);
-                chatService.sendSuccessMessage(sender, "Loot block type set to " + type);
+                chatService.sendSuccessMessage(sender, "Container type set to " + typeId);
                 return true;
             } else if (args[0].equalsIgnoreCase("status") && args.length == 2) {
                 int status;
@@ -66,7 +66,7 @@ public class LootBlockCommandListener extends CommandListener {
                 }
                 lootBlock.setStatus(status);
 				lootBlockService.updateLootBlock(lootBlock);
-                chatService.sendSuccessMessage(sender, "Loot block status set to " + status);
+                chatService.sendSuccessMessage(sender, "Container status set to " + status);
                 return true;
             }
         }

@@ -48,7 +48,7 @@ class LootBlockServiceTest {
 	@Test
 	void updateLootBlock() {
 		LootBlock lootBlock = lootBlockService.getLootBlock(new WorldPoint(238, 4, -239));
-		lootBlock.setType(3);
+		lootBlock.setType(LootBlock.ContainerType.TEAM_VETERAN);
 		lootBlock.setOutputPerHour(99);
 		lootBlock.setStatus(2);
 		lootBlockService.updateLootBlock(lootBlock);
@@ -56,7 +56,7 @@ class LootBlockServiceTest {
 		LootBlock[] lootBlocks = lootBlockDataManager.getAllData().stream().toArray(LootBlock[]::new);
 		assertEquals(1, lootBlocks.length);
 		assertNotNull(lootBlocks[0]);
-		assertEquals(3, lootBlocks[0].getType());
+		assertEquals(LootBlock.ContainerType.TEAM_VETERAN, lootBlocks[0].getType());
 		assertEquals(99, lootBlocks[0].getOutputPerHour());
 		assertEquals(2, lootBlocks[0].getStatus());
 	}

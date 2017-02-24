@@ -36,7 +36,7 @@ public class LootBlockDataManager {
 			PreparedStatement statement
 					= database.createStatement("UPDATE lootBlocks SET Status = ?, Type = ?, Output = ? WHERE LocX = ? AND LocY = ? AND LocZ = ?");
 			statement.setInt(1, lootBlock.getStatus());
-			statement.setInt(2, lootBlock.getType());
+			statement.setInt(2, lootBlock.getType().getId());
 			statement.setDouble(3, lootBlock.getOutputPerHour());
 			statement.setInt(4, lootBlock.getWorldPoint().x);
 			statement.setInt(5, lootBlock.getWorldPoint().y);
@@ -63,12 +63,12 @@ public class LootBlockDataManager {
 				int locY = result.getInt("LocY");
 				int locZ = result.getInt("LocZ");
 				int status = result.getInt("Status");
-				int type = result.getInt("Type");
+				int typeId = result.getInt("Type");
 				int output = result.getInt("Output");
 
 				LootBlock lootBlock = new LootBlock(new WorldPoint(locX, locY, locZ));
 				lootBlock.setStatus(status);
-				lootBlock.setType(type);
+				lootBlock.setType(LootBlock.ContainerType.getContainerType(typeId));
 				lootBlock.setOutputPerHour(output);
 
 				allData.add(lootBlock);
@@ -94,7 +94,7 @@ public class LootBlockDataManager {
 			statement.setInt(2, lootBlock.getWorldPoint().y);
 			statement.setInt(3, lootBlock.getWorldPoint().z);
 			statement.setInt(4, lootBlock.getStatus());
-			statement.setInt(5, lootBlock.getType());
+			statement.setInt(5, lootBlock.getType().getId());
 			statement.setInt(6, lootBlock.getOutputPerHour());
 			statement.execute();
 		} catch (Exception e) {

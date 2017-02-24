@@ -123,11 +123,11 @@ public class User {
 		currentPlot = plot;
 	}
 
-	public LootBlock getTargetLootBlock() {
+	public LootBlock getTargetContainer() {
 		return targetLootBlock;
 	}
 
-	public void setTargetLootBlock(LootBlock lootBlock) {
+	public void setTargetContainer(LootBlock lootBlock) {
 		targetLootBlock = lootBlock;
 	}
 

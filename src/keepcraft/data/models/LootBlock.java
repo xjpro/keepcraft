@@ -1,25 +1,50 @@
 package keepcraft.data.models;
 
 import keepcraft.Keepcraft;
-import org.bukkit.*;
+import org.bukkit.Chunk;
+import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class LootBlock {
+
+	public enum ContainerType {
+		PUBLIC(0),
+		TEAM_STARTER(1),
+		TEAM_NORMAL(2),
+		TEAM_VETERAN(3),
+		PRIVATE(4);
+
+		private final int id;
+
+		ContainerType(int id) {
+			this.id = id;
+		}
+
+		public static ContainerType getContainerType(int id) {
+			return Arrays.stream(ContainerType.values()).filter(containerType -> containerType.getId() == id).findFirst().orElse(null);
+		}
+
+		public int getId() {
+			return id;
+		}
+	}
 
 	private static Random Random = new Random();
 
 	private final WorldPoint worldPoint;
 	private int status = 1;
-	private int type = 1;
+	private ContainerType type = ContainerType.PUBLIC;
 
 	// Output in items generated per hour
-	private int outputPerHour = 60;
+	private int outputPerHour = 0;
 	// Fractional output from previous run
 	private double leftoverOutput = 0;
 
@@ -47,11 +72,11 @@ public class LootBlock {
 		status = value;
 	}
 
-	public int getType() {
+	public ContainerType getType() {
 		return type;
 	}
 
-	public void setType(int value) {
+	public void setType(ContainerType value) {
 		type = value;
 	}
 
