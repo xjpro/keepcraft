@@ -9,11 +9,11 @@ import keepcraft.Keepcraft;
 import keepcraft.data.models.LootBlock;
 import keepcraft.data.models.WorldPoint;
 
-public class LootBlockDataManager {
+public class ContainerDataManager {
 
 	private Database database;
 
-	public LootBlockDataManager(Database database) {
+	public ContainerDataManager(Database database) {
 		this.database = database;
 		init();
 	}

@@ -22,7 +22,7 @@ public class Keepcraft extends JavaPlugin {
 	private final UserDataManager userDataManager = new UserDataManager(database);
 	private final PlotDataManager plotDataManager = new PlotDataManager(database);
 	private final FactionSpawnDataManager factionSpawnManager = new FactionSpawnDataManager(database);
-	private final LootBlockDataManager lootBlockDataManager = new LootBlockDataManager(database);
+	private final ContainerDataManager containerDataManager = new ContainerDataManager(database);
 
 	private final Database statsDatabase = new Database("keepcraft_stats.db");
 	private final UserStatsDataManager userStatsDataManager = new UserStatsDataManager(statsDatabase);
@@ -31,7 +31,7 @@ public class Keepcraft extends JavaPlugin {
 	private final UserService userService = new UserService(userDataManager, userStatsDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
-	private final ContainerService containerService = new ContainerService(this, lootBlockDataManager);
+	private final ContainerService containerService = new ContainerService(this, containerDataManager);
 	private final ChatService chatService = new ChatService(userService);
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 	private final RallyService rallyService = new RallyService(chatService);

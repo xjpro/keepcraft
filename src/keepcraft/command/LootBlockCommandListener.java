@@ -41,7 +41,7 @@ public class LootBlockCommandListener extends CommandListener {
                     return false;
                 }
                 lootBlock.setOutputPerHour(output);
-				containerService.updateLootBlock(lootBlock);
+				containerService.updateContainer(lootBlock);
                 chatService.sendSuccessMessage(sender, String.format("Container output set to %s per hour", output));
                 return true;
             } else if (args[0].equalsIgnoreCase("type") && args.length == 2) {
@@ -53,7 +53,7 @@ public class LootBlockCommandListener extends CommandListener {
                     return false;
                 }
                 lootBlock.setType(LootBlock.ContainerType.getContainerType(typeId));
-				containerService.updateLootBlock(lootBlock);
+				containerService.updateContainer(lootBlock);
                 chatService.sendSuccessMessage(sender, "Container type set to " + typeId);
                 return true;
             } else if (args[0].equalsIgnoreCase("status") && args.length == 2) {
@@ -65,7 +65,7 @@ public class LootBlockCommandListener extends CommandListener {
                     return false;
                 }
                 lootBlock.setStatus(status);
-				containerService.updateLootBlock(lootBlock);
+				containerService.updateContainer(lootBlock);
                 chatService.sendSuccessMessage(sender, "Container status set to " + status);
                 return true;
             }
