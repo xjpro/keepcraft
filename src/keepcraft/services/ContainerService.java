@@ -13,7 +13,7 @@ public class ContainerService {
 
 	private final Plugin plugin;
 	private final ContainerDataManager containerDataManager;
-	private Collection<LootBlock> lootBlocks;
+	private Collection<LootBlock> containers;
 	private int taskId = 0;
 
 	public ContainerService(Plugin plugin, ContainerDataManager containerDataManager) {
@@ -23,40 +23,40 @@ public class ContainerService {
 	}
 
 	public void refreshCache() {
-		lootBlocks = containerDataManager.getAllData();
+		containers = containerDataManager.getAllData();
 	}
 
 	public Collection<LootBlock> getContainers() {
-		return lootBlocks;
+		return containers;
 	}
 
 	public Collection<LootBlock> getOutputtingContainers() {
-		return lootBlocks.stream().filter(container -> container.getOutputPerHour() > 0).collect(Collectors.toList());
+		return containers.stream().filter(container -> container.getOutputPerHour() > 0).collect(Collectors.toList());
 	}
 
 	public LootBlock getContainer(WorldPoint worldPoint) {
-		for (LootBlock lootBlock : getContainers()) {
-			if (lootBlock.getWorldPoint().equals(worldPoint)) {
-				return lootBlock;
+		for (LootBlock container : getContainers()) {
+			if (container.getWorldPoint().equals(worldPoint)) {
+				return container;
 			}
 		}
 		return null;
 	}
 
-	public void updateContainer(LootBlock lootBlock) {
-		containerDataManager.updateData(lootBlock);
+	public void updateContainer(LootBlock container) {
+		containerDataManager.updateData(container);
 	}
 
 	public LootBlock createContainer(WorldPoint worldPoint) {
-		LootBlock lootBlock = new LootBlock(worldPoint);
-		containerDataManager.putData(lootBlock);
-		lootBlocks.add(lootBlock);
-		return lootBlock;
+		LootBlock container = new LootBlock(worldPoint);
+		containerDataManager.putData(container);
+		containers.add(container);
+		return container;
 	}
 
-	public void removeContainer(LootBlock lootBlock) {
-		containerDataManager.deleteData(lootBlock);
-		lootBlocks.remove(lootBlock);
+	public void removeContainer(LootBlock container) {
+		containerDataManager.deleteData(container);
+		containers.remove(container);
 	}
 
 	public void startDispensing() {

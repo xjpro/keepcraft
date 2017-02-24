@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -90,7 +91,7 @@ public class LootBlock {
 
 	public void dispense() {
 		Block block = getBlock();
-		if (block == null || block.getType() != Material.CHEST || outputPerHour == 0) return;
+		if (block == null || !(block.getState() instanceof InventoryHolder) || outputPerHour == 0) return;
 
 		Chest chest = (Chest) block.getState();
 		Inventory inventory = chest.getBlockInventory();
