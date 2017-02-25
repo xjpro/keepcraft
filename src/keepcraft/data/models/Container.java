@@ -18,10 +18,9 @@ public class Container {
 
 	public enum ContainerType {
 		PUBLIC(0),
-		TEAM_STARTER(1),
-		TEAM_NORMAL(2),
-		TEAM_VETERAN(3),
-		PRIVATE(4);
+		TEAM_NORMAL(1),
+		TEAM_VETERAN(2),
+		PRIVATE(3);
 
 		private final int id;
 
@@ -79,9 +78,6 @@ public class Container {
 		}
 		if (type.equals(ContainerType.TEAM_NORMAL)) {
 			return user.getPrivilege().getId() > UserPrivilege.MEMBER_START.getId();
-		}
-		if (type.equals(ContainerType.TEAM_STARTER)) {
-			return user.getPrivilege().getId() > UserPrivilege.NONMEMBER.getId();
 		}
 
 		// Otherwise, public, anyone can modify

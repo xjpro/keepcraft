@@ -83,9 +83,14 @@ public class ContainerListener implements Listener {
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
-			if (player.isOp() || user.isAdmin()) {
+			if(container.canAccess(user)) {
 				user.setTargetContainer(container);
+				// todo can't target chests in enemy territory
 				chatService.sendSuccessMessage(user, "Container targeted");
+			}
+			else {
+				chatService.sendFailureMessage(user, "You do not have permission to open this");
+				event.setCancelled(true);
 			}
 		}
 	}
