@@ -78,41 +78,6 @@ public class ActionListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerItemDamage(PlayerItemDamageEvent event) {
-		if (event.isCancelled()) return;
-
-		// Make tool use in team plot not cause durability damage
-		switch (event.getItem().getType()) {
-			case WOOD_SPADE:
-			case STONE_SPADE:
-			case IRON_SPADE:
-			case GOLD_SPADE:
-			case DIAMOND_SPADE:
-			case WOOD_PICKAXE:
-			case STONE_PICKAXE:
-			case IRON_PICKAXE:
-			case GOLD_PICKAXE:
-			case DIAMOND_PICKAXE:
-//			case WOOD_AXE:
-//			case STONE_AXE:
-//			case IRON_AXE:
-//			case GOLD_AXE:
-//			case DIAMOND_AXE:
-			case WOOD_HOE:
-			case STONE_HOE:
-			case IRON_HOE:
-			case GOLD_HOE:
-			case DIAMOND_HOE:
-				User user = userService.getOnlineUser(event.getPlayer().getName());
-				Plot plot = plotService.getIntersectedPlot(event.getPlayer().getLocation());
-				if (plot != null && plot.isFactionProtected(user.getFaction())) {
-					event.setCancelled(true);
-				}
-				break;
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
 		if (event.getBlockClicked().getType() == Material.STATIONARY_LAVA) {
 			// Don't allow people to scoop lava
