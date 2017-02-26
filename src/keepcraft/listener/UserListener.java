@@ -58,6 +58,10 @@ public class UserListener implements Listener {
 			Keepcraft.log("Player " + player.getName() + " was on the wrong world, moving to " + Keepcraft.getWorld().getName());
 			teleportHome(player, user);
 		}
+		else if(player.getGameMode() == GameMode.SPECTATOR) {
+			// If user logs in and they are in spec mode, they must have disconnected while respawning...
+			respawnAfterTimeout(player, user, safelyGetFactionSpawn(user).getWorldPoint().asLocation());
+		}
 
 		if (player.isOp()) {
 			player.setPlayerListName(ChatService.NameAdmin + player.getDisplayName());
@@ -105,22 +109,7 @@ public class UserListener implements Listener {
 
 		// If user died while in combat they must wait to respawn...
 		if (user.isInCombat()) {
-			GameMode originalGameMode = player.getGameMode();
-
-			// Place user in the sky above their base in spectator mode
-			respawnLocation.setY(192);
-			player.setGameMode(GameMode.SPECTATOR);
-
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
-				// Have to put this on a delayed task or it will throw a null exception when trying to find the player
-				chatService.sendAlertMessage(user, String.format("Respawning in %s seconds", RespawnSeconds));
-			}, 0);
-
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
-				// Respawn player: set their game mode back and move them home
-				player.setGameMode(originalGameMode);
-				teleportHome(player, user);
-			}, 20 * RespawnSeconds);
+			respawnAfterTimeout(player, user, respawnLocation);
 		}
 
 		event.setRespawnLocation(respawnLocation);
@@ -159,6 +148,24 @@ public class UserListener implements Listener {
 	private void teleportHome(Player p, User user) {
 		FactionSpawn respawn = safelyGetFactionSpawn(user);
 		p.teleport(respawn.getWorldPoint().asLocation());
+	}
+
+	private void respawnAfterTimeout(Player player, User user, Location respawnLocation) {
+		GameMode originalGameMode = player.getGameMode();
+
+		respawnLocation.setY(192);
+		player.setGameMode(GameMode.SPECTATOR);
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
+			// Have to put this on a delayed task or it will throw a null exception when trying to find the player
+			chatService.sendAlertMessage(user, String.format("Respawning in %s seconds", RespawnSeconds));
+		}, 0);
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
+			// Respawn player: set their game mode back and move them home
+			player.setGameMode(originalGameMode == GameMode.SPECTATOR ? GameMode.SURVIVAL : originalGameMode);
+			teleportHome(player, user);
+		}, 20 * RespawnSeconds);
 	}
 
 	private FactionSpawn safelyGetFactionSpawn(User user) {
