@@ -57,10 +57,9 @@ public class UserListener implements Listener {
 		} else if (player.getLocation().getWorld() != Keepcraft.getWorld()) {
 			Keepcraft.log("Player " + player.getName() + " was on the wrong world, moving to " + Keepcraft.getWorld().getName());
 			teleportHome(player, user);
-		}
-		else if(player.getGameMode() == GameMode.SPECTATOR) {
+		} else if (player.getGameMode() == GameMode.SPECTATOR) {
 			// If user logs in and they are in spec mode, they must have disconnected while respawning...
-			respawnAfterTimeout(player, user, safelyGetFactionSpawn(user).getWorldPoint().asLocation());
+			respawnAfterTimeout(player, user);
 		}
 
 		if (player.isOp()) {
@@ -109,7 +108,8 @@ public class UserListener implements Listener {
 
 		// If user died while in combat they must wait to respawn...
 		if (user.isInCombat()) {
-			respawnAfterTimeout(player, user, respawnLocation);
+			respawnLocation.setY(192);
+			respawnAfterTimeout(player, user);
 		}
 
 		event.setRespawnLocation(respawnLocation);
@@ -150,10 +150,9 @@ public class UserListener implements Listener {
 		p.teleport(respawn.getWorldPoint().asLocation());
 	}
 
-	private void respawnAfterTimeout(Player player, User user, Location respawnLocation) {
+	private void respawnAfterTimeout(Player player, User user) {
 		GameMode originalGameMode = player.getGameMode();
 
-		respawnLocation.setY(192);
 		player.setGameMode(GameMode.SPECTATOR);
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
