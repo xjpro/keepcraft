@@ -21,7 +21,7 @@ public class ContainerDataManager {
 	private void init() {
 		try {
 			PreparedStatement statement
-					= database.createStatement("CREATE TABLE IF NOT EXISTS lootBlocks (LocX, LocY, LocZ, Status, Type, Output)");
+					= database.createStatement("CREATE TABLE IF NOT EXISTS containers (LocX, LocY, LocZ, Permission, OutputType, Output)");
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error initializing table: " + e.getMessage());
@@ -31,19 +31,19 @@ public class ContainerDataManager {
 	}
 
 	public void updateData(Container container) {
-		Keepcraft.log("Updating data for lootBlocks");
+		Keepcraft.log("Updating data for containers");
 		try {
 			PreparedStatement statement
-					= database.createStatement("UPDATE lootBlocks SET Status = ?, Type = ?, Output = ? WHERE LocX = ? AND LocY = ? AND LocZ = ?");
-			statement.setInt(1, container.getStatus());
-			statement.setInt(2, container.getType().getId());
+					= database.createStatement("UPDATE containers SET Permission = ?, OutputType = ?, Output = ? WHERE LocX = ? AND LocY = ? AND LocZ = ?");
+			statement.setInt(1, container.getPermission().getId());
+			statement.setInt(2, container.getOutputType().getId());
 			statement.setDouble(3, container.getOutputPerHour());
 			statement.setInt(4, container.getWorldPoint().x);
 			statement.setInt(5, container.getWorldPoint().y);
 			statement.setInt(6, container.getWorldPoint().z);
 			statement.execute();
 		} catch (Exception e) {
-			Keepcraft.error("Error setting lootBlocks data: " + e.getMessage());
+			Keepcraft.error("Error setting containers data: " + e.getMessage());
 		} finally {
 			database.close();
 		}
@@ -52,23 +52,23 @@ public class ContainerDataManager {
 	public Collection<Container> getAllData() {
 		ArrayList<Container> allData = new ArrayList<>();
 
-		Keepcraft.log("Beginning lookup of all lootBlocks");
+		Keepcraft.log("Beginning lookup of all containers");
 
 		try {
-			PreparedStatement statement = database.createStatement("SELECT LocX, LocY, LocZ, Status, Type, Output FROM lootBlocks");
+			PreparedStatement statement = database.createStatement("SELECT LocX, LocY, LocZ, Permission, OutputType, Output FROM containers");
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
 				int locX = result.getInt("LocX");
 				int locY = result.getInt("LocY");
 				int locZ = result.getInt("LocZ");
-				int status = result.getInt("Status");
-				int typeId = result.getInt("Type");
+				int permissionId = result.getInt("Permission");
+				int outputTypeId = result.getInt("OutputType");
 				int output = result.getInt("Output");
 
 				Container container = new Container(new WorldPoint(locX, locY, locZ));
-				container.setStatus(status);
-				container.setType(Container.ContainerType.getContainerType(typeId));
+				container.setPermission(Container.ContainerPermission.getContainerPermission(permissionId));
+				container.setOutputType(Container.ContainerOutputType.getContainerOutputType(outputTypeId));
 				container.setOutputPerHour(output);
 
 				allData.add(container);
@@ -76,7 +76,7 @@ public class ContainerDataManager {
 
 			result.close();
 		} catch (Exception e) {
-			Keepcraft.error("Error during all lootBlocks data lookup: " + e.getMessage());
+			Keepcraft.error("Error during all containers data lookup: " + e.getMessage());
 		} finally {
 			database.close();
 		}
@@ -86,34 +86,34 @@ public class ContainerDataManager {
 
 	public void putData(Container container) {
 
-		Keepcraft.log("Creating record for new lootBlocks");
+		Keepcraft.log("Creating record for new containers");
 		try {
 			PreparedStatement statement
-					= database.createStatement("INSERT INTO lootBlocks (LocX, LocY, LocZ, Status, Type, Output) VALUES(?, ?, ?, ?, ?, ?)");
+					= database.createStatement("INSERT INTO containers (LocX, LocY, LocZ, Permission, OutputType, Output) VALUES(?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, container.getWorldPoint().x);
 			statement.setInt(2, container.getWorldPoint().y);
 			statement.setInt(3, container.getWorldPoint().z);
-			statement.setInt(4, container.getStatus());
-			statement.setInt(5, container.getType().getId());
+			statement.setInt(4, container.getPermission().getId());
+			statement.setInt(5, container.getOutputType().getId());
 			statement.setInt(6, container.getOutputPerHour());
 			statement.execute();
 		} catch (Exception e) {
-			Keepcraft.error("Error creating lootBlocks data: " + e.getMessage());
+			Keepcraft.error("Error creating containers data: " + e.getMessage());
 		} finally {
 			database.close();
 		}
 	}
 
 	public void deleteData(Container container) {
-		Keepcraft.log("Deleting record for lootBlocks");
+		Keepcraft.log("Deleting record for containers");
 		try {
-			PreparedStatement statement = database.createStatement("DELETE FROM lootBlocks WHERE LocX = ? AND LocY = ? AND LocZ = ?");
+			PreparedStatement statement = database.createStatement("DELETE FROM containers WHERE LocX = ? AND LocY = ? AND LocZ = ?");
 			statement.setInt(1, container.getWorldPoint().x);
 			statement.setInt(2, container.getWorldPoint().y);
 			statement.setInt(3, container.getWorldPoint().z);
 			statement.execute();
 		} catch (Exception e) {
-			Keepcraft.error("Error deleting lootBlocks data: " + e.getMessage());
+			Keepcraft.error("Error deleting containers data: " + e.getMessage());
 		} finally {
 			database.close();
 		}

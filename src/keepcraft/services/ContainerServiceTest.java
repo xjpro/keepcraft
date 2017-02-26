@@ -48,17 +48,17 @@ class ContainerServiceTest {
 	@Test
 	void updateContainer() {
 		Container container = containerService.getContainer(new WorldPoint(238, 4, -239));
-		container.setType(Container.ContainerType.TEAM_VETERAN);
+		container.setPermission(Container.ContainerPermission.TEAM_VETERAN);
 		container.setOutputPerHour(99);
-		container.setStatus(2);
+		container.setOutputType(Container.ContainerOutputType.SIEGE);
 		containerService.updateContainer(container);
 
 		Container[] containers = containerDataManager.getAllData().stream().toArray(Container[]::new);
 		assertEquals(1, containers.length);
 		assertNotNull(containers[0]);
-		assertEquals(Container.ContainerType.TEAM_VETERAN, containers[0].getType());
+		assertEquals(Container.ContainerPermission.TEAM_VETERAN, containers[0].getOutputType());
 		assertEquals(99, containers[0].getOutputPerHour());
-		assertEquals(2, containers[0].getStatus());
+		assertEquals(2, containers[0].getPermission());
 	}
 
 	@Test

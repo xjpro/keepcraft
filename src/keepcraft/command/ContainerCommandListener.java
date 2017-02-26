@@ -73,9 +73,9 @@ public class ContainerCommandListener extends CommandListener {
 					return true;
 				}
 
-				container.setType(Container.ContainerType.getContainerType(typeId));
+				container.setPermission(Container.ContainerPermission.getContainerPermission(typeId));
 				containerService.updateContainer(container);
-				chatService.sendSuccessMessage(user, String.format("Permissions updated to %s", container.getType()));
+				chatService.sendSuccessMessage(user, String.format("Permissions updated to %s", container.getOutputType()));
 				return true;
 
 			} else if (args.length == 2) {

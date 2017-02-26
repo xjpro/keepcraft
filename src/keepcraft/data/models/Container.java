@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class Container {
 
-	public enum ContainerType {
+	public enum ContainerPermission {
 		PUBLIC(0),
 		TEAM_NORMAL(1),
 		TEAM_VETERAN(2),
@@ -24,12 +24,31 @@ public class Container {
 
 		private final int id;
 
-		ContainerType(int id) {
+		ContainerPermission(int id) {
 			this.id = id;
 		}
 
-		public static ContainerType getContainerType(int id) {
-			return Arrays.stream(ContainerType.values()).filter(containerType -> containerType.getId() == id).findFirst().orElse(null);
+		public static ContainerPermission getContainerPermission(int id) {
+			return Arrays.stream(ContainerPermission.values()).filter(containerPermission -> containerPermission.getId() == id).findFirst().orElse(null);
+		}
+
+		public int getId() {
+			return id;
+		}
+	}
+
+	public enum ContainerOutputType {
+		NONE(0),
+		SIEGE(1);
+
+		private final int id;
+
+		ContainerOutputType(int id) {
+			this.id = id;
+		}
+
+		public static ContainerOutputType getContainerOutputType(int id) {
+			return Arrays.stream(ContainerOutputType.values()).filter(outputType -> outputType.getId() == id).findFirst().orElse(null);
 		}
 
 		public int getId() {
@@ -40,8 +59,8 @@ public class Container {
 	private static Random Random = new Random();
 
 	private final WorldPoint worldPoint;
-	private int status = 1;
-	private ContainerType type = ContainerType.PUBLIC;
+	private ContainerPermission permission = ContainerPermission.PUBLIC;
+	private ContainerOutputType outputType = ContainerOutputType.NONE;
 
 	// Output in items generated per hour
 	private int outputPerHour = 0;
@@ -64,19 +83,19 @@ public class Container {
 		return getBlock().getChunk();
 	}
 
-	public int getStatus() {
-		return status;
+	public ContainerPermission getPermission() {
+		return permission;
 	}
 
-	public void setStatus(int value) {
-		status = value;
+	public void setPermission(ContainerPermission value) {
+		permission = value;
 	}
 
 	public boolean canAccess(User user) {
-		if (type.equals(ContainerType.TEAM_VETERAN)) {
+		if (permission.equals(ContainerPermission.TEAM_VETERAN)) {
 			return user.getPrivilege().getId() > UserPrivilege.MEMBER_NORMAL.getId();
 		}
-		if (type.equals(ContainerType.TEAM_NORMAL)) {
+		if (permission.equals(ContainerPermission.TEAM_NORMAL)) {
 			return user.getPrivilege().getId() > UserPrivilege.MEMBER_START.getId();
 		}
 
@@ -84,12 +103,12 @@ public class Container {
 		return true;
 	}
 
-	public ContainerType getType() {
-		return type;
+	public ContainerOutputType getOutputType() {
+		return outputType;
 	}
 
-	public void setType(ContainerType value) {
-		type = value;
+	public void setOutputType(ContainerOutputType value) {
+		outputType = value;
 	}
 
 	public int getOutputPerHour() {
