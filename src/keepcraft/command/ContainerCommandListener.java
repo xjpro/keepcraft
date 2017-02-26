@@ -75,7 +75,7 @@ public class ContainerCommandListener extends CommandListener {
 
 				container.setPermission(Container.ContainerPermission.getContainerPermission(typeId));
 				containerService.updateContainer(container);
-				chatService.sendSuccessMessage(user, String.format("Permissions updated to %s", container.getOutputType()));
+				chatService.sendSuccessMessage(user, String.format("Permissions updated to %s", container.getPermission()));
 				return true;
 
 			} else if (args.length == 2) {

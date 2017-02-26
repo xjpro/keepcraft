@@ -44,7 +44,7 @@ public class ContainerListener implements Listener {
 				// flag container
 				Container container = containerService.createContainer(new WorldPoint(placed.getLocation()));
 				user.setTargetContainer(container);
-				chatService.sendSuccessMessage(user, "Container placed & targeted");
+				//chatService.sendSuccessMessage(user, "Container placed & targeted");
 			}
 		}
 	}
@@ -83,12 +83,13 @@ public class ContainerListener implements Listener {
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
-			if(container.canAccess(user)) {
-				user.setTargetContainer(container);
-				// todo can't target chests in enemy territory
-				chatService.sendSuccessMessage(user, "Container targeted");
-			}
-			else {
+			if (container.canAccess(user)) {
+				if (container != user.getTargetContainer()) {
+					user.setTargetContainer(container);
+					// todo can't target chests in enemy territory
+					//chatService.sendSuccessMessage(user, "Container targeted");
+				}
+			} else {
 				chatService.sendFailureMessage(user, "You do not have permission to open this");
 				event.setCancelled(true);
 			}
