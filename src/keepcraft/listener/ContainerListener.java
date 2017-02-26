@@ -61,9 +61,9 @@ public class ContainerListener implements Listener {
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
-			if (player.isOp() || user.isAdmin()) {
+			if (container.canAccess(user)) {
+				chatService.sendFailureMessage(user, "You do not have permission to destroy this");
 				containerService.removeContainer(container);
-				chatService.sendSuccessMessage(user, "Container destroyed");
 			} else {
 				// Don't allow regular users to break loot blocks
 				event.setCancelled(true);
