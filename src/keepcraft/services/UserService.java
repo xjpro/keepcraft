@@ -59,7 +59,7 @@ public class UserService {
 
 	public void saveUserAndSetOffline(User user) {
 		userDataManager.updateData(user);
-		userStatsDataManager.saveData(user.getName(), Keepcraft.getWorld().getSeed(), user.getUserStats());
+		userStatsDataManager.saveData(user.getName(), Keepcraft.getWorld().getUID(), user.getUserStats());
 		onlineUsers.remove(user.getName());
 	}
 

@@ -4,6 +4,7 @@ import keepcraft.Keepcraft;
 import keepcraft.data.models.UserStats;
 
 import java.sql.PreparedStatement;
+import java.util.UUID;
 
 public class UserStatsDataManager {
 
@@ -17,7 +18,7 @@ public class UserStatsDataManager {
 	private void init() {
 		try {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS userStats " +
-					"(RecordStart, UserName, WorldSeed, PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
+					"(RecordStart, UserName, WorldSeed, WorldGUID, PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
 					"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests, " +
 					"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
 					"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits)");
@@ -29,7 +30,7 @@ public class UserStatsDataManager {
 		}
 	}
 
-	public void saveData(String userName, long worldSeed, UserStats stats) {
+	public void saveData(String userName, UUID worldGUID, UserStats stats) {
 		Keepcraft.log("Updating stats for " + userName);
 		try {
 			PreparedStatement statement = database.createStatement("UPDATE userStats SET " +
@@ -51,7 +52,7 @@ public class UserStatsDataManager {
 					"SwordHits = SwordHits + ?, " +
 					"AxeHits = AxeHits + ?, " +
 					"OtherHits = OtherHits + ? " +
-					"WHERE UserName = ? AND WorldSeed = ?");
+					"WHERE UserName = ? AND WorldGUID = ?");
 			statement.setInt(1, (int) stats.playSeconds);
 			statement.setInt(2, stats.blocksPlaced);
 			statement.setInt(3, stats.blocksRemoved);
@@ -71,7 +72,7 @@ public class UserStatsDataManager {
 			statement.setInt(17, stats.axeHits);
 			statement.setInt(18, stats.otherHits);
 			statement.setString(19, userName);
-			statement.setLong(20, worldSeed);
+			statement.setString(20, worldGUID.toString());
 			int rowsAffected = statement.executeUpdate();
 
 			if (rowsAffected == 0) {
@@ -79,7 +80,7 @@ public class UserStatsDataManager {
 						"(PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
 						"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests, " +
 						"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
-						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, UserName, WorldSeed, RecordStart) " +
+						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, UserName, WorldGUID, RecordStart) " +
 						"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))");
 				statement.setInt(1, (int) stats.playSeconds);
 				statement.setInt(2, stats.blocksPlaced);
@@ -100,7 +101,7 @@ public class UserStatsDataManager {
 				statement.setInt(17, stats.axeHits);
 				statement.setInt(18, stats.otherHits);
 				statement.setString(19, userName);
-				statement.setLong(20, worldSeed);
+				statement.setString(20, worldGUID.toString());
 				statement.execute();
 			}
 		} catch (Exception e) {

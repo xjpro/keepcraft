@@ -1,6 +1,7 @@
 package keepcraft.services;
 
 import keepcraft.data.ContainerDataManager;
+import keepcraft.data.MapDataManager;
 import keepcraft.data.models.Container;
 import keepcraft.data.models.WorldPoint;
 import org.bukkit.Bukkit;
@@ -13,12 +14,14 @@ public class ContainerService {
 
 	private final Plugin plugin;
 	private final ContainerDataManager containerDataManager;
+	private final MapDataManager mapDataManager;
 	private Collection<Container> containers;
 	private int taskId = 0;
 
-	public ContainerService(Plugin plugin, ContainerDataManager containerDataManager) {
+	public ContainerService(Plugin plugin, ContainerDataManager containerDataManager, MapDataManager mapDataManager) {
 		this.plugin = plugin;
 		this.containerDataManager = containerDataManager;
+		this.mapDataManager = mapDataManager;
 		refreshCache();
 	}
 
@@ -63,8 +66,18 @@ public class ContainerService {
 		if (plugin == null) return;
 
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+
+			long mapAgeInDays = mapDataManager.getMapAgeInSeconds() / 60 / 24;
+
 			for (Container container : getOutputtingContainers()) {
-				container.dispense();
+				double modifier = 0;
+
+				// Base loot output increasing daily
+				if (container.getOutputType() == Container.ContainerOutputType.BASE) {
+					modifier = 1 + mapAgeInDays * 0.10; // 10% more per day
+				}
+
+				container.dispense(modifier);
 			}
 		}, 1200, 1200);
 	}

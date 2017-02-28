@@ -39,7 +39,7 @@ public class Container {
 
 	public enum ContainerOutputType {
 		NONE(0),
-		SIEGE(1);
+		BASE(1);
 
 		private final int id;
 
@@ -119,7 +119,7 @@ public class Container {
 		outputPerHour = value;
 	}
 
-	public void dispense() {
+	public void dispense(double modifier) {
 		Block block = getBlock();
 		if (block == null || !(block.getState() instanceof InventoryHolder) || outputPerHour == 0) return;
 
@@ -129,7 +129,8 @@ public class Container {
 		// Say outputPerHour per hour is 75
 		// We'll need to put (75/60) = 1.25 items into the chest per minute
 		// It's obviously impossible to put fractions of items into the chest
-		double fullOutputThisRun = (outputPerHour / 60.0) + leftoverOutput;
+		double outputWithModifier = outputPerHour * modifier;
+		double fullOutputThisRun = (outputWithModifier / 60.0) + leftoverOutput;
 		long integerOutputThisRun = (long) fullOutputThisRun; // So calculate the integer amount we can put in
 		leftoverOutput = fullOutputThisRun - integerOutputThisRun; // And save the remainder to be used in the next run
 

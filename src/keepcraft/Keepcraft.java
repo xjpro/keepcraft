@@ -23,6 +23,7 @@ public class Keepcraft extends JavaPlugin {
 	private final PlotDataManager plotDataManager = new PlotDataManager(database);
 	private final FactionSpawnDataManager factionSpawnManager = new FactionSpawnDataManager(database);
 	private final ContainerDataManager containerDataManager = new ContainerDataManager(database);
+	private final MapDataManager mapDataManager = new MapDataManager(database);
 
 	private final Database statsDatabase = new Database("keepcraft_stats.db");
 	private final UserStatsDataManager userStatsDataManager = new UserStatsDataManager(statsDatabase);
@@ -31,7 +32,7 @@ public class Keepcraft extends JavaPlugin {
 	private final UserService userService = new UserService(userDataManager, userStatsDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
-	private final ContainerService containerService = new ContainerService(this, containerDataManager);
+	private final ContainerService containerService = new ContainerService(this, containerDataManager, mapDataManager);
 	private final ChatService chatService = new ChatService(userService);
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 	private final RallyService rallyService = new RallyService(chatService);
@@ -152,11 +153,13 @@ public class Keepcraft extends JavaPlugin {
 	private void setup() {
 		WorldSetter setter = new WorldSetter(plotService, factionSpawnService);
 		World world = setter.setupWorld(Keepcraft.getWorld());
+		mapDataManager.createWorldRecord(world.getUID());
+
 		userService.refreshCache();
 		plotService.refreshCache();
 		factionSpawnService.refreshCache();
 		containerService.refreshCache();
-		log(String.format("Successfully setup map on '%s'", world.getName()));
+		log(String.format("Successfully setup new map on '%s'", world.getName()));
 	}
 
 	public static void log(String text) {

@@ -2,6 +2,7 @@ package keepcraft.services;
 
 import keepcraft.data.Database;
 import keepcraft.data.ContainerDataManager;
+import keepcraft.data.MapDataManager;
 import keepcraft.data.models.Container;
 import keepcraft.data.models.WorldPoint;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ class ContainerServiceTest {
 		Database database = new Database("keepcraft_test.db");
 		containerDataManager = new ContainerDataManager(database);
 		containerDataManager.putData(new Container(new WorldPoint(238, 4, -239)));
-		containerService = new ContainerService(null, containerDataManager);
+		containerService = new ContainerService(null, containerDataManager, new MapDataManager(database));
 	}
 
 	@Test
@@ -50,15 +51,15 @@ class ContainerServiceTest {
 		Container container = containerService.getContainer(new WorldPoint(238, 4, -239));
 		container.setPermission(Container.ContainerPermission.TEAM_VETERAN);
 		container.setOutputPerHour(99);
-		container.setOutputType(Container.ContainerOutputType.SIEGE);
+		container.setOutputType(Container.ContainerOutputType.BASE);
 		containerService.updateContainer(container);
 
 		Container[] containers = containerDataManager.getAllData().stream().toArray(Container[]::new);
 		assertEquals(1, containers.length);
 		assertNotNull(containers[0]);
-		assertEquals(Container.ContainerPermission.TEAM_VETERAN, containers[0].getOutputType());
+		assertEquals(Container.ContainerPermission.TEAM_VETERAN, containers[0].getPermission());
+		assertEquals(Container.ContainerOutputType.BASE, containers[0].getOutputType());
 		assertEquals(99, containers[0].getOutputPerHour());
-		assertEquals(2, containers[0].getPermission());
 	}
 
 	@Test
