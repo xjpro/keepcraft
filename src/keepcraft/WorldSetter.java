@@ -1,7 +1,9 @@
 package keepcraft;
 
+import keepcraft.data.models.Container;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.WorldPoint;
+import keepcraft.services.ContainerService;
 import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import org.bukkit.Location;
@@ -19,11 +21,13 @@ class WorldSetter {
 
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
+	private final ContainerService containerService;
 	private final int TEAM_PLOT_RADIUS = 70;
 
-	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService) {
+	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService, ContainerService containerService) {
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
+		this.containerService = containerService;
 	}
 
 	World setupWorld(World world) {
@@ -98,15 +102,15 @@ class WorldSetter {
 		Block center = world.getBlockAt(spawnLocation);
 
 		int platformBottomY = spawnLocation.getBlockY();
-		int platformTopY = platformBottomY + 3;
+		int platformTopY = platformBottomY + 4;
 
 		WorldHelper.inCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), 1, 150, 3, (x, y, z) -> {
 			if (y < platformBottomY || y == platformTopY) {
 				// Make huge cylinder from ENDER_STONE to spawn location
 				if (x == center.getX() && z == center.getZ()) {
 					if (y == platformTopY) {
-						// Hole for beacon light
-						world.getBlockAt(x, y, z).setType(Material.AIR);
+						// Beacon above
+						world.getBlockAt(x, y, z).setType(Material.BEACON);
 					} else {
 						// Thread of blocks for the win condition
 						world.getBlockAt(x, y, z).setType(Material.DIAMOND_BLOCK);
@@ -142,7 +146,17 @@ class WorldSetter {
 			}
 		});
 
-		center.getRelative(BlockFace.DOWN).setType(Material.BEACON);
+
+		// Outputting container at center of base
+		Block chestBlock = center.getRelative(BlockFace.DOWN);
+		chestBlock.setType(Material.CHEST);
+
+		Container baseLootContainer = containerService.createContainer(new WorldPoint(chestBlock.getLocation()));
+		baseLootContainer.setOutputType(Container.ContainerOutputType.BASE);
+		baseLootContainer.setOutputPerHour(5);
+		baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
+
+		// Drop pick axe so players can dig out if necessary
 		world.dropItem(center.getLocation().add(0, 1, 0), new ItemStack(Material.WOOD_PICKAXE, 1));
 	}
 

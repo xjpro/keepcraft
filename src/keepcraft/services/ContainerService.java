@@ -74,7 +74,7 @@ public class ContainerService {
 
 				// Base loot output increasing daily
 				if (container.getOutputType() == Container.ContainerOutputType.BASE) {
-					modifier = 1 + mapAgeInDays * 0.10; // 10% more per day
+					modifier = 1 + mapAgeInDays * 0.20; // 20% more per day
 				}
 
 				container.dispense(modifier);
