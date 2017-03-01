@@ -50,6 +50,9 @@ public class WorldSetter {
 		} while (!found);
 
 		world.setSpawnLocation(center.getBlockX(), world.getHighestBlockYAt(center), center.getBlockZ());
+		world.getWorldBorder().setCenter(center);
+		world.getWorldBorder().setSize(2000);
+
 		setBase(UserFaction.FactionRed, redBase);
 		setBase(UserFaction.FactionBlue, blueBase);
 		return world;
