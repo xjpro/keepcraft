@@ -1,6 +1,7 @@
 package keepcraft.data;
 
 import keepcraft.Keepcraft;
+import keepcraft.data.models.WorldPoint;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +20,7 @@ public class MapDataManager {
 	private void init() {
 		try {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS map " +
-					"(WorldGUID, StartDateTime)");
+					"(WorldGUID, StartDateTime, CenterPosX, CenterPosZ)");
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error initializing table: " + e.getMessage());
@@ -53,12 +54,14 @@ public class MapDataManager {
 		return ageInSeconds;
 	}
 
-	public void createWorldRecord(UUID worldGUID) {
+	public void createWorldRecord(UUID worldGUID, WorldPoint center) {
 		try {
 			PreparedStatement statement = database.createStatement("INSERT INTO map " +
-					"(WorldGUID, StartDateTime) " +
-					"VALUES(?, datetime('now'))");
+					"(WorldGUID, StartDateTime, CenterPosX, CenterPosZ) " +
+					"VALUES(?, datetime('now'), ?, ?)");
 			statement.setString(1, worldGUID.toString());
+			statement.setInt(2, center.x);
+			statement.setInt(3, center.z);
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error creating map data: " + e.getMessage());

@@ -3,6 +3,7 @@ package keepcraft;
 import keepcraft.command.*;
 import keepcraft.data.*;
 import keepcraft.data.models.User;
+import keepcraft.data.models.WorldPoint;
 import keepcraft.listener.*;
 
 import java.util.logging.Logger;
@@ -151,9 +152,9 @@ public class Keepcraft extends JavaPlugin {
 	}
 
 	private void setup() {
-		WorldSetter setter = new WorldSetter(plotService, factionSpawnService);
+		WorldSetter setter = new WorldSetter(plotService, factionSpawnService, containerService);
 		World world = setter.setupWorld(Keepcraft.getWorld());
-		mapDataManager.createWorldRecord(world.getUID());
+		mapDataManager.createWorldRecord(world.getUID(), new WorldPoint(world.getSpawnLocation()));
 
 		userService.refreshCache();
 		plotService.refreshCache();
