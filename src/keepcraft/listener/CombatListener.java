@@ -137,19 +137,20 @@ public class CombatListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityCombustByEnchantedWeapon(EntityCombustByEntityEvent event) {
 		if (event.isCancelled()) return;
-		System.out.println(event.getEntityType() + " " + event.getEntity());
+		//System.out.println(event.getEntityType() + " " + event.getEntity());
 
 		if (event.getEntityType().equals(EntityType.ARROW)) {
-			// Flame arrows, by default burn target for 5 seconds (100 tick time)
+			// todo seems to be a bug here where friendlies can light each other on fire
+			// Flame arrows, by default burn target for 5 seconds
 			// There's only one level to this so we don't need to check
 			// Reduce duration to 2 seconds
-			event.setDuration(40);
+			event.setDuration(2);
 		} else if (event.getEntityType().equals(EntityType.PLAYER)) {
 			// Fire Aspect weapons, by default burn target for 4 seconds (80 time tick) per level
 			int enchantmentLevel = ((Player) event.getEntity()).getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.FIRE_ASPECT);
 
 			// Reduce duration to 2 seconds per level
-			event.setDuration(enchantmentLevel * 40);
+			event.setDuration(enchantmentLevel * 2);
 		}
 	}
 
