@@ -160,6 +160,7 @@ public class WorldSetter {
 		baseLootContainer.setOutputType(Container.ContainerOutputType.BASE);
 		baseLootContainer.setOutputPerHour(5);
 		baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
+		containerService.updateContainer(baseLootContainer);
 
 		// Drop pick axe so players can dig out if necessary
 		world.dropItem(center.getLocation().add(0, 1, 0), new ItemStack(Material.WOOD_PICKAXE, 1));

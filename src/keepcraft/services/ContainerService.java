@@ -67,14 +67,14 @@ public class ContainerService {
 
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 
-			long mapAgeInDays = mapDataManager.getMapAgeInSeconds() / 60 / 24;
+			long mapAgeInDays = mapDataManager.getMapAgeInSeconds() / 60 / 60 / 24;
 
 			for (Container container : getOutputtingContainers()) {
-				double modifier = 0;
+				double modifier = 1;
 
 				// Base loot output increasing daily
 				if (container.getOutputType() == Container.ContainerOutputType.BASE) {
-					modifier = 1 + mapAgeInDays * 0.20; // 20% more per day
+					modifier += mapAgeInDays * 0.20; // 20% more per day
 				}
 
 				container.dispense(modifier);

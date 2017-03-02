@@ -40,7 +40,7 @@ public class MapDataManager {
 			if (!found) {
 				Keepcraft.error("No map was found in data");
 			} else {
-				Date mapStart = result.getDate("StartDateTime");
+				Date mapStart = database.getDateFormat().parse(result.getString("StartDateTime"));
 				ageInSeconds = ((new Date()).getTime() - mapStart.getTime()) / 1000;
 			}
 
@@ -84,10 +84,11 @@ public class MapDataManager {
 		try {
 			PreparedStatement statement = database.createStatement("INSERT INTO map " +
 					"(WorldGUID, StartDateTime, CenterPosX, CenterPosZ) " +
-					"VALUES(?, datetime('now'), ?, ?)");
+					"VALUES(?, ?, ?, ?)");
 			statement.setString(1, worldGUID.toString());
-			statement.setInt(2, center.x);
-			statement.setInt(3, center.z);
+			statement.setString(2, database.getDateFormat().format(new Date()));
+			statement.setInt(3, center.x);
+			statement.setInt(4, center.z);
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error creating map data: " + e.getMessage());

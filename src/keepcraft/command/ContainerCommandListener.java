@@ -81,7 +81,20 @@ public class ContainerCommandListener extends CommandListener {
 			} else if (args.length == 2) {
 				if (user.getPrivilege() != UserPrivilege.ADMIN) return false; // only ops
 
-				if (args[0].equalsIgnoreCase("output")) {
+				if (args[0].equalsIgnoreCase("type")) {
+					int outputType;
+					try {
+						outputType = Integer.parseInt(args[1]);
+					} catch (Exception e) {
+						// invalid input
+						return false;
+					}
+					container.setOutputType(Container.ContainerOutputType.getContainerOutputType(outputType));
+					containerService.updateContainer(container);
+					chatService.sendSuccessMessage(user, String.format("Container output type to %s", outputType));
+					return true;
+				}
+				else if (args[0].equalsIgnoreCase("output")) {
 					int output;
 					try {
 						output = Integer.parseInt(args[1]);
