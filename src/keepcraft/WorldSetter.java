@@ -52,7 +52,7 @@ public class WorldSetter {
 
 		world.setSpawnLocation(center.getBlockX(), world.getHighestBlockYAt(center), center.getBlockZ());
 		world.getWorldBorder().setCenter(center);
-		world.getWorldBorder().setSize(2000);
+		world.getWorldBorder().setSize(1250);
 
 		setBase(UserFaction.FactionRed, redBase);
 		setBase(UserFaction.FactionBlue, blueBase);
