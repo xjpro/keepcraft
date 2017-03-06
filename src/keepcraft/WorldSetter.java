@@ -14,6 +14,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Random;
+
 // -5036103636176790253 spawn in big ass canyons with small sky island near 175, 175, meanwhile -175,-175 is in ocean (a very bad spawn seed)
 // 794682861 huge floating island near 175, 175
 // -476567279232347522 horrible spawn for blue with base deep inside a mountain
@@ -25,6 +27,7 @@ public class WorldSetter {
 	public static final int TEAM_PLOT_RADIUS = 70;
 	public static final int BASE_DISTANCE_FROM_CENTER = 250;
 	public static final int CENTER_SPAWN_CLEARANCE = 4;
+	public static final int WORLD_BORDER = 1250;
 
 	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService, ContainerService containerService) {
 		this.plotService = plotService;
@@ -52,10 +55,11 @@ public class WorldSetter {
 
 		world.setSpawnLocation(center.getBlockX(), world.getHighestBlockYAt(center), center.getBlockZ());
 		world.getWorldBorder().setCenter(center);
-		world.getWorldBorder().setSize(1250);
+		world.getWorldBorder().setSize(WORLD_BORDER);
 
 		setBase(UserFaction.FactionRed, redBase);
 		setBase(UserFaction.FactionBlue, blueBase);
+		prepareCenterTrench(center);
 		return world;
 	}
 
@@ -165,6 +169,20 @@ public class WorldSetter {
 
 		// Drop pick axe so players can dig out if necessary
 		world.dropItem(center.getLocation().add(0, 1, 0), new ItemStack(Material.WOOD_PICKAXE, 1));
+	}
+
+	private void prepareCenterTrench(Location center) {
+		Random random = new Random();
+		World world = center.getWorld();
+		for (int z = center.getBlockZ() - (WORLD_BORDER / 2); z <= center.getBlockZ() + (WORLD_BORDER / 2); z++) {
+			for (int x = center.getBlockX() - 5; x <= center.getBlockX() + 5; x++) {
+				if (x == 0 || x % 5 != 0 || random.nextDouble() > 0.15) {
+					for (int y = 10; y < 150; y++) {
+						world.getBlockAt(x, y, z).setType(Material.AIR);
+					}
+				}
+			}
+		}
 	}
 
 	private boolean isAcceptableBiome(Biome biome) {
