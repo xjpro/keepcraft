@@ -13,10 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class ActionListener implements Listener {
 
@@ -30,24 +31,34 @@ public class ActionListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (!event.hasBlock()) {
-			return; // Air
-		}
-		Block clicked = event.getClickedBlock();
+		Player player = event.getPlayer();
+		User user = userService.getOnlineUser(player.getName());
 
-		Plot plot = plotService.getIntersectedPlot(clicked.getLocation());
+		if (user.isAdmin()) return;
+
+		Block clicked = event.getClickedBlock();
+		Plot plot = plotService.getIntersectedPlot(clicked != null ? clicked.getLocation() : player.getLocation());
 		if (plot == null || plot.getProtection() == null) {
 			return;
 		}
 
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
-		Material blockType = clicked.getType();
+		// Prevent enemy players from creating boats in protected plots
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
+			if (!plot.isFactionProtected(user.getFaction()) && itemInMainHand != null && isBoat(itemInMainHand.getType())) {
+				event.setCancelled(true);
+				return;
+			}
+		}
 
+		if (clicked == null || !event.hasBlock()) {
+			return; // Air
+		}
+
+		Material blockType = clicked.getType();
 		switch (blockType) {
-			// Put the things we need to check against in here. Which are switches. Don't need
-			// to check for any block types that don't have secondary functions because WorldListener
-			// will check those.
+			// Do not allow enemy team to access buttons, switches, levers, etc.
+			// Exception: if the switch is near a door and not a stone plate, destroy it so it can't be used to block TNT placement
 			case STONE_BUTTON:
 			case STONE_PLATE:
 			case IRON_PLATE:
@@ -70,7 +81,7 @@ public class ActionListener implements Listener {
 				break;
 			case DISPENSER:
 				// Protect dispenser in event plots
-				if (plot.getProtection().getType() == PlotProtection.EVENT && !user.isAdmin()) {
+				if (plot.getProtection().getType() == PlotProtection.EVENT) {
 					event.setCancelled(true);
 				}
 				break;
@@ -115,6 +126,20 @@ public class ActionListener implements Listener {
 			}
 		}
 		return false;
+	}
+
+	private boolean isBoat(Material material) {
+		switch (material) {
+			case BOAT:
+			case BOAT_ACACIA:
+			case BOAT_BIRCH:
+			case BOAT_DARK_OAK:
+			case BOAT_JUNGLE:
+			case BOAT_SPRUCE:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 }

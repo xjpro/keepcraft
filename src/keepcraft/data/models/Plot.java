@@ -1,5 +1,6 @@
 package keepcraft.data.models;
 
+import keepcraft.WorldSetter;
 import keepcraft.services.ChatService;
 import org.bukkit.Location;
 import keepcraft.tasks.Siege;
@@ -106,7 +107,7 @@ public class Plot {
 
 	public boolean isUnderCenter(Location location) {
 		Location plotLocation = getLocation();
-		return plotLocation.getBlockX() == location.getBlockX() && plotLocation.getBlockZ() == location.getBlockZ() && plotLocation.getBlockY() > location.getBlockY();
+		return plotLocation.getBlockX() == location.getBlockX() && plotLocation.getBlockZ() == location.getBlockZ() && plotLocation.getBlockY() + WorldSetter.CENTER_SPAWN_CLEARANCE >= location.getBlockY();
 	}
 
 	public int getId() {

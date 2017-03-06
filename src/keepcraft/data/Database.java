@@ -59,7 +59,7 @@ public class Database {
 		}
 	}
 
-		SimpleDateFormat getDateFormat() {
+	SimpleDateFormat getDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	}
 

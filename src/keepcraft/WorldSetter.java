@@ -24,6 +24,7 @@ public class WorldSetter {
 	private final ContainerService containerService;
 	public static final int TEAM_PLOT_RADIUS = 70;
 	public static final int BASE_DISTANCE_FROM_CENTER = 250;
+	public static final int CENTER_SPAWN_CLEARANCE = 4;
 
 	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService, ContainerService containerService) {
 		this.plotService = plotService;
@@ -107,7 +108,7 @@ public class WorldSetter {
 		Block center = world.getBlockAt(spawnLocation);
 
 		int platformBottomY = spawnLocation.getBlockY();
-		int platformTopY = platformBottomY + 4;
+		int platformTopY = platformBottomY + CENTER_SPAWN_CLEARANCE;
 
 		WorldHelper.inCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), 1, 150, 3, (x, y, z) -> {
 			if (y < platformBottomY || y == platformTopY) {

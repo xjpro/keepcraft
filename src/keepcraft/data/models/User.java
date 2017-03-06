@@ -28,9 +28,6 @@ public class User {
 	private Date lastCombat = null;
 	private Plot rallyingTo = null;
 
-	// Tasks
-	private int inCombatTaskId = 0;
-
 	// Stats (persisted on log off)
 	private UserStats userStats = new UserStats();
 
