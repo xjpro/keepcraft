@@ -4,6 +4,7 @@ import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
+import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Material;
@@ -13,11 +14,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class ActionListener implements Listener {
 
@@ -27,6 +26,27 @@ public class ActionListener implements Listener {
 	public ActionListener(UserService userService, PlotService plotService) {
 		this.userService = userService;
 		this.plotService = plotService;
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerUseItem(PlayerInteractEvent event) {
+		// This event handler only concerned with right clicking with an item in hand
+		Player player = event.getPlayer();
+
+		// Disable ender pearls
+		if (event.getMaterial().equals(Material.ENDER_PEARL)) {
+			player.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled, pending balance changes");
+			event.setCancelled(true);
+		}
+		// Prevent enemy players from creating boats in protected plots
+		else if (isBoat(event.getMaterial())) {
+			Block clicked = event.getClickedBlock();
+			Plot plot = plotService.getIntersectedPlot(clicked != null ? clicked.getLocation() : player.getLocation());
+			User user = userService.getOnlineUser(player.getName());
+			if (plot != null && !plot.isFactionProtected(user.getFaction())) {
+				event.setCancelled(true);
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -40,15 +60,6 @@ public class ActionListener implements Listener {
 		Plot plot = plotService.getIntersectedPlot(clicked != null ? clicked.getLocation() : player.getLocation());
 		if (plot == null || plot.getProtection() == null) {
 			return;
-		}
-
-		// Prevent enemy players from creating boats in protected plots
-		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
-			if (!plot.isFactionProtected(user.getFaction()) && itemInMainHand != null && isBoat(itemInMainHand.getType())) {
-				event.setCancelled(true);
-				return;
-			}
 		}
 
 		if (clicked == null || !event.hasBlock()) {

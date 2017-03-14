@@ -120,26 +120,6 @@ public class UserListener implements Listener {
 		Keepcraft.log(String.format("%s respawning", player.getName()));
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.isCancelled()) return;
-
-		ItemStack inHand = event.getItem();
-		if (inHand == null) return;
-
-		Player player = event.getPlayer();
-		User user = userService.getOnlineUser(player.getName());
-
-		if (player.isOp() || user.isAdmin()) {
-			return;
-		}
-
-		if (inHand.getType().equals(Material.ENDER_PEARL)) {
-			event.setCancelled(true);
-			player.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled, pending balance changes");
-		}
-	}
-
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerPortal(PlayerPortalEvent event) {
 		event.setCancelled(true);
