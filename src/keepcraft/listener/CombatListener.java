@@ -107,7 +107,7 @@ public class CombatListener implements Listener {
 		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, event.getDamage(EntityDamageEvent.DamageModifier.ARMOR) * (1 - armorReduction));
 
 		// Apply damage reduction for wearing enchantments
-		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged);
+		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
 		// Each point of enchantment protection provides 0.5% (vanilla is 4%) damage reduction, maxing out at 15%
 		double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
 		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
