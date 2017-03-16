@@ -24,10 +24,10 @@ public class WorldSetter {
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
 	private final ContainerService containerService;
-	public static final int TEAM_PLOT_RADIUS = 70;
+	public static final int TEAM_PLOT_RADIUS = 65;
 	public static final int BASE_DISTANCE_FROM_CENTER = 250;
 	public static final int CENTER_SPAWN_CLEARANCE = 4;
-	public static final int WORLD_BORDER = 1250;
+	public static final int WORLD_BORDER = 1000;
 
 	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService, ContainerService containerService) {
 		this.plotService = plotService;
@@ -65,7 +65,6 @@ public class WorldSetter {
 
 	private void setBase(int faction, Location location) {
 		Keepcraft.log(String.format("Setting up %s faction...", UserFaction.getName(faction)));
-		prepareBaseArea(location, TEAM_PLOT_RADIUS + 25);
 
 		World world = location.getWorld();
 
@@ -77,6 +76,7 @@ public class WorldSetter {
 		}
 		goodSpawnLocation.add(0, 5, 0); // Get above terrain
 
+		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 25);
 		prepareSpawnArea(goodSpawnLocation);
 		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), faction, TEAM_PLOT_RADIUS);
 
@@ -95,6 +95,10 @@ public class WorldSetter {
 						&& !block.getRelative(BlockFace.DOWN).getType().isSolid()) {
 					block.setType(Material.AIR);
 				}
+			}
+			// Fill in lower areas with bedrock
+			else if (y < center.getBlockY() - 5) {
+				block.setType(Material.BEDROCK);
 			}
 			// Remove water below 63 in plot area
 			else if (y < 63 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
