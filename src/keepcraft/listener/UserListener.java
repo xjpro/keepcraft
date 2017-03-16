@@ -9,17 +9,18 @@ import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class UserListener implements Listener {
 
-	public static int RespawnSeconds = 10;
+	public static int RespawnSeconds = 15;
 
 	private final UserService userService;
 	private final PlotService plotService;

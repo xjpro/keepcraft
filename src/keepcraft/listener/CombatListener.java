@@ -22,7 +22,7 @@ public class CombatListener implements Listener {
 	private static float SharpnessDamageBonusPerLevel = 0.05f; // each level of Sharpness (swords & axes) gives 5% damage bonus
 	private static float ArrowDamageReduction = 0.15f; // arrow damage reduced by 15%
 	private static int FoodRemovedOnArrowHit = 2; // food removed when hit by an arrow
-	private static float ProtectionDamageReductionPerPoint = 0.0075f; // damage reduction by point of Protection (armor)
+	private static float ProtectionDamageReductionPerPoint = 0.0050f; // damage reduction by point of Protection (armor)
 
 	private final UserService userService;
 
@@ -108,7 +108,7 @@ public class CombatListener implements Listener {
 
 		// Apply damage reduction for wearing enchantments
 		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged);
-		// Each point of enchantment protection provides 0.75% (vanilla is 4%) damage reduction, maxing out at 15%
+		// Each point of enchantment protection provides 0.5% (vanilla is 4%) damage reduction, maxing out at 15%
 		double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
 		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
 
