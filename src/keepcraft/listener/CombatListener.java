@@ -22,7 +22,7 @@ public class CombatListener implements Listener {
 	private static float SharpnessDamageBonusPerLevel = 0.05f; // each level of Sharpness (swords & axes) gives 5% damage bonus
 	private static float ArrowDamageReduction = 0.15f; // arrow damage reduced by 15%
 	private static int FoodRemovedOnArrowHit = 2; // food removed when hit by an arrow
-	private static float ProtectionDamageReductionPerPoint = 0.01f; // damage reduction by point of Protection (armor)
+	private static float ProtectionDamageReductionPerPoint = 0.0075f; // damage reduction by point of Protection (armor)
 
 	private final UserService userService;
 
@@ -92,12 +92,6 @@ public class CombatListener implements Listener {
 		damagerUser.setInCombat();
 		damagedUser.setInCombat();
 
-		if (isArrowHit) {
-			// Remove food from bar when hit by an arrow
-			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FoodRemovedOnArrowHit));
-			// todo buff shields vs arrows via event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, ) ?
-		}
-
 		// We assume at this point we've arrived at a good damage amount pre armor and magical protection
 		event.setDamage(EntityDamageEvent.DamageModifier.BASE, baseDamage);
 
@@ -114,9 +108,14 @@ public class CombatListener implements Listener {
 
 		// Apply damage reduction for wearing enchantments
 		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged);
-		// Each point of enchantment protection provides 1% (vanilla is 4%) damage reduction, maxing out at 20%
+		// Each point of enchantment protection provides 0.75% (vanilla is 4%) damage reduction, maxing out at 15%
 		double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
 		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
+
+		if (isArrowHit && event.getFinalDamage() > 0) {
+			// Remove food when damaged by an arrow
+			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FoodRemovedOnArrowHit));
+		}
 
 		// todo thorns
 //		System.out.println("----end----");
