@@ -27,7 +27,7 @@ public class WorldSetter {
 	public static final int TEAM_PLOT_RADIUS = 65;
 	public static final int BASE_DISTANCE_FROM_CENTER = 250;
 	public static final int CENTER_SPAWN_CLEARANCE = 4;
-	public static final int WORLD_BORDER = 1000;
+	public static final int WORLD_BORDER = 900;
 
 	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService, ContainerService containerService) {
 		this.plotService = plotService;
@@ -76,7 +76,7 @@ public class WorldSetter {
 		}
 		goodSpawnLocation.add(0, 5, 0); // Get above terrain
 
-		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 25);
+		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 15);
 		prepareSpawnArea(goodSpawnLocation);
 		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), faction, TEAM_PLOT_RADIUS);
 
@@ -97,7 +97,7 @@ public class WorldSetter {
 				}
 			}
 			// Fill in lower areas with bedrock
-			else if (y < center.getBlockY() - 5) {
+			else if (y < center.getBlockY() - 12) {
 				block.setType(Material.BEDROCK);
 			}
 			// Remove water below 63 in plot area
