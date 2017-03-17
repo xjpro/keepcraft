@@ -6,19 +6,24 @@ import keepcraft.data.UserStatsDataManager;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.UserPrivilege;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class UserService {
 
+	private final Plugin plugin;
 	private final UserDataManager userDataManager;
 	private final UserStatsDataManager userStatsDataManager;
 	private HashMap<String, User> onlineUsers = new HashMap<>();
 
-	public UserService(UserDataManager userDataManager, UserStatsDataManager userStatisticsDataManager) {
+	public UserService(Plugin plugin, UserDataManager userDataManager, UserStatsDataManager userStatsDataManager) {
+		this.plugin = plugin;
 		this.userDataManager = userDataManager;
-		this.userStatsDataManager = userStatisticsDataManager;
+		this.userStatsDataManager = userStatsDataManager;
 	}
 
 	public void refreshCache() {
@@ -75,20 +80,42 @@ public class UserService {
 		return true;
 	}
 
-	private User createUser(String name) {
-		// Determine faction to place on
-		int redCount = userDataManager.getFactionCount(UserFaction.FactionRed);
-		int blueCount = userDataManager.getFactionCount(UserFaction.FactionBlue);
-		int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
-
+	private User createUser(String userName) {
 		int faction;
-		if (redCount == blueCount) {
-			faction = UserFaction.getRandomFaction();
+
+		// Determine which team to place the new user on, using two strategies
+
+		UUID worldGUID = plugin != null ? plugin.getServer().getWorld("world").getUID() : null;
+		List<String> recentlyPlayedUserNamesByPlayTime = userStatsDataManager.getRecentlyPlayedUserNamesByPlayTime(worldGUID);
+
+		// Take the first half of the previously played user names as our list of "active" users
+		List<String> previouslyActiveUserNames = recentlyPlayedUserNamesByPlayTime.subList(0, (int) Math.ceil(recentlyPlayedUserNamesByPlayTime.size() * 0.5));
+
+		if (previouslyActiveUserNames.stream().anyMatch(previouslyActiveUserName -> previouslyActiveUserName.equals(userName))) {
+			// This user identified as a previously active user, balance these users so they are even on both teams
+			int redCount = userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionRed, previouslyActiveUserNames);
+			int blueCount = userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionBlue, previouslyActiveUserNames);
+			int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
+
+			if (redCount == blueCount) {
+				faction = UserFaction.getRandomFaction();
+			} else {
+				faction = UserFaction.getSmallestFaction(redCount, blueCount, greenCount);
+			}
 		} else {
-			faction = UserFaction.getSmallestFaction(redCount, blueCount, greenCount);
+			// This user has not been previously active, place them on the smallest team
+			int redCount = userDataManager.getFactionCount(UserFaction.FactionRed);
+			int blueCount = userDataManager.getFactionCount(UserFaction.FactionBlue);
+			int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
+
+			if (redCount == blueCount) {
+				faction = UserFaction.getRandomFaction();
+			} else {
+				faction = UserFaction.getSmallestFaction(redCount, blueCount, greenCount);
+			}
 		}
 
-		User user = new User(name);
+		User user = new User(userName);
 		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 		user.setFaction(faction);
 		user.setMoney(0);

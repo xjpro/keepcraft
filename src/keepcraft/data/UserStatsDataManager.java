@@ -4,6 +4,9 @@ import keepcraft.Keepcraft;
 import keepcraft.data.models.UserStats;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class UserStatsDataManager {
@@ -109,5 +112,49 @@ public class UserStatsDataManager {
 		} finally {
 			database.close();
 		}
+	}
+
+	public List<String> getRecentlyPlayedUserNamesByPlayTime(UUID currentWorldGUID) {
+
+		List<String> previouslyPlayedUserNames = new ArrayList<>();
+
+		// Gather all users from the past 3 maps, excluding the current map
+		try {
+			PreparedStatement statement = database.createStatement("SELECT WorldGUID FROM userStats " +
+					"WHERE WorldGUID IS NOT NULL AND WorldGUID != ? " +
+					"GROUP BY WorldGUID " +
+					"ORDER BY RecordStart DESC LIMIT 3");
+			// Fake UUID if one not provided, used for testing
+			statement.setString(1, currentWorldGUID != null ? currentWorldGUID.toString() : "2b79c281-7287-4627-96fc-788a03901345");
+			ResultSet result = statement.executeQuery();
+
+			ArrayList<String> recentWorldGUIDs = new ArrayList<>();
+			while (result.next()) {
+				recentWorldGUIDs.add(result.getString("WorldGUID"));
+			}
+
+			if (recentWorldGUIDs.size() > 2) {
+				// We have enough data to make this determination
+				statement = database.createStatement("SELECT UserName, SUM(PlaySeconds) AS TotalPlayed FROM userStats " +
+						"WHERE WorldGUID = ? OR WorldGUID = ? OR WorldGUID = ? " +
+						"GROUP BY UserName " +
+						"ORDER BY TotalPlayed DESC");
+				statement.setString(1, recentWorldGUIDs.get(0));
+				statement.setString(2, recentWorldGUIDs.get(1));
+				statement.setString(3, recentWorldGUIDs.get(2));
+				result = statement.executeQuery();
+
+				while (result.next()) {
+					previouslyPlayedUserNames.add(result.getString("UserName"));
+				}
+			}
+
+		} catch (Exception e) {
+			Keepcraft.error("Error looking up recent activity: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+
+		return previouslyPlayedUserNames;
 	}
 }

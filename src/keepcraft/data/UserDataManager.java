@@ -7,6 +7,7 @@ import keepcraft.data.models.UserPrivilege;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 
 public class UserDataManager {
 
@@ -232,5 +233,32 @@ public class UserDataManager {
 		Keepcraft.log("Active member count for " + UserFaction.asString(faction) + " is " + memberCount);
 
 		return memberCount;
+	}
+
+	public int getPreviouslyActiveTeamCount(int team, List<String> previouslyActiveUserNames) {
+		int count = 0;
+		try {
+			PreparedStatement statement = database.createStatement("SELECT Name FROM users WHERE Faction = ? AND Privilege != ?");
+			statement.setInt(1, team);
+			statement.setInt(2, UserPrivilege.ADMIN.getId());
+			ResultSet result = statement.executeQuery();
+
+			while (result.next()) {
+				String userName = result.getString("Name");
+				if (previouslyActiveUserNames.stream().anyMatch(previouslyActiveUserName -> previouslyActiveUserName.equals(userName))) {
+					count++;
+				}
+			}
+
+			result.close();
+		} catch (Exception e) {
+			Keepcraft.error("Error counting previously active team members: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+
+		Keepcraft.log(String.format("Previously active member count for %s is %s", UserFaction.asString(team), count));
+
+		return count;
 	}
 }

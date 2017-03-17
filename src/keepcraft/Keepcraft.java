@@ -5,14 +5,13 @@ import keepcraft.data.*;
 import keepcraft.data.models.User;
 import keepcraft.data.models.WorldPoint;
 import keepcraft.listener.*;
-
-import java.util.logging.Logger;
-
 import keepcraft.services.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.logging.Logger;
 
 public class Keepcraft extends JavaPlugin {
 
@@ -30,7 +29,7 @@ public class Keepcraft extends JavaPlugin {
 	private final UserStatsDataManager userStatsDataManager = new UserStatsDataManager(statsDatabase);
 
 	// Services
-	private final UserService userService = new UserService(userDataManager, userStatsDataManager);
+	private final UserService userService = new UserService(this, userDataManager, userStatsDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
 	private final ContainerService containerService = new ContainerService(this, containerDataManager, mapDataManager);
