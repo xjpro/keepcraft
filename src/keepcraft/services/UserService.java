@@ -93,26 +93,19 @@ public class UserService {
 
 		if (previouslyActiveUserNames.stream().anyMatch(previouslyActiveUserName -> previouslyActiveUserName.equals(userName))) {
 			// This user identified as a previously active user, balance these users so they are even on both teams
-			int redCount = userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionRed, previouslyActiveUserNames);
-			int blueCount = userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionBlue, previouslyActiveUserNames);
-			int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
+			int prevActiveReds = userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionRed, previouslyActiveUserNames);
+			int prevActiveBlues = userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionBlue, previouslyActiveUserNames);
+			int prevActiveGreens = 9999;//userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionGreen, previouslyActiveUserNames);
 
-			if (redCount == blueCount) {
-				faction = UserFaction.getRandomFaction();
+			if (prevActiveReds == prevActiveBlues) {
+				// Previously actives are equal, select based on current numbers instead
+				faction = selectTeamUsingCurrentUserCount();
 			} else {
-				faction = UserFaction.getSmallestFaction(redCount, blueCount, greenCount);
+				faction = UserFaction.getSmallestFaction(prevActiveReds, prevActiveBlues, prevActiveGreens);
 			}
 		} else {
-			// This user has not been previously active, place them on the smallest team
-			int redCount = userDataManager.getFactionCount(UserFaction.FactionRed);
-			int blueCount = userDataManager.getFactionCount(UserFaction.FactionBlue);
-			int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
-
-			if (redCount == blueCount) {
-				faction = UserFaction.getRandomFaction();
-			} else {
-				faction = UserFaction.getSmallestFaction(redCount, blueCount, greenCount);
-			}
+			// This user has not been previously active, place them on the smallest team based on current numbers
+			faction = selectTeamUsingCurrentUserCount();
 		}
 
 		User user = new User(userName);
@@ -122,5 +115,18 @@ public class UserService {
 		user.setLoggedOffFriendlyPlotId(0);
 		userDataManager.putData(user);
 		return user;
+	}
+
+	private int selectTeamUsingCurrentUserCount() {
+		// This user has not been previously active, place them on the smallest team
+		int redCount = userDataManager.getFactionCount(UserFaction.FactionRed);
+		int blueCount = userDataManager.getFactionCount(UserFaction.FactionBlue);
+		int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
+
+		if (redCount == blueCount) {
+			return UserFaction.getRandomFaction();
+		} else {
+			return UserFaction.getSmallestFaction(redCount, blueCount, greenCount);
+		}
 	}
 }
