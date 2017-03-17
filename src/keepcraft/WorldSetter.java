@@ -118,7 +118,7 @@ public class WorldSetter {
 		int platformBottomY = spawnLocation.getBlockY();
 		int platformTopY = platformBottomY + CENTER_SPAWN_CLEARANCE;
 
-		WorldHelper.inCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), 1, 150, 3, (x, y, z) -> {
+		WorldHelper.inSquare(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), 1, 150, 2, (x, y, z) -> {
 			if (y < platformBottomY || y == platformTopY) {
 				// Make huge cylinder from ENDER_STONE to spawn location
 				if (x == center.getX() && z == center.getZ()) {
@@ -139,17 +139,25 @@ public class WorldSetter {
 				world.getBlockAt(x, y, z).setType(Material.AIR); // set things to air by default
 				// Build hollow area
 				// North wall
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 2).setType(Material.ENDER_STONE);
 				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() + 2).setType(Material.ENDER_STONE);
 				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() + 2).setType(Material.ENDER_STONE);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 2).setType(Material.ENDER_STONE);
 				// East wall
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 2).setType(Material.ENDER_STONE);
 				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 1).setType(Material.ENDER_STONE);
 				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 1).setType(Material.ENDER_STONE);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 2).setType(Material.ENDER_STONE);
 				// South wall
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 2).setType(Material.ENDER_STONE);
 				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() - 2).setType(Material.ENDER_STONE);
 				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() - 2).setType(Material.ENDER_STONE);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 2).setType(Material.ENDER_STONE);
 				// West wall
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 2).setType(Material.ENDER_STONE);
 				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 1).setType(Material.ENDER_STONE);
 				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 1).setType(Material.ENDER_STONE);
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 2).setType(Material.ENDER_STONE);
 
 //				if(y == platformBottomY) {
 //					world.getBlockAt(spawnLocation.getBlockX(), y, spawnLocation.getBlockZ() + 2).setType(Material.WOODEN_DOOR);
