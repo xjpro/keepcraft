@@ -147,7 +147,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	void teamAssignmentMixed() {
+	void teamAssignment1() {
 
 		User summit = userService.loadOfflineUser("SummitMC"); // put on team A
 		User jjnguy = userService.loadOfflineUser("jjnguy"); // as non-active, should be put on team B to balance numbers
@@ -167,8 +167,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	void teamAssignmentMixedAgain() {
-
+	void teamAssignmentMixed2() {
 		User alot = userService.loadOfflineUser("PlayedAlot"); // A or B
 		User summit = userService.loadOfflineUser("SummitMC"); // not on alot's team
 		assertTeamsEqual();
@@ -182,6 +181,27 @@ class UserServiceTest {
 		assertNotEquals(summit.getFaction(), alot.getFaction());
 		assertNotEquals(abe.getFaction(), never.getFaction());
 		assertNotEquals(sivias.getFaction(), doji.getFaction());
+	}
+
+	@Test
+	void teamAssignmentMixed3() {
+		User summit = userService.loadOfflineUser("SummitMC"); // A or B
+		User never = userService.loadOfflineUser("NeverPlays"); // not on summit's team
+		assertTeamsEqual();
+		User sivias = userService.loadOfflineUser("Sivias"); // not on summit's team, on Never's team
+		User abe = userService.loadOfflineUser("AbeFrohman"); // on summit's team
+		assertTeamsEqual();
+		User jjnguy = userService.loadOfflineUser("jjnguy"); // A or B
+		User doji = userService.loadOfflineUser("DojiSuave"); // A or B
+		assertTeamsEqual();
+		User alot = userService.loadOfflineUser("PlayedAlot"); // not on Doji's team
+
+		assertNotEquals(summit.getFaction(), never.getFaction());
+		assertNotEquals(summit.getFaction(), sivias.getFaction());
+		assertEquals(never.getFaction(), sivias.getFaction());
+		assertEquals(summit.getFaction(), abe.getFaction());
+		assertNotEquals(abe.getFaction(), jjnguy.getFaction());
+		assertNotEquals(doji.getFaction(), alot.getFaction());
 	}
 
 	private void assertTeamsEqual() {
