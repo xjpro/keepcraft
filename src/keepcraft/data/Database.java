@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
 public class Database {
 
@@ -56,6 +57,10 @@ public class Database {
 		} catch (SQLException e) {
 			Keepcraft.error("Error while closing database: " + e.getMessage());
 		}
+	}
+
+	SimpleDateFormat getDateFormat() {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	}
 
 	public static void deleteIfExists(String pathname) {

@@ -6,6 +6,7 @@ import java.util.List;
 
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
+import keepcraft.services.RallyService;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,11 +19,13 @@ public class BasicCommandListener extends CommandListener {
 
 	private final UserService userService;
 	private final PlotService plotService;
+	private final RallyService rallyService;
 	private final ChatService chatService;
 
-	public BasicCommandListener(UserService userService, PlotService plotService, ChatService chatService) {
+	public BasicCommandListener(UserService userService, PlotService plotService, RallyService rallyService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
+		this.rallyService = rallyService;
 		this.chatService = chatService;
 	}
 
@@ -30,7 +33,7 @@ public class BasicCommandListener extends CommandListener {
 	protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
 		Player p = (Player) commandSender;
 		User sender = userService.getOnlineUser(commandSender.getName());
-		int privilege = sender.getPrivilege();
+		UserPrivilege privilege = sender.getPrivilege();
 
 		// Char info
 		if ((commandName.equalsIgnoreCase("who")) && args.length == 1) {
@@ -115,7 +118,7 @@ public class BasicCommandListener extends CommandListener {
 //						if (plot.isImmuneToAttack()) {
 //							status += " (Not capturable, immune to attack outside of siege hours)";
 //						}
-					} else if (plot.canBeRalliedTo()) {
+					} else if (plot.getProtection().isCapturable()) {
 						status = plot.getProtection().isCaptureInProgress() ? "Under attack" : "Secured";
 						orderNumber = Integer.toString(plot.getOrderNumber());
 					} else {
@@ -132,19 +135,6 @@ public class BasicCommandListener extends CommandListener {
 
 				return true;
 			} else if (args.length > 0) {
-				Plot currentPlot = sender.getCurrentPlot();
-
-				// Ensure requester is in a plot that can be rallied from
-				if (currentPlot == null || !currentPlot.canBeRalliedTo() || !currentPlot.isFactionProtected(sender.getFaction())) {
-					chatService.sendFailureMessage(sender, "You can only rally from a secured rally point");
-					return true;
-				} else if (!currentPlot.isInTriggerRadius(p.getLocation())) {
-					chatService.sendFailureMessage(sender, "Move closer to center of point to rally");
-					return true;
-				}
-
-				// Requester is in the trigger radius of a plot that can be rallied from
-				// Parse their destination
 
 				// /rally #?
 				int orderNumber = 0;
@@ -154,39 +144,24 @@ public class BasicCommandListener extends CommandListener {
 					// Leave as 0
 				}
 
+				Plot requestedPlot;
 				// Could not parse into a number, we'll just assume it's a request to base because all points except base require numbers
 				if (orderNumber < 1) {
 					Plot base = plotService.getPlots().stream().filter(plot -> plot.isBasePlot() && plot.isFactionProtected(sender.getFaction())).findFirst().orElse(null);
 					if (base == null) {
 						chatService.sendFailureMessage(sender, "Your team does not have a base to rally to");
+						return true;
 					} else {
-						p.teleport(base.getLocation());
+						requestedPlot = base;
 					}
-					return true;
+				}
+				else {
+					// /rally # with a good number, try to find the plot with that order number
+					int finalOrderNumber = orderNumber;
+					requestedPlot = plotService.getPlots().stream().filter(plot -> plot.getOrderNumber() == finalOrderNumber).findFirst().orElse(null);
 				}
 
-				// /rally # with a good number, try to find the plot with that order number
-
-				int finalOrderNumber = orderNumber;
-				Plot requestedPlot = plotService.getPlots().stream().filter(plot -> plot.getOrderNumber() == finalOrderNumber).findFirst().orElse(null);
-
-				// Doesn't exist
-				if (requestedPlot == null) {
-					chatService.sendFailureMessage(sender, "Use /map to find the number of the area you wish to rally to");
-					return true;
-				}
-				// Exists but is either not owned by requester's team or is currently being contested
-				else if (!requestedPlot.isFactionProtected(sender.getFaction()) || requestedPlot.getProtection().isCaptureInProgress()) {
-					chatService.sendFailureMessage(sender, "That rally point has not been secured");
-					return true;
-				}
-				// Exists but requester is already in the plot
-				else if (requestedPlot == currentPlot) {
-					chatService.sendFailureMessage(sender, "You are already at that rally point");
-					return true;
-				}
-
-				p.teleport(requestedPlot.getLocation());
+				rallyService.rallyToPlot(sender, p, requestedPlot);
 				return true;
 			}
 		} else if (commandName.equalsIgnoreCase("global") && args.length == 1) {

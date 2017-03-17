@@ -1,7 +1,9 @@
 package keepcraft;
 
+import keepcraft.data.models.Container;
 import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.WorldPoint;
+import keepcraft.services.ContainerService;
 import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import org.bukkit.Location;
@@ -12,18 +14,25 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Random;
+
 // -5036103636176790253 spawn in big ass canyons with small sky island near 175, 175, meanwhile -175,-175 is in ocean (a very bad spawn seed)
 // 794682861 huge floating island near 175, 175
 // -476567279232347522 horrible spawn for blue with base deep inside a mountain
-class WorldSetter {
+public class WorldSetter {
 
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
-	private final int TEAM_PLOT_RADIUS = 75;
+	private final ContainerService containerService;
+	public static final int TEAM_PLOT_RADIUS = 65;
+	public static final int BASE_DISTANCE_FROM_CENTER = 250;
+	public static final int CENTER_SPAWN_CLEARANCE = 4;
+	public static final int WORLD_BORDER = 900;
 
-	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService) {
+	WorldSetter(PlotService plotService, FactionSpawnService factionSpawnService, ContainerService containerService) {
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
+		this.containerService = containerService;
 	}
 
 	World setupWorld(World world) {
@@ -32,26 +41,30 @@ class WorldSetter {
 		Location redBase;
 		Location blueBase;
 		do {
-			redBase = center.clone().add(175.5, 0, 175.5);
-			blueBase = center.clone().add(-175.5, 0, -175.5);
+			redBase = center.clone().add(-BASE_DISTANCE_FROM_CENTER, 0, 0);
+			blueBase = center.clone().add(BASE_DISTANCE_FROM_CENTER, 0, 0);
 
 			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) &&
 					isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ()))) {
 				found = true;
 			} else {
-				Keepcraft.log("Unacceptable base biomes, going north");
-				center.add(500, 0, 0);
+				Keepcraft.log(String.format("Unacceptable base biomes, going up +%s z units", BASE_DISTANCE_FROM_CENTER));
+				center.add(0, 0, BASE_DISTANCE_FROM_CENTER);
 			}
 		} while (!found);
 
+		world.setSpawnLocation(center.getBlockX(), world.getHighestBlockYAt(center), center.getBlockZ());
+		world.getWorldBorder().setCenter(center);
+		world.getWorldBorder().setSize(WORLD_BORDER);
+
 		setBase(UserFaction.FactionRed, redBase);
 		setBase(UserFaction.FactionBlue, blueBase);
+		prepareCenterTrench(center);
 		return world;
 	}
 
 	private void setBase(int faction, Location location) {
 		Keepcraft.log(String.format("Setting up %s faction...", UserFaction.getName(faction)));
-		prepareBaseArea(location, TEAM_PLOT_RADIUS + 25);
 
 		World world = location.getWorld();
 
@@ -63,6 +76,7 @@ class WorldSetter {
 		}
 		goodSpawnLocation.add(0, 5, 0); // Get above terrain
 
+		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 15);
 		prepareSpawnArea(goodSpawnLocation);
 		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), faction, TEAM_PLOT_RADIUS);
 
@@ -82,6 +96,10 @@ class WorldSetter {
 					block.setType(Material.AIR);
 				}
 			}
+			// Fill in lower areas with bedrock
+			else if (y < center.getBlockY() - 12) {
+				block.setType(Material.BEDROCK);
+			}
 			// Remove water below 63 in plot area
 			else if (y < 63 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
 				if (y < 58) {
@@ -98,14 +116,14 @@ class WorldSetter {
 		Block center = world.getBlockAt(spawnLocation);
 
 		int platformBottomY = spawnLocation.getBlockY();
-		int platformTopY = platformBottomY + 3;
+		int platformTopY = platformBottomY + CENTER_SPAWN_CLEARANCE;
 
-		WorldHelper.inCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), 1, 150, 3, (x, y, z) -> {
+		WorldHelper.inSquare(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), 1, 150, 2, (x, y, z) -> {
 			if (y < platformBottomY || y == platformTopY) {
-				// Make huge cylinder from ENDER_STONE to spawn location
+				// Make huge cylinder from END_BRICKS to spawn location
 				if (x == center.getX() && z == center.getZ()) {
 					if (y == platformTopY) {
-						// Hole for beacon light
+						// Hole above
 						world.getBlockAt(x, y, z).setType(Material.AIR);
 					} else {
 						// Thread of blocks for the win condition
@@ -113,7 +131,7 @@ class WorldSetter {
 					}
 				} else {
 					// Not in center, make ender stone
-					world.getBlockAt(x, y, z).setType(Material.ENDER_STONE);
+					world.getBlockAt(x, y, z).setType(Material.END_BRICKS);
 				}
 			} else if (y > platformTopY) {
 				world.getBlockAt(x, y, z).setType(Material.AIR);
@@ -121,17 +139,25 @@ class WorldSetter {
 				world.getBlockAt(x, y, z).setType(Material.AIR); // set things to air by default
 				// Build hollow area
 				// North wall
-				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() + 2).setType(Material.ENDER_STONE);
-				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() + 2).setType(Material.ENDER_STONE);
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 2).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() + 2).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() + 2).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 2).setType(Material.END_BRICKS);
 				// East wall
-				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 1).setType(Material.ENDER_STONE);
-				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 1).setType(Material.ENDER_STONE);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 2).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 1).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 1).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 2).setType(Material.END_BRICKS);
 				// South wall
-				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() - 2).setType(Material.ENDER_STONE);
-				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() - 2).setType(Material.ENDER_STONE);
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 2).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() - 2).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() - 2).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 2).setType(Material.END_BRICKS);
 				// West wall
-				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 1).setType(Material.ENDER_STONE);
-				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 1).setType(Material.ENDER_STONE);
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 2).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 1).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 1).setType(Material.END_BRICKS);
+				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 2).setType(Material.END_BRICKS);
 
 //				if(y == platformBottomY) {
 //					world.getBlockAt(spawnLocation.getBlockX(), y, spawnLocation.getBlockZ() + 2).setType(Material.WOODEN_DOOR);
@@ -142,8 +168,45 @@ class WorldSetter {
 			}
 		});
 
-		center.getRelative(BlockFace.DOWN).setType(Material.BEACON);
+
+		// Outputting container at center of base
+		Block chestBlock = center.getRelative(BlockFace.DOWN);
+		chestBlock.setType(Material.CHEST);
+
+		// Create beacon
+		Block beaconBlock = center.getRelative(BlockFace.DOWN, 2);
+		beaconBlock.setType(Material.BEACON);
+		beaconBlock.getRelative(0, -1, 1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(1, -1, 1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(1, -1, 0).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(1, -1, -1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(0, -1, -1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(-1, -1, -1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(-1, -1, 0).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(-1, -1, 1).setType(Material.IRON_BLOCK);
+
+		Container baseLootContainer = containerService.createContainer(new WorldPoint(chestBlock.getLocation()));
+		baseLootContainer.setOutputType(Container.ContainerOutputType.BASE);
+		baseLootContainer.setOutputPerHour(7);
+		baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
+		containerService.updateContainer(baseLootContainer);
+
+		// Drop pick axe so players can dig out if necessary
 		world.dropItem(center.getLocation().add(0, 1, 0), new ItemStack(Material.WOOD_PICKAXE, 1));
+	}
+
+	private void prepareCenterTrench(Location center) {
+		Random random = new Random();
+		World world = center.getWorld();
+		for (int z = center.getBlockZ() - (WORLD_BORDER / 2); z <= center.getBlockZ() + (WORLD_BORDER / 2); z++) {
+			for (int x = center.getBlockX() - 5; x <= center.getBlockX() + 5; x++) {
+				if (x == 0 || x % 5 != 0 || random.nextDouble() > 0.15) {
+					for (int y = 10; y < 150; y++) {
+						world.getBlockAt(x, y, z).setType(Material.AIR);
+					}
+				}
+			}
+		}
 	}
 
 	private boolean isAcceptableBiome(Biome biome) {

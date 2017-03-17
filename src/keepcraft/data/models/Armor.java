@@ -2,6 +2,7 @@ package keepcraft.data.models;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
@@ -124,30 +125,31 @@ public class Armor {
 		return totalArmor;
 	}
 
-	public static int getEnchantmentProtectionFactor(LivingEntity entity) {
+	public static int getEnchantmentProtectionFactor(LivingEntity entity, EntityDamageEvent.DamageCause damageCause) {
 		EntityEquipment equipment = entity.getEquipment();
 		int enchantmentProtectionFactor = 0;
-
-		ItemStack helmet = equipment.getHelmet();
-		if (helmet != null) {
-			enchantmentProtectionFactor += helmet.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
-		}
-
-		ItemStack chestPlate = equipment.getChestplate();
-		if (chestPlate != null) {
-			enchantmentProtectionFactor += chestPlate.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
-		}
-
-		ItemStack leggings = equipment.getLeggings();
-		if (leggings != null) {
-			enchantmentProtectionFactor += leggings.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
-		}
-
-		ItemStack boots = equipment.getBoots();
-		if (boots != null) {
-			enchantmentProtectionFactor += boots.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
-		}
-
+		enchantmentProtectionFactor += getItemProtectionFactor(equipment.getHelmet(), damageCause);
+		enchantmentProtectionFactor += getItemProtectionFactor(equipment.getChestplate(), damageCause);
+		enchantmentProtectionFactor += getItemProtectionFactor(equipment.getLeggings(), damageCause);
+		enchantmentProtectionFactor += getItemProtectionFactor(equipment.getBoots(), damageCause);
 		return Math.min(enchantmentProtectionFactor, 20);
+	}
+
+	private static int getItemProtectionFactor(ItemStack item, EntityDamageEvent.DamageCause damageCause) {
+		if (item == null) return 0;
+
+		int enchantmentProtectionFactor = item.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL); // gives level * 1 points
+
+		// TODO check that these work:
+		if (damageCause == EntityDamageEvent.DamageCause.PROJECTILE) {
+			enchantmentProtectionFactor += item.getEnchantmentLevel(Enchantment.PROTECTION_PROJECTILE) * 2; // gives level * 2 points
+		} else if (damageCause == EntityDamageEvent.DamageCause.FIRE || damageCause == EntityDamageEvent.DamageCause.FIRE_TICK || damageCause == EntityDamageEvent.DamageCause.LAVA) {
+			enchantmentProtectionFactor += item.getEnchantmentLevel(Enchantment.PROTECTION_FIRE) * 2; // gives level * 2 points
+		} else if (damageCause == EntityDamageEvent.DamageCause.FALL) {
+			enchantmentProtectionFactor += item.getEnchantmentLevel(Enchantment.PROTECTION_FALL) * 3; // gives level * 3 points
+		} else if (damageCause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || damageCause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+			enchantmentProtectionFactor += item.getEnchantmentLevel(Enchantment.PROTECTION_EXPLOSIONS) * 2; // gives level * 2 points
+		}
+		return enchantmentProtectionFactor;
 	}
 }

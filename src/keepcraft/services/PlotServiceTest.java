@@ -56,7 +56,6 @@ class PlotServiceTest {
 		assertEquals("Red", plot.getName());
 		assertEquals(75, plot.getRadius());
 		assertEquals(plots[0].getId(), plot.getProtection().getPlotId());
-		assertEquals(75, plot.getProtection().getProtectedRadius());
 		assertEquals(Plot.DEFAULT_RADIUS, plot.getProtection().getAdminRadius());
 
 		plot = plots[1];
@@ -67,7 +66,6 @@ class PlotServiceTest {
 		assertEquals("Blue", plot.getName());
 		assertEquals(75, plot.getRadius());
 		assertEquals(plot.getId(), plot.getProtection().getPlotId());
-		assertEquals(75, plot.getProtection().getProtectedRadius());
 		assertEquals(Plot.DEFAULT_RADIUS, plot.getProtection().getAdminRadius());
 
 		plot = plots[2];
@@ -78,7 +76,6 @@ class PlotServiceTest {
 		assertEquals("Center", plot.getName());
 		assertEquals(20, plot.getRadius());
 		assertEquals(plot.getId(), plot.getProtection().getPlotId());
-		assertEquals(20, plot.getProtection().getProtectedRadius());
 		assertEquals(Plot.DEFAULT_RADIUS, plot.getProtection().getAdminRadius());
 	}
 
@@ -106,7 +103,6 @@ class PlotServiceTest {
 		assertEquals("Gold Castle", plot.getName());
 		assertEquals(PlotProtection.FACTION_E, plot.getProtection().getType());
 		assertEquals(99, plot.getRadius());
-		assertEquals(99, plot.getProtection().getProtectedRadius());
 		assertEquals(0, plot.getProtection().getKeepRadius());
 	}
 

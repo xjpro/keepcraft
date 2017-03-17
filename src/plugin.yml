@@ -41,12 +41,12 @@ commands:
     setfaction:
         description: Change a user's faction
         usage: /setfaction <username> [faction #]
-    plottp:
-        description: Teleport to a plot name
-        usage: /plottp <plot name>
-    lootblock:
-        description: Edit a lootblock
-        usage: /lootblock
+    ptp:
+        description: Teleport to a plot by name
+        usage: /ptp <plot name>
+    chest:
+        description: Edit a chest
+        usage: /chest
     dawn:
         description: Let there be light!
         usage: /dawn

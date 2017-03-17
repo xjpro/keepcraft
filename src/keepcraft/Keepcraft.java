@@ -3,15 +3,15 @@ package keepcraft;
 import keepcraft.command.*;
 import keepcraft.data.*;
 import keepcraft.data.models.User;
+import keepcraft.data.models.WorldPoint;
 import keepcraft.listener.*;
-
-import java.util.logging.Logger;
-
 import keepcraft.services.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.logging.Logger;
 
 public class Keepcraft extends JavaPlugin {
 
@@ -22,18 +22,20 @@ public class Keepcraft extends JavaPlugin {
 	private final UserDataManager userDataManager = new UserDataManager(database);
 	private final PlotDataManager plotDataManager = new PlotDataManager(database);
 	private final FactionSpawnDataManager factionSpawnManager = new FactionSpawnDataManager(database);
-	private final LootBlockDataManager lootBlockDataManager = new LootBlockDataManager(database);
+	private final ContainerDataManager containerDataManager = new ContainerDataManager(database);
+	private final MapDataManager mapDataManager = new MapDataManager(database);
 
 	private final Database statsDatabase = new Database("keepcraft_stats.db");
 	private final UserStatsDataManager userStatsDataManager = new UserStatsDataManager(statsDatabase);
 
 	// Services
-	private final UserService userService = new UserService(userDataManager, userStatsDataManager);
+	private final UserService userService = new UserService(this, userDataManager, userStatsDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
-	private final LootBlockService lootBlockService = new LootBlockService(lootBlockDataManager);
+	private final ContainerService containerService = new ContainerService(this, containerDataManager, mapDataManager);
 	private final ChatService chatService = new ChatService(userService);
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
+	private final RallyService rallyService = new RallyService(chatService);
 
 	@Override
 	public void onEnable() {
@@ -51,7 +53,7 @@ public class Keepcraft extends JavaPlugin {
 
 		PluginManager manager = this.getServer().getPluginManager();
 
-		manager.registerEvents(new UserListener(userService, plotService, factionSpawnService), this);
+		manager.registerEvents(new UserListener(userService, plotService, factionSpawnService, chatService), this);
 		manager.registerEvents(new ActionListener(userService, plotService), this);
 		manager.registerEvents(new MovementListener(userService, plotService, chatService), this);
 		manager.registerEvents(new ChatListener(userService, chatService), this);
@@ -60,13 +62,16 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new ExplosionListener(plotService, chatService), this);
 		manager.registerEvents(new PlotAttackListener(userService, plotService, chatService), this);
 		manager.registerEvents(new PlotProtectionListener(userService, plotService, chatService), this);
-		manager.registerEvents(new LootBlockListener(userService, lootBlockService, chatService), this);
+		manager.registerEvents(new ContainerListener(userService, containerService, chatService), this);
 		manager.registerEvents(new CraftItemListener(), this);
 		manager.registerEvents(new StormListener(), this);
 		manager.registerEvents(new StatsListener(userService, plotService), this);
 
+		// Start any tasks
+		containerService.startDispensing();
+
 		// Basic commands
-		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, chatService);
+		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, chatService);
 		String[] basicCommands = {"die", "who", "map", "rally", "global"};
 		for (String basicCommand : basicCommands) {
 			getCommand(basicCommand).setExecutor(basicCommandListener);
@@ -88,7 +93,7 @@ public class Keepcraft extends JavaPlugin {
 
 		// Admin commands
 		AdminCommandListener adminCommandListener = new AdminCommandListener(userService, plotService);
-		String[] adminCommands = {"promote", "demote", "delete", "setfaction", "plottp", "dawn", "noon", "dusk"};
+		String[] adminCommands = {"promote", "demote", "delete", "setfaction", "ptp", "dawn", "noon", "dusk"};
 		for (String adminCommand : adminCommands) {
 			getCommand(adminCommand).setExecutor(adminCommandListener);
 		}
@@ -106,11 +111,11 @@ public class Keepcraft extends JavaPlugin {
 			getCommand(plotCommand).setExecutor(plotCommandListener);
 		}
 
-		// LootBlock commands
-		CommandListener lootBlockCommandListener = new LootBlockCommandListener(userService, lootBlockService, chatService);
-		String[] lootBlockCommands = {"lootblock"};
-		for (String lootBlockCommand : lootBlockCommands) {
-			getCommand(lootBlockCommand).setExecutor(lootBlockCommandListener);
+		// Container commands
+		CommandListener containerCommandListener = new ContainerCommandListener(userService, plotService, containerService, chatService);
+		String[] containerCommands = {"chest"};
+		for (String command : containerCommands) {
+			getCommand(command).setExecutor(containerCommandListener);
 		}
 
 		// Siege commands
@@ -125,6 +130,9 @@ public class Keepcraft extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		// Stop any tasks
+		containerService.stopDispensing();
+
 		// Save everybody's user data
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
 			User user = userService.getOnlineUser(player.getName());
@@ -143,13 +151,15 @@ public class Keepcraft extends JavaPlugin {
 	}
 
 	private void setup() {
-		WorldSetter setter = new WorldSetter(plotService, factionSpawnService);
+		WorldSetter setter = new WorldSetter(plotService, factionSpawnService, containerService);
 		World world = setter.setupWorld(Keepcraft.getWorld());
+		mapDataManager.createWorldRecord(world.getUID(), new WorldPoint(world.getSpawnLocation()));
+
 		userService.refreshCache();
 		plotService.refreshCache();
 		factionSpawnService.refreshCache();
-		lootBlockService.refreshCache();
-		log(String.format("Successfully setup map on '%s'", world.getName()));
+		containerService.refreshCache();
+		log(String.format("Successfully setup new map on '%s'", world.getName()));
 	}
 
 	public static void log(String text) {

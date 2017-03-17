@@ -22,7 +22,7 @@ public class CombatListener implements Listener {
 	private static float SharpnessDamageBonusPerLevel = 0.05f; // each level of Sharpness (swords & axes) gives 5% damage bonus
 	private static float ArrowDamageReduction = 0.15f; // arrow damage reduced by 15%
 	private static int FoodRemovedOnArrowHit = 2; // food removed when hit by an arrow
-	private static float ProtectionDamageReductionPerPoint = 0.01f; // damage reduction by point of Protection (armor)
+	private static float ProtectionDamageReductionPerPoint = 0.0075f; // damage reduction by point of Protection (armor)
 
 	private final UserService userService;
 
@@ -88,11 +88,9 @@ public class CombatListener implements Listener {
 			return;
 		}
 
-		if (isArrowHit) {
-			// Remove food from bar when hit by an arrow
-			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FoodRemovedOnArrowHit));
-			// todo buff shields vs arrows via event.setDamage(EntityDamageEvent.DamageModifier.BLOCKING, ) ?
-		}
+		// When two players damage each other, set both in combat
+		damagerUser.setInCombat();
+		damagedUser.setInCombat();
 
 		// We assume at this point we've arrived at a good damage amount pre armor and magical protection
 		event.setDamage(EntityDamageEvent.DamageModifier.BASE, baseDamage);
@@ -109,10 +107,15 @@ public class CombatListener implements Listener {
 		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, event.getDamage(EntityDamageEvent.DamageModifier.ARMOR) * (1 - armorReduction));
 
 		// Apply damage reduction for wearing enchantments
-		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged);
-		// Each point of enchantment protection provides 1% (vanilla is 4%) damage reduction, maxing out at 20%
+		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
+		// Each point of enchantment protection provides 0.75% (vanilla is 4%) damage reduction, maxing out at 15%
 		double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
 		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
+
+		if (isArrowHit && event.getFinalDamage() > 0) {
+			// Remove food when damaged by an arrow
+			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FoodRemovedOnArrowHit));
+		}
 
 		// todo thorns
 //		System.out.println("----end----");
@@ -133,19 +136,20 @@ public class CombatListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityCombustByEnchantedWeapon(EntityCombustByEntityEvent event) {
 		if (event.isCancelled()) return;
-		System.out.println(event.getEntityType() + " " + event.getEntity());
+		//System.out.println(event.getEntityType() + " " + event.getEntity());
 
 		if (event.getEntityType().equals(EntityType.ARROW)) {
-			// Flame arrows, by default burn target for 5 seconds (100 tick time)
+			// todo seems to be a bug here where friendlies can light each other on fire
+			// Flame arrows, by default burn target for 5 seconds
 			// There's only one level to this so we don't need to check
 			// Reduce duration to 2 seconds
-			event.setDuration(40);
+			event.setDuration(2);
 		} else if (event.getEntityType().equals(EntityType.PLAYER)) {
 			// Fire Aspect weapons, by default burn target for 4 seconds (80 time tick) per level
 			int enchantmentLevel = ((Player) event.getEntity()).getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.FIRE_ASPECT);
 
 			// Reduce duration to 2 seconds per level
-			event.setDuration(enchantmentLevel * 40);
+			event.setDuration(enchantmentLevel * 2);
 		}
 	}
 
@@ -175,6 +179,8 @@ public class CombatListener implements Listener {
 			User attackerUser = userService.getOnlineUser(attackerName);
 
 			if (attackerUser != null) {
+				target.setInCombat();
+
 				String causeSection = "";
 				for (int i = 1; i < parts.length - 1; i++) {
 					causeSection += parts[i] + " ";

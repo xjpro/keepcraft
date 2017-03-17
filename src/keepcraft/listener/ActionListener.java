@@ -4,6 +4,7 @@ import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
+import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Material;
@@ -16,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemDamageEvent;
 
 public class ActionListener implements Listener {
 
@@ -29,25 +29,47 @@ public class ActionListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (!event.hasBlock()) {
-			return; // Air
-		}
-		Block clicked = event.getClickedBlock();
+	public void onPlayerUseItem(PlayerInteractEvent event) {
+		// This event handler only concerned with right clicking with an item in hand
+		Player player = event.getPlayer();
 
-		Plot plot = plotService.getIntersectedPlot(clicked.getLocation());
+		// Disable ender pearls
+		if (event.getMaterial().equals(Material.ENDER_PEARL)) {
+			player.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled, pending balance changes");
+			event.setCancelled(true);
+		}
+		// Prevent enemy players from creating boats in protected plots
+		else if (isBoat(event.getMaterial())) {
+			Block clicked = event.getClickedBlock();
+			Plot plot = plotService.getIntersectedPlot(clicked != null ? clicked.getLocation() : player.getLocation());
+			User user = userService.getOnlineUser(player.getName());
+			if (plot != null && !plot.isFactionProtected(user.getFaction())) {
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		User user = userService.getOnlineUser(player.getName());
+
+		if (user.isAdmin()) return;
+
+		Block clicked = event.getClickedBlock();
+		Plot plot = plotService.getIntersectedPlot(clicked != null ? clicked.getLocation() : player.getLocation());
 		if (plot == null || plot.getProtection() == null) {
 			return;
 		}
 
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
-		Material blockType = clicked.getType();
+		if (clicked == null || !event.hasBlock()) {
+			return; // Air
+		}
 
+		Material blockType = clicked.getType();
 		switch (blockType) {
-			// Put the things we need to check against in here. Which are switches. Don't need
-			// to check for any block types that don't have secondary functions because WorldListener
-			// will check those.
+			// Do not allow enemy team to access buttons, switches, levers, etc.
+			// Exception: if the switch is near a door and not a stone plate, destroy it so it can't be used to block TNT placement
 			case STONE_BUTTON:
 			case STONE_PLATE:
 			case IRON_PLATE:
@@ -70,42 +92,7 @@ public class ActionListener implements Listener {
 				break;
 			case DISPENSER:
 				// Protect dispenser in event plots
-				if (plot.getProtection().getType() == PlotProtection.EVENT && !user.isAdmin()) {
-					event.setCancelled(true);
-				}
-				break;
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerItemDamage(PlayerItemDamageEvent event) {
-		if (event.isCancelled()) return;
-
-		// Make tool use in team plot not cause durability damage
-		switch (event.getItem().getType()) {
-			case WOOD_SPADE:
-			case STONE_SPADE:
-			case IRON_SPADE:
-			case GOLD_SPADE:
-			case DIAMOND_SPADE:
-			case WOOD_PICKAXE:
-			case STONE_PICKAXE:
-			case IRON_PICKAXE:
-			case GOLD_PICKAXE:
-			case DIAMOND_PICKAXE:
-//			case WOOD_AXE:
-//			case STONE_AXE:
-//			case IRON_AXE:
-//			case GOLD_AXE:
-//			case DIAMOND_AXE:
-			case WOOD_HOE:
-			case STONE_HOE:
-			case IRON_HOE:
-			case GOLD_HOE:
-			case DIAMOND_HOE:
-				User user = userService.getOnlineUser(event.getPlayer().getName());
-				Plot plot = plotService.getIntersectedPlot(event.getPlayer().getLocation());
-				if (plot != null && plot.isFactionProtected(user.getFaction())) {
+				if (plot.getProtection().getType() == PlotProtection.EVENT) {
 					event.setCancelled(true);
 				}
 				break;
@@ -150,6 +137,20 @@ public class ActionListener implements Listener {
 			}
 		}
 		return false;
+	}
+
+	private boolean isBoat(Material material) {
+		switch (material) {
+			case BOAT:
+			case BOAT_ACACIA:
+			case BOAT_BIRCH:
+			case BOAT_DARK_OAK:
+			case BOAT_JUNGLE:
+			case BOAT_SPRUCE:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 }

@@ -17,8 +17,6 @@ public class PlotProtection {
     private int type;
 
     // A plot has a radius but protection within that radius can vary:
-    // Radius of plot which is "protected", in the usual case this means only team member modifications
-    private double protectedRadius;
     // Radius of plot which is the "keep", unused currently this would allow an inner area that only higher level team members can modify
     private double keepRadius;
     // Radius of plot which only admins can modify, in the usual case this is a small area at the center that protects the spawn point
@@ -48,14 +46,6 @@ public class PlotProtection {
 
     public void setType(int value) {
         type = value;
-    }
-
-    public double getProtectedRadius() {
-        return protectedRadius;
-    }
-
-    public void setProtectedRadius(double value) {
-        protectedRadius = value;
     }
 
     public double getKeepRadius() {
@@ -111,11 +101,7 @@ public class PlotProtection {
     }
 
     public String asString() {
-        return PlotProtection.asString(type);
-    }
-
-    public static String asString(int protection) {
-        switch (protection) {
+        switch (type) {
             case ADMIN:
                 return ChatService.NameAdmin + "Admin";
             case EVENT:
@@ -136,5 +122,4 @@ public class PlotProtection {
                 return "Unknown";
         }
     }
-
 }

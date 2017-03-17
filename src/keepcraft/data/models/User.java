@@ -10,9 +10,11 @@ import java.util.Date;
  */
 public class User {
 
+	public static int InCombatTimeoutSeconds = 15;
+
 	// Persistent data, from database
 	private final String name;
-	private int privilege;
+	private UserPrivilege privilege;
 	private int faction;
 	private int money;
 	private int loggedOffFriendlyPlotId;
@@ -20,9 +22,11 @@ public class User {
 	// Non persistent real time data
 	private Date logOnDateTime = null;
 	private Plot currentPlot = null;
-	private LootBlock targetLootBlock = null;
+	private Container targetContainer = null;
 	private boolean receiveGlobalMessages = true;
 	private String lastPrivateMessageSender = null;
+	private Date lastCombat = null;
+	private Plot rallyingTo = null;
 
 	// Stats (persisted on log off)
 	private UserStats userStats = new UserStats();
@@ -59,7 +63,7 @@ public class User {
 		return getChatTag();
 	}
 
-	public int getPrivilege() {
+	public UserPrivilege getPrivilege() {
 		return privilege;
 	}
 
@@ -67,7 +71,7 @@ public class User {
 		return privilege == UserPrivilege.ADMIN;
 	}
 
-	public void setPrivilege(int value) {
+	public void setPrivilege(UserPrivilege value) {
 		privilege = value;
 	}
 
@@ -85,11 +89,11 @@ public class User {
 	}
 
 	public String getInfo() {
-		return getColoredName() + ChatService.RequestedInfo + " (" + UserPrivilege.asString(privilege) + ")";
+		return getColoredName() + ChatService.RequestedInfo + " (" + privilege + ")";
 	}
 
 	public String getPrivateInfo() {
-		return getColoredName() + ChatService.RequestedInfo + " (" + UserPrivilege.asString(privilege) + ")";
+		return getColoredName() + ChatService.RequestedInfo + " (" + privilege + ")";
 	}
 
 	public int getMoney() {
@@ -116,12 +120,28 @@ public class User {
 		currentPlot = plot;
 	}
 
-	public LootBlock getTargetLootBlock() {
-		return targetLootBlock;
+	public Container getTargetContainer() {
+		return targetContainer;
 	}
 
-	public void setTargetLootBlock(LootBlock lootBlock) {
-		targetLootBlock = lootBlock;
+	public void setTargetContainer(Container container) {
+		targetContainer = container;
+	}
+
+	public boolean isInCombat() {
+		return lastCombat != null && ((new Date()).getTime() - lastCombat.getTime()) / 1000 < InCombatTimeoutSeconds;
+	}
+
+	public void setInCombat() {
+		lastCombat = new Date();
+	}
+
+	public Plot getRallyingTo() {
+		return rallyingTo;
+	}
+
+	public void setRallyingTo(Plot value) {
+		rallyingTo = value;
 	}
 
 	public boolean getReceiveGlobalMessages() {

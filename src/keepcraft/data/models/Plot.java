@@ -1,5 +1,6 @@
 package keepcraft.data.models;
 
+import keepcraft.WorldSetter;
 import keepcraft.services.ChatService;
 import org.bukkit.Location;
 import keepcraft.tasks.Siege;
@@ -36,8 +37,8 @@ public class Plot {
 		return isFactionProtected() && !protection.isCapturable();
 	}
 
-	public boolean canBeRalliedTo() {
-		return isBasePlot() || (protection.isCapturable() && !protection.isCaptureInProgress());
+	public boolean canBeRalliedTo(User user) {
+		return isFactionProtected(user.getFaction()) && !protection.isCaptureInProgress();
 	}
 
 	public Location getLocation() {
@@ -89,7 +90,7 @@ public class Plot {
 	}
 
 	public boolean isInTeamProtectedRadius(Location loc) {
-		return protection != null && intersectsIgnoreY(new WorldPoint(loc), protection.getProtectedRadius());
+		return isInRadius(loc);
 	}
 
 	public boolean isInKeepRadius(Location loc) {
@@ -106,7 +107,7 @@ public class Plot {
 
 	public boolean isUnderCenter(Location location) {
 		Location plotLocation = getLocation();
-		return plotLocation.getBlockX() == location.getBlockX() && plotLocation.getBlockZ() == location.getBlockZ() && plotLocation.getBlockY() > location.getBlockY();
+		return plotLocation.getBlockX() == location.getBlockX() && plotLocation.getBlockZ() == location.getBlockZ() && plotLocation.getBlockY() >= location.getBlockY();
 	}
 
 	public int getId() {
@@ -209,7 +210,6 @@ public class Plot {
 	public String getInfo() {
 		String info = name + ChatService.RequestedInfo + " (Protection: " + protection.asString() + ChatService.RequestedInfo + ")\n";
 		info += "Radius: " + radius + "\n";
-		info += "Protected Radius: " + protection.getProtectedRadius() + "\n";
 		if (protection.getKeepRadius() > 0) {
 			info += "Keep protected radius: " + protection.getKeepRadius() + "\n";
 		}

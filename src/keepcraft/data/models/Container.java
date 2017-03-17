@@ -1,31 +1,74 @@
 package keepcraft.data.models;
 
 import keepcraft.Keepcraft;
-import org.bukkit.*;
+import org.bukkit.Chunk;
+import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.Random;
 
-public class LootBlock implements Runnable {
+public class Container {
+
+	public enum ContainerPermission {
+		PUBLIC(0),
+		TEAM_NORMAL(1),
+		TEAM_VETERAN(2),
+		PRIVATE(3);
+
+		private final int id;
+
+		ContainerPermission(int id) {
+			this.id = id;
+		}
+
+		public static ContainerPermission getContainerPermission(int id) {
+			return Arrays.stream(ContainerPermission.values()).filter(containerPermission -> containerPermission.getId() == id).findFirst().orElse(null);
+		}
+
+		public int getId() {
+			return id;
+		}
+	}
+
+	public enum ContainerOutputType {
+		NONE(0),
+		BASE(1),
+		WORLD_ALL(2);
+
+		private final int id;
+
+		ContainerOutputType(int id) {
+			this.id = id;
+		}
+
+		public static ContainerOutputType getContainerOutputType(int id) {
+			return Arrays.stream(ContainerOutputType.values()).filter(outputType -> outputType.getId() == id).findFirst().orElse(null);
+		}
+
+		public int getId() {
+			return id;
+		}
+	}
 
 	private static Random Random = new Random();
 
 	private final WorldPoint worldPoint;
-	private int status = 1;
-	private int type = 1;
+	private ContainerPermission permission = ContainerPermission.PUBLIC;
+	private ContainerOutputType outputType = ContainerOutputType.NONE;
 
 	// Output in items generated per hour
-	private int outputPerHour = 60;
+	private int outputPerHour = 0;
 	// Fractional output from previous run
 	private double leftoverOutput = 0;
-	// Id of the Bukkit repeating task performing output
-	private int dispenseTaskId = 0;
 
-	public LootBlock(WorldPoint worldPoint) {
+	public Container(WorldPoint worldPoint) {
 		this.worldPoint = worldPoint;
 	}
 
@@ -41,20 +84,32 @@ public class LootBlock implements Runnable {
 		return getBlock().getChunk();
 	}
 
-	public int getStatus() {
-		return status;
+	public ContainerPermission getPermission() {
+		return permission;
 	}
 
-	public void setStatus(int value) {
-		status = value;
+	public void setPermission(ContainerPermission value) {
+		permission = value;
 	}
 
-	public int getType() {
-		return type;
+	public boolean canAccess(User user) {
+		if (permission.equals(ContainerPermission.TEAM_VETERAN)) {
+			return user.getPrivilege().getId() > UserPrivilege.MEMBER_NORMAL.getId();
+		}
+		if (permission.equals(ContainerPermission.TEAM_NORMAL)) {
+			return user.getPrivilege().getId() > UserPrivilege.MEMBER_START.getId();
+		}
+
+		// Otherwise, public, anyone can modify
+		return true;
 	}
 
-	public void setType(int value) {
-		type = value;
+	public ContainerOutputType getOutputType() {
+		return outputType;
+	}
+
+	public void setOutputType(ContainerOutputType value) {
+		outputType = value;
 	}
 
 	public int getOutputPerHour() {
@@ -65,11 +120,9 @@ public class LootBlock implements Runnable {
 		outputPerHour = value;
 	}
 
-	@Override
-	// Runs every minute
-	public void run() {
+	public void dispense(double modifier) {
 		Block block = getBlock();
-		if (block == null || block.getType() != Material.CHEST || outputPerHour == 0) return;
+		if (block == null || !(block.getState() instanceof InventoryHolder) || outputPerHour == 0) return;
 
 		Chest chest = (Chest) block.getState();
 		Inventory inventory = chest.getBlockInventory();
@@ -77,7 +130,8 @@ public class LootBlock implements Runnable {
 		// Say outputPerHour per hour is 75
 		// We'll need to put (75/60) = 1.25 items into the chest per minute
 		// It's obviously impossible to put fractions of items into the chest
-		double fullOutputThisRun = (outputPerHour / 60.0) + leftoverOutput;
+		double outputWithModifier = outputPerHour * modifier;
+		double fullOutputThisRun = (outputWithModifier / 60.0) + leftoverOutput;
 		long integerOutputThisRun = (long) fullOutputThisRun; // So calculate the integer amount we can put in
 		leftoverOutput = fullOutputThisRun - integerOutputThisRun; // And save the remainder to be used in the next run
 
@@ -109,13 +163,16 @@ public class LootBlock implements Runnable {
 			} else if (value <= 0.91) { // 2%
 				// Makes night vision & invis potions
 				item = new ItemStack(Material.BROWN_MUSHROOM, 1); // used for creating fermented spider eyes
+			} else if (value <= 0.92) { // 1%
+				// Makes lingering potions
+				item = new ItemStack(Material.DRAGONS_BREATH, 1);
 			}
 			// Items that come in grinders
-			else if (value <= 0.92) { // 1%
+			else if (value <= 0.93) { // 1%
 				item = new ItemStack(Material.BONE, 1);
-			} else if (value <= 0.93) { // 1%
+			} else if (value <= 0.94) { // 1%
 				item = new ItemStack(Material.STRING, 1);
-			} else if (value <= 0.95) { // 2%
+			} else if (value <= 0.95) { // 1%
 				item = new ItemStack(Material.SLIME_BALL, 1);
 			}
 			// Items that allow building with nether materials
@@ -133,17 +190,5 @@ public class LootBlock implements Runnable {
 		// Make a little smoke effect
 		block.getWorld().playEffect(block.getRelative(BlockFace.UP).getLocation(), Effect.SMOKE, 4);
 		block.getWorld().playEffect(block.getLocation(), Effect.CLICK1, 0);
-	}
-
-	public void startDispensing() {
-		stopDispensing();
-		dispenseTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Keepcraft.getPlugin(), this, 1200, 1200);
-	}
-
-	public void stopDispensing() {
-		if (dispenseTaskId != 0) {
-			Bukkit.getScheduler().cancelTask(dispenseTaskId);
-			dispenseTaskId = 0;
-		}
 	}
 }

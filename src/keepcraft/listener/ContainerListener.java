@@ -1,13 +1,12 @@
 package keepcraft.listener;
 
-import keepcraft.data.models.LootBlock;
+import keepcraft.data.models.Container;
 import keepcraft.data.models.User;
 import keepcraft.data.models.WorldPoint;
 import keepcraft.services.ChatService;
-import keepcraft.services.LootBlockService;
+import keepcraft.services.ContainerService;
 import keepcraft.services.UserService;
 import org.bukkit.Chunk;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,19 +17,18 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.InventoryHolder;
 
-public class LootBlockListener implements Listener {
+public class ContainerListener implements Listener {
 
 	private final UserService userService;
-	private final LootBlockService lootBlockService;
+	private final ContainerService containerService;
 	private final ChatService chatService;
 
-	public LootBlockListener(UserService userService, LootBlockService lootBlockService, ChatService chatService) {
+	public ContainerListener(UserService userService, ContainerService containerService, ChatService chatService) {
 		this.userService = userService;
-		this.lootBlockService = lootBlockService;
+		this.containerService = containerService;
 		this.chatService = chatService;
-
-		lootBlockService.getLootBlocks().forEach(LootBlock::startDispensing);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -38,17 +36,15 @@ public class LootBlockListener implements Listener {
 		if (event.isCancelled()) return;
 
 		Block placed = event.getBlock();
-		if (placed.getType() == Material.TRAPPED_CHEST) {
+		if (placed.getState() instanceof InventoryHolder) {
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
 			if (player.isOp() || user.isAdmin()) {
-				// create a loot dispenser chest
-				placed.setType(Material.CHEST);
-				LootBlock lootBlock = lootBlockService.createLootBlock(new WorldPoint(placed.getLocation()));
-				lootBlock.startDispensing();
-				user.setTargetLootBlock(lootBlock);
-				chatService.sendSuccessMessage(user, "Loot block placed & targeted");
+				// flag container
+				Container container = containerService.createContainer(new WorldPoint(placed.getLocation()));
+				user.setTargetContainer(container);
+				//chatService.sendSuccessMessage(user, "Container placed & targeted");
 			}
 		}
 	}
@@ -58,17 +54,16 @@ public class LootBlockListener implements Listener {
 		if (event.isCancelled()) return;
 
 		Block broken = event.getBlock();
-		if (broken.getType() == Material.CHEST) {
-			LootBlock lootBlock = lootBlockService.getLootBlock(new WorldPoint(broken.getLocation()));
-			if (lootBlock == null) return;
+		if (broken.getState() instanceof InventoryHolder) {
+			Container container = containerService.getContainer(new WorldPoint(broken.getLocation()));
+			if (container == null) return;
 
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
-			if (player.isOp() || user.isAdmin()) {
-				lootBlock.stopDispensing();
-				lootBlockService.removeLootBlock(lootBlock);
-				chatService.sendSuccessMessage(user, "Loot block destroyed");
+			if (container.canAccess(user)) {
+				chatService.sendFailureMessage(user, "You do not have permission to destroy this");
+				containerService.removeContainer(container);
 			} else {
 				// Don't allow regular users to break loot blocks
 				event.setCancelled(true);
@@ -81,16 +76,22 @@ public class LootBlockListener implements Listener {
 		if (!event.hasBlock() || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
 		Block clickedBlock = event.getClickedBlock();
-		if (clickedBlock.getType() == Material.CHEST) {
-			LootBlock lootBlock = lootBlockService.getLootBlock(new WorldPoint(clickedBlock.getLocation()));
-			if (lootBlock == null) return;
+		if (clickedBlock.getState() instanceof InventoryHolder) {
+			Container container = containerService.getContainer(new WorldPoint(clickedBlock.getLocation()));
+			if (container == null) return;
 
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
-			if (player.isOp() || user.isAdmin()) {
-				user.setTargetLootBlock(lootBlock);
-				chatService.sendSuccessMessage(user, "Loot block targeted");
+			if (container.canAccess(user)) {
+				if (container != user.getTargetContainer()) {
+					user.setTargetContainer(container);
+					// todo can't target chests in enemy territory
+					//chatService.sendSuccessMessage(user, "Container targeted");
+				}
+			} else {
+				chatService.sendFailureMessage(user, "You do not have permission to open this");
+				event.setCancelled(true);
 			}
 		}
 	}
@@ -98,8 +99,8 @@ public class LootBlockListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onChunkUnload(ChunkUnloadEvent event) {
 		Chunk chunk = event.getChunk();
-		for (LootBlock lootBlock : lootBlockService.getLootBlocks()) {
-			if (chunk.equals(lootBlock.getChunk())) {
+		for (Container outputtingContainer : containerService.getOutputtingContainers()) {
+			if (chunk.equals(outputtingContainer.getChunk())) {
 				// Leave this chunk in the game world so the loot chest it contains continues to receive loot
 				event.setCancelled(true);
 			}

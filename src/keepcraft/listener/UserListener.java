@@ -7,40 +7,31 @@ import keepcraft.services.FactionSpawnService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class UserListener implements Listener {
+
+	public static int RespawnSeconds = 15;
 
 	private final UserService userService;
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
+	private final ChatService chatService;
 
-	public UserListener(UserService userService, PlotService plotService, FactionSpawnService factionSpawnService) {
+	public UserListener(UserService userService, PlotService plotService, FactionSpawnService factionSpawnService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
-	}
-
-	private static class StartingValueSetter implements Runnable {
-
-		private final Player p;
-
-		public StartingValueSetter(Player player) {
-			this.p = player;
-		}
-
-		@Override
-		public void run() {
-			p.setHealth(10);
-			p.setFoodLevel(20);
-		}
+		this.chatService = chatService;
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -58,16 +49,18 @@ public class UserListener implements Listener {
 				user.setPrivilege(UserPrivilege.ADMIN);
 				//user.setFaction(UserFaction.FactionGold);
 			} else {
-				user.setPrivilege(UserPrivilege.MEMBER);
+				user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 			}
 
 			userService.updateUser(user);
 
-			setBasicEquipment(player);
 			teleportHome(player, user);
 		} else if (player.getLocation().getWorld() != Keepcraft.getWorld()) {
 			Keepcraft.log("Player " + player.getName() + " was on the wrong world, moving to " + Keepcraft.getWorld().getName());
 			teleportHome(player, user);
+		} else if (player.getGameMode() == GameMode.SPECTATOR) {
+			// If user logs in and they are in spec mode, they must have disconnected while respawning...
+			respawnAfterTimeout(player, user);
 		}
 
 		if (player.isOp()) {
@@ -109,42 +102,23 @@ public class UserListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
+		Player player = event.getPlayer();
+		User user = userService.getOnlineUser(player.getName());
 		FactionSpawn spawn = safelyGetFactionSpawn(user);
+		Location respawnLocation = spawn.getWorldPoint().asLocation();
 
-		event.setRespawnLocation(spawn.getWorldPoint().asLocation());
-
-		if (user.isAdmin()) {
-			setAdminEquipment(p);
-		} else {
-			setBasicEquipment(p);
+		// If user died while in combat they must wait to respawn...
+		if (user.isInCombat()) {
+			respawnLocation.setY(192);
+			respawnAfterTimeout(player, user);
 		}
+
+		event.setRespawnLocation(respawnLocation);
 
 		// Want to set the player's starting health and food values but the server will not respond to
 		// those changes in this method body. So we'll set a slightly delayed task to do it.
 		//Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), new StartingValueSetter(p), 40);
-		Keepcraft.log(String.format("%s respawning", p.getName()));
-	}
-
-	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.isCancelled()) return;
-
-		ItemStack inHand = event.getItem();
-		if (inHand == null) return;
-
-		Player player = event.getPlayer();
-		User user = userService.getOnlineUser(player.getName());
-
-		if (player.isOp() || user.isAdmin()) {
-			return;
-		}
-
-		if (inHand.getType().equals(Material.ENDER_PEARL)) {
-			event.setCancelled(true);
-			player.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled, pending balance changes");
-		}
+		Keepcraft.log(String.format("%s respawning", player.getName()));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -152,34 +126,36 @@ public class UserListener implements Listener {
 		event.setCancelled(true);
 	}
 
-	private void setBasicEquipment(Player p) {
-		//PlayerInventory inventory = p.getInventory();
-		//inventory.addItem(new ItemStack(Material.WOOD_SWORD, 1));
-		//inventory.addItem(new ItemStack(Material.BREAD, 1));
-		//inventory.setHelmet(new ItemStack(Material.LEATHER_HELMET, 1));
-	}
-
-	private void setAdminEquipment(Player p) {
-		PlayerInventory inventory = p.getInventory();
-		inventory.addItem(new ItemStack(Material.DIAMOND_SWORD, 1));
-		inventory.addItem(new ItemStack(Material.BOW, 1));
-		inventory.addItem(new ItemStack(Material.ARROW, 32));
-		inventory.addItem(new ItemStack(Material.GOLDEN_APPLE, 4));
-		inventory.setHelmet(new ItemStack(Material.DIAMOND_HELMET, 1));
-		inventory.setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE, 1));
-		inventory.setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS, 1));
-		inventory.setBoots(new ItemStack(Material.DIAMOND_BOOTS, 1));
-	}
-
 	private void teleportHome(Player p, User user) {
 		FactionSpawn respawn = safelyGetFactionSpawn(user);
 		p.teleport(respawn.getWorldPoint().asLocation());
+	}
+
+	private void respawnAfterTimeout(Player player, User user) {
+		GameMode originalGameMode = player.getGameMode();
+
+		player.setGameMode(GameMode.SPECTATOR);
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
+			// Have to put this on a delayed task or it will throw a null exception when trying to find the player
+			chatService.sendAlertMessage(user, String.format("Respawning in %s seconds", RespawnSeconds));
+		}, 0);
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
+			// Respawn player: set their game mode back and move them home
+			player.setGameMode(originalGameMode == GameMode.SPECTATOR ? GameMode.SURVIVAL : originalGameMode);
+			teleportHome(player, user);
+		}, 20 * RespawnSeconds);
 	}
 
 	private FactionSpawn safelyGetFactionSpawn(User user) {
 		FactionSpawn spawn = factionSpawnService.getFactionSpawn(user.getFaction());
 
 		if (spawn == null) {
+			if (user.getFaction() == UserFaction.FactionGold) {
+				return factionSpawnService.getFactionSpawn(UserFaction.FactionRed);
+			}
+
 			// A very bad thing has happened and we apparently have no spawn data, refresh cache in an attempt to recover
 			Keepcraft.error(String.format("Could not find spawn for %s of faction %s", user.getName(), user.getFaction()));
 			factionSpawnService.refreshCache(); // Attempt to restore things as they should be

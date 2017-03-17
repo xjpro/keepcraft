@@ -7,6 +7,7 @@ import keepcraft.data.models.UserPrivilege;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 
 public class UserDataManager {
 
@@ -34,7 +35,7 @@ public class UserDataManager {
 		try {
 			PreparedStatement statement
 					= database.createStatement("UPDATE users SET Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, LastOnline = datetime('now') WHERE Name = ?");
-			statement.setInt(1, user.getPrivilege());
+			statement.setInt(1, user.getPrivilege().getId());
 			statement.setInt(2, user.getFaction());
 			statement.setInt(3, user.getMoney());
 			statement.setInt(4, user.getLoggedOffFriendlyPlotId());
@@ -63,7 +64,7 @@ public class UserDataManager {
 				Keepcraft.log("No user was found for name " + name);
 			} else {
 				user = new User(name);
-				user.setPrivilege(result.getInt("Privilege"));
+				user.setPrivilege(UserPrivilege.getPrivilege(result.getInt("Privilege")));
 				user.setFaction(result.getInt("Faction"));
 				user.setMoney(result.getInt("Money"));
 				user.setLoggedOffFriendlyPlotId(result.getInt("LastPlotId"));
@@ -125,7 +126,7 @@ public class UserDataManager {
 			PreparedStatement statement
 					= database.createStatement("INSERT INTO users (Name, Privilege, Faction, Money, LastPlotId, FirstOnline, LastOnline) VALUES(?, ?, ?, ?, ?, datetime('now'), datetime('now'))");
 			statement.setString(1, user.getName());
-			statement.setInt(2, user.getPrivilege());
+			statement.setInt(2, user.getPrivilege().getId());
 			statement.setInt(3, user.getFaction());
 			statement.setInt(4, user.getMoney());
 			statement.setInt(5, user.getLoggedOffFriendlyPlotId());
@@ -214,7 +215,7 @@ public class UserDataManager {
 							+ "((julianday(datetime('now')) - julianday(LastOnline)) < ?)"
 			);
 			statement.setInt(1, faction);
-			statement.setInt(2, UserPrivilege.ADMIN);
+			statement.setInt(2, UserPrivilege.ADMIN.getId());
 			statement.setFloat(3, 3.0f);
 			ResultSet result = statement.executeQuery();
 
@@ -232,5 +233,32 @@ public class UserDataManager {
 		Keepcraft.log("Active member count for " + UserFaction.asString(faction) + " is " + memberCount);
 
 		return memberCount;
+	}
+
+	public int getPreviouslyActiveTeamCount(int team, List<String> previouslyActiveUserNames) {
+		int count = 0;
+		try {
+			PreparedStatement statement = database.createStatement("SELECT Name FROM users WHERE Faction = ? AND Privilege != ?");
+			statement.setInt(1, team);
+			statement.setInt(2, UserPrivilege.ADMIN.getId());
+			ResultSet result = statement.executeQuery();
+
+			while (result.next()) {
+				String userName = result.getString("Name");
+				if (previouslyActiveUserNames.stream().anyMatch(previouslyActiveUserName -> previouslyActiveUserName.equals(userName))) {
+					count++;
+				}
+			}
+
+			result.close();
+		} catch (Exception e) {
+			Keepcraft.error("Error counting previously active team members: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+
+		Keepcraft.log(String.format("Previously active member count for %s is %s", UserFaction.asString(team), count));
+
+		return count;
 	}
 }

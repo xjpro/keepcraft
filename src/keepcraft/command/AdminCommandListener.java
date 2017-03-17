@@ -1,16 +1,15 @@
 package keepcraft.command;
 
+import keepcraft.Keepcraft;
+import keepcraft.Privilege;
+import keepcraft.data.models.Plot;
+import keepcraft.data.models.User;
+import keepcraft.data.models.UserFaction;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import keepcraft.Privilege;
-import keepcraft.Keepcraft;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
-import keepcraft.data.models.UserPrivilege;
 
 import java.util.Objects;
 
@@ -54,20 +53,13 @@ public class AdminCommandListener extends CommandListener {
 				return true;
 			}
 
-			int newPrivilege;
-			if (target.getPrivilege() < UserPrivilege.INIT || target.getPrivilege() > UserPrivilege.ADMIN) {
-				newPrivilege = 100;
-			} else {
-				newPrivilege = target.getPrivilege() + 100;
-			}
-
-			target.setPrivilege(newPrivilege);
+			target.setPrivilege(target.getPrivilege().getNext());
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Promoted " + target.getName() + " to " + UserPrivilege.asString(newPrivilege));
+			commandSender.sendMessage(ChatService.Success + "Promoted " + target.getName() + " to " + userSender.getPrivilege());
 			if (target != userSender) {
 				commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were promoted to "
-						+ UserPrivilege.asString(newPrivilege) + " status");
+						+ userSender.getPrivilege() + " status");
 			}
 			return true;
 		} // Demote
@@ -87,14 +79,13 @@ public class AdminCommandListener extends CommandListener {
 				return true;
 			}
 
-			int newPrivilege = target.getPrivilege() - 100;
-			target.setPrivilege(newPrivilege);
+			target.setPrivilege(target.getPrivilege().getPrevious());
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Demoted " + target.getName() + " to " + UserPrivilege.asString(newPrivilege));
+			commandSender.sendMessage(ChatService.Success + "Demoted " + target.getName() + " to " + userSender.getPrivilege());
 			if (target != userSender) {
 				commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were demoted to "
-						+ UserPrivilege.asString(newPrivilege) + " status");
+						+ userSender.getPrivilege() + " status");
 			}
 			return true;
 		}
@@ -138,7 +129,7 @@ public class AdminCommandListener extends CommandListener {
 
 			return true;
 		} // teleport to a plot
-		else if (commandName.equals("plottp") && args.length > 0) {
+		else if (commandName.equals("ptp") && args.length > 0) {
 			Plot plot = null;
 			try {
 				int orderNumber = Integer.parseInt(args[0]);

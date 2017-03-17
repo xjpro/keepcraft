@@ -68,7 +68,6 @@ public class PlotService {
 		PlotProtection protection = plot.getProtection();
 		protection.setType(userFaction);
 		protection.setAdminRadius(3);
-		protection.setProtectedRadius(radius);
 
 		plotDataManager.updatePlot(plot);
 		refreshCache();
@@ -80,7 +79,6 @@ public class PlotService {
 		PlotProtection protection = plot.getProtection();
 		protection.setType(PlotProtection.ADMIN);
 		protection.setAdminRadius(Plot.DEFAULT_RADIUS);
-		protection.setProtectedRadius(radius);
 
 		plotDataManager.updatePlot(plot);
 		refreshCache();

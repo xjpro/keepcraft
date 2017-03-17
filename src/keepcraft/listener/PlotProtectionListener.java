@@ -86,13 +86,14 @@ public class PlotProtectionListener implements Listener {
 		if (player == null) return;
 
 		Block block = event.getBlock();
-		if (block.getType() == Material.ENDER_STONE && !userService.getOnlineUser(player.getName()).isAdmin()) {
+		Material blockType = block.getType();
+		if ((blockType == Material.ENDER_STONE  || blockType == Material.END_BRICKS) && !userService.getOnlineUser(player.getName()).isAdmin()) {
 			// Only admin may remove ender blocks
 			event.setCancelled(true);
 			return;
 		}
 
-		switch (block.getType()) {
+		switch (blockType) {
 			// Put materials here that can be broken no matter what
 			case CROPS:
 			case MELON_BLOCK:

@@ -4,6 +4,10 @@ import keepcraft.Keepcraft;
 import keepcraft.data.models.UserStats;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class UserStatsDataManager {
 
@@ -17,7 +21,7 @@ public class UserStatsDataManager {
 	private void init() {
 		try {
 			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS userStats " +
-					"(RecordStart, UserName, WorldSeed, PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
+					"(RecordStart, UserName, WorldSeed, WorldGUID, PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
 					"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests, " +
 					"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
 					"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits)");
@@ -29,7 +33,7 @@ public class UserStatsDataManager {
 		}
 	}
 
-	public void saveData(String userName, long worldSeed, UserStats stats) {
+	public void saveData(String userName, UUID worldGUID, UserStats stats) {
 		Keepcraft.log("Updating stats for " + userName);
 		try {
 			PreparedStatement statement = database.createStatement("UPDATE userStats SET " +
@@ -51,7 +55,7 @@ public class UserStatsDataManager {
 					"SwordHits = SwordHits + ?, " +
 					"AxeHits = AxeHits + ?, " +
 					"OtherHits = OtherHits + ? " +
-					"WHERE UserName = ? AND WorldSeed = ?");
+					"WHERE UserName = ? AND WorldGUID = ?");
 			statement.setInt(1, (int) stats.playSeconds);
 			statement.setInt(2, stats.blocksPlaced);
 			statement.setInt(3, stats.blocksRemoved);
@@ -71,7 +75,7 @@ public class UserStatsDataManager {
 			statement.setInt(17, stats.axeHits);
 			statement.setInt(18, stats.otherHits);
 			statement.setString(19, userName);
-			statement.setLong(20, worldSeed);
+			statement.setString(20, worldGUID.toString());
 			int rowsAffected = statement.executeUpdate();
 
 			if (rowsAffected == 0) {
@@ -79,7 +83,7 @@ public class UserStatsDataManager {
 						"(PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
 						"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests, " +
 						"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
-						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, UserName, WorldSeed, RecordStart) " +
+						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, UserName, WorldGUID, RecordStart) " +
 						"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))");
 				statement.setInt(1, (int) stats.playSeconds);
 				statement.setInt(2, stats.blocksPlaced);
@@ -100,7 +104,7 @@ public class UserStatsDataManager {
 				statement.setInt(17, stats.axeHits);
 				statement.setInt(18, stats.otherHits);
 				statement.setString(19, userName);
-				statement.setLong(20, worldSeed);
+				statement.setString(20, worldGUID.toString());
 				statement.execute();
 			}
 		} catch (Exception e) {
@@ -108,5 +112,49 @@ public class UserStatsDataManager {
 		} finally {
 			database.close();
 		}
+	}
+
+	public List<String> getRecentlyPlayedUserNamesByPlayTime(UUID currentWorldGUID) {
+
+		List<String> previouslyPlayedUserNames = new ArrayList<>();
+
+		// Gather all users from the past 3 maps, excluding the current map
+		try {
+			PreparedStatement statement = database.createStatement("SELECT WorldGUID FROM userStats " +
+					"WHERE WorldGUID IS NOT NULL AND WorldGUID != ? " +
+					"GROUP BY WorldGUID " +
+					"ORDER BY RecordStart DESC LIMIT 3");
+			// Fake UUID if one not provided, used for testing
+			statement.setString(1, currentWorldGUID != null ? currentWorldGUID.toString() : "2b79c281-7287-4627-96fc-788a03901345");
+			ResultSet result = statement.executeQuery();
+
+			ArrayList<String> recentWorldGUIDs = new ArrayList<>();
+			while (result.next()) {
+				recentWorldGUIDs.add(result.getString("WorldGUID"));
+			}
+
+			if (recentWorldGUIDs.size() > 2) {
+				// We have enough data to make this determination
+				statement = database.createStatement("SELECT UserName, SUM(PlaySeconds) AS TotalPlayed FROM userStats " +
+						"WHERE WorldGUID = ? OR WorldGUID = ? OR WorldGUID = ? " +
+						"GROUP BY UserName " +
+						"ORDER BY TotalPlayed DESC");
+				statement.setString(1, recentWorldGUIDs.get(0));
+				statement.setString(2, recentWorldGUIDs.get(1));
+				statement.setString(3, recentWorldGUIDs.get(2));
+				result = statement.executeQuery();
+
+				while (result.next()) {
+					previouslyPlayedUserNames.add(result.getString("UserName"));
+				}
+			}
+
+		} catch (Exception e) {
+			Keepcraft.error("Error looking up recent activity: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+
+		return previouslyPlayedUserNames;
 	}
 }

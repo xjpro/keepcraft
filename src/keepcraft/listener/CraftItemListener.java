@@ -1,9 +1,11 @@
 package keepcraft.listener;
 
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,6 +18,7 @@ public class CraftItemListener implements Listener {
 
 			case NETHER_STALK: // makes the base "awkward" potion
 			case SULPHUR: // allows throwing variants
+			case DRAGONS_BREATH: // allows lingering variants
 
 			case GHAST_TEAR: // regen
 			case SPIDER_EYE: // poison
@@ -37,6 +40,40 @@ public class CraftItemListener implements Listener {
 			case GLOWSTONE_DUST: // allows level 2 variants
 			default:
 				event.setCancelled(true);
+				break;
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onItemCrafted(CraftItemEvent event) {
+		if (event.isCancelled()) return;
+
+		ItemStack item = event.getCurrentItem();
+		switch (item.getType()) {
+			case WOOD_SPADE:
+			case STONE_SPADE:
+			case IRON_SPADE:
+			case GOLD_SPADE:
+			case DIAMOND_SPADE:
+			case WOOD_PICKAXE:
+			case STONE_PICKAXE:
+			case IRON_PICKAXE:
+			case GOLD_PICKAXE:
+			case DIAMOND_PICKAXE:
+			case WOOD_AXE:
+			case STONE_AXE:
+			case IRON_AXE:
+			case GOLD_AXE:
+			case DIAMOND_AXE:
+				item.addEnchantment(Enchantment.DURABILITY, 1);
+				item.addEnchantment(Enchantment.DIG_SPEED, 3);
+				break;
+			case WOOD_HOE:
+			case STONE_HOE:
+			case IRON_HOE:
+			case GOLD_HOE:
+			case DIAMOND_HOE:
+				item.addEnchantment(Enchantment.DURABILITY, 1);
 				break;
 		}
 	}

@@ -11,15 +11,11 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftBoat;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftMinecart;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
@@ -93,18 +89,6 @@ public class MovementListener implements Listener {
 			exitingLocation.setYaw(playerLocation.getYaw());
 			exitingLocation.add(0, 1, 0);
 			event.getExited().teleport(exitingLocation);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerEnteringVehicle(PlayerInteractEntityEvent event) {
-		Entity entity = event.getRightClicked();
-		if (entity instanceof CraftBoat || entity instanceof CraftMinecart) {
-			if (event.getPlayer().getLocation().distance(entity.getLocation()) > 1.3f) {
-				// Impose a lower than normal maximum distance on entering a vehicle
-				// This prevents players from using boats to get over short walls
-				event.setCancelled(true);
-			}
 		}
 	}
 
