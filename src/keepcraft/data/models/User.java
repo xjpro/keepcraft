@@ -27,6 +27,7 @@ public class User {
 	private String lastPrivateMessageSender = null;
 	private Date lastCombat = null;
 	private Plot rallyingTo = null;
+	private boolean hasStealth = false;
 
 	// Stats (persisted on log off)
 	private UserStats userStats = new UserStats();
@@ -170,5 +171,13 @@ public class User {
 
 	public UserStats getUserStats() {
 		return userStats;
+	}
+
+	public boolean hasStealth() {
+		return hasStealth;
+	}
+
+	public void setStealth(boolean stealth) {
+		this.hasStealth = stealth;
 	}
 }

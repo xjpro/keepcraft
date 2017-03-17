@@ -35,15 +35,18 @@ public class MovementListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
+		User user = userService.getOnlineUser(player.getName());
 
-		if (Armor.getDefensePoints(player) < 8) {
+		if (Armor.isWearingFullLeatherArmor(player)) {
+			user.setStealth(true);
 			player.setSneaking(true);
-			player.setWalkSpeed(0.4f); // double walk speed to offset perma sneak
-		} else {
+			player.setWalkSpeed(0.2f);
+		} else if (user.hasStealth()) {
+			user.setStealth(false);
+			player.setSneaking(false);
 			player.setWalkSpeed(0.2f);
 		}
 
-		User user = userService.getOnlineUser(player.getName());
 		handleMovement(user, event.getTo(), event.getFrom());
 
 		Plot currentPlot = user.getCurrentPlot();

@@ -1,5 +1,6 @@
 package keepcraft.data.models;
 
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -32,6 +33,19 @@ public class Armor {
 		static short IronBoots = 2;
 		static short GoldBoots = 1;
 		static short DiamondBoots = 3;
+	}
+
+	public static boolean isWearingFullLeatherArmor(LivingEntity entity) {
+		EntityEquipment equipment = entity.getEquipment();
+		if (equipment.getHelmet() == null || equipment.getHelmet().getType() != Material.LEATHER_HELMET)
+			return false;
+		if (equipment.getChestplate() == null || equipment.getChestplate().getType() != Material.LEATHER_CHESTPLATE)
+			return false;
+		if (equipment.getLeggings() == null || equipment.getLeggings().getType() != Material.LEATHER_LEGGINGS)
+			return false;
+		if (equipment.getBoots() == null || equipment.getBoots().getType() != Material.LEATHER_BOOTS)
+			return false;
+		return true;
 	}
 
 	public static int getDefensePoints(LivingEntity entity) {
