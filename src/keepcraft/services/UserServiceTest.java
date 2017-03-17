@@ -189,18 +189,18 @@ class UserServiceTest {
 		User never = userService.loadOfflineUser("NeverPlays"); // not on summit's team
 		assertTeamsEqual();
 		User sivias = userService.loadOfflineUser("Sivias"); // not on summit's team, on Never's team
-		User abe = userService.loadOfflineUser("AbeFrohman"); // on summit's team
+		User abe = userService.loadOfflineUser("AbeFrohman"); // on summit's team to even things out
 		assertTeamsEqual();
-		User jjnguy = userService.loadOfflineUser("jjnguy"); // A or B
-		User doji = userService.loadOfflineUser("DojiSuave"); // A or B
+		User jjnguy = userService.loadOfflineUser("jjnguy"); // A or B, random
+		User doji = userService.loadOfflineUser("DojiSuave"); // actives even, not on jjnguy's team, evening things again
 		assertTeamsEqual();
-		User alot = userService.loadOfflineUser("PlayedAlot"); // not on Doji's team
+		User alot = userService.loadOfflineUser("PlayedAlot"); // not on Doji's team, actives now even
 
 		assertNotEquals(summit.getFaction(), never.getFaction());
 		assertNotEquals(summit.getFaction(), sivias.getFaction());
 		assertEquals(never.getFaction(), sivias.getFaction());
 		assertEquals(summit.getFaction(), abe.getFaction());
-		assertNotEquals(abe.getFaction(), jjnguy.getFaction());
+		assertNotEquals(jjnguy.getFaction(), doji.getFaction());
 		assertNotEquals(doji.getFaction(), alot.getFaction());
 	}
 
