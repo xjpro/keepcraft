@@ -187,7 +187,7 @@ public class WorldSetter {
 
 		Container baseLootContainer = containerService.createContainer(new WorldPoint(chestBlock.getLocation()));
 		baseLootContainer.setOutputType(Container.ContainerOutputType.BASE);
-		baseLootContainer.setOutputPerHour(5);
+		baseLootContainer.setOutputPerHour(7);
 		baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
 		containerService.updateContainer(baseLootContainer);
 
