@@ -1,7 +1,6 @@
 package keepcraft.listener;
 
 import keepcraft.Keepcraft;
-import keepcraft.data.models.Armor;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
@@ -36,16 +35,6 @@ public class MovementListener implements Listener {
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		User user = userService.getOnlineUser(player.getName());
-
-		if (Armor.isWearingFullLeatherArmor(player)) {
-			user.setStealth(true);
-			player.setSneaking(true);
-			player.setWalkSpeed(0.2f);
-		} else if (user.hasStealth()) {
-			user.setStealth(false);
-			player.setSneaking(false);
-			player.setWalkSpeed(0.2f);
-		}
 
 		handleMovement(user, event.getTo(), event.getFrom());
 

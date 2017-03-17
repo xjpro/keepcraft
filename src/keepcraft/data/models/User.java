@@ -28,6 +28,8 @@ public class User {
 	private Date lastCombat = null;
 	private Plot rallyingTo = null;
 	private boolean hasStealth = false;
+	private boolean toggleSneak = false; // todo persist in db
+	private boolean persistentSneak = false;
 
 	// Stats (persisted on log off)
 	private UserStats userStats = new UserStats();
@@ -179,5 +181,21 @@ public class User {
 
 	public void setStealth(boolean stealth) {
 		this.hasStealth = stealth;
+	}
+
+	public boolean getToggleSneak() {
+		return toggleSneak;
+	}
+
+	public void setToggleSneak(boolean toggleSneak) {
+		this.toggleSneak = toggleSneak;
+	}
+
+	public boolean getPersistentSneak() {
+		return persistentSneak;
+	}
+
+	public void setPersistentSneak(boolean sneak) {
+		this.persistentSneak = sneak;
 	}
 }
