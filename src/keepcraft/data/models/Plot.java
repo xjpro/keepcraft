@@ -107,7 +107,7 @@ public class Plot {
 
 	public boolean isUnderCenter(Location location) {
 		Location plotLocation = getLocation();
-		return plotLocation.getBlockX() == location.getBlockX() && plotLocation.getBlockZ() == location.getBlockZ() && plotLocation.getBlockY() + WorldSetter.CENTER_SPAWN_CLEARANCE >= location.getBlockY();
+		return plotLocation.getBlockX() == location.getBlockX() && plotLocation.getBlockZ() == location.getBlockZ() && plotLocation.getBlockY() >= location.getBlockY();
 	}
 
 	public int getId() {

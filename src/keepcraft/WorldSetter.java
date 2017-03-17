@@ -123,8 +123,8 @@ public class WorldSetter {
 				// Make huge cylinder from ENDER_STONE to spawn location
 				if (x == center.getX() && z == center.getZ()) {
 					if (y == platformTopY) {
-						// Beacon above
-						world.getBlockAt(x, y, z).setType(Material.BEACON);
+						// Hole above
+						world.getBlockAt(x, y, z).setType(Material.AIR);
 					} else {
 						// Thread of blocks for the win condition
 						world.getBlockAt(x, y, z).setType(Material.DIAMOND_BLOCK);
@@ -172,6 +172,18 @@ public class WorldSetter {
 		// Outputting container at center of base
 		Block chestBlock = center.getRelative(BlockFace.DOWN);
 		chestBlock.setType(Material.CHEST);
+
+		// Create beacon
+		Block beaconBlock = center.getRelative(BlockFace.DOWN, 2);
+		beaconBlock.setType(Material.BEACON);
+		beaconBlock.getRelative(0, -1, 1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(1, -1, 1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(1, -1, 0).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(1, -1, -1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(0, -1, -1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(-1, -1, -1).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(-1, -1, 0).setType(Material.IRON_BLOCK);
+		beaconBlock.getRelative(-1, -1, 1).setType(Material.IRON_BLOCK);
 
 		Container baseLootContainer = containerService.createContainer(new WorldPoint(chestBlock.getLocation()));
 		baseLootContainer.setOutputType(Container.ContainerOutputType.BASE);
