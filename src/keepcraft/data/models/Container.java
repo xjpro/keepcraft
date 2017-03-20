@@ -176,7 +176,7 @@ public class Container {
 				item = new ItemStack(Material.SLIME_BALL, 1);
 			}
 			// Items that allow building with nether materials
-			else if (value <= 0.96) { // 1%
+			else if (value <= 0.97) { // 2%
 				item = new ItemStack(Material.QUARTZ, 1);
 			}
 			// Remainder 4% (pork)
