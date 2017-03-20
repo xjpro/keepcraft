@@ -66,15 +66,15 @@ public class ChatService {
 		logger.info(message);
 	}
 
-	public void sendFactionMessage(User sender, Collection<User> connectedUsers, UserTeam faction, String text) {
+	public void sendFactionMessage(User sender, Collection<User> connectedUsers, UserTeam userTeam, String text) {
 		if (text == null || text.length() == 0) {
 			return;
 		}
 
-		String message = String.format(ChatService.ChatFormat, sender.getChatTag(faction), ChatService.FactionMessage, "Team", text);
+		String message = String.format(ChatService.ChatFormat, sender.getChatTag(userTeam), ChatService.FactionMessage, "Team", text);
 
 		for (User receiver : connectedUsers) {
-			if (receiver.getPrivilege() == UserPrivilege.ADMIN || receiver.getFaction() == faction) {
+			if (receiver.getPrivilege() == UserPrivilege.ADMIN || receiver.getTeam() == userTeam) {
 				Bukkit.getPlayer(receiver.getName()).sendMessage(message);
 			}
 		}

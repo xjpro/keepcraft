@@ -122,9 +122,9 @@ class UserServiceTest {
 		User alot = userService.loadOfflineUser("PlayedAlot"); // not on Doji's team
 		assertTeamsNotEqual();
 
-		assertNotEquals(abe.getFaction(), jjnguy.getFaction()); // joined after eachother, would never be on same team
-		assertNotEquals(summit.getFaction(), sivias.getFaction()); // first 2 actives, would not be on same team
-		assertNotEquals(doji.getFaction(), alot.getFaction());
+		assertNotEquals(abe.getTeam(), jjnguy.getTeam()); // joined after eachother, would never be on same team
+		assertNotEquals(summit.getTeam(), sivias.getTeam()); // first 2 actives, would not be on same team
+		assertNotEquals(doji.getTeam(), alot.getTeam());
 	}
 
 	@Test
@@ -141,9 +141,9 @@ class UserServiceTest {
 		User never = userService.loadOfflineUser("NeverPlays"); // which team needs numbers
 		assertTeamsNotEqual();
 
-		assertNotEquals(summit.getFaction(), sivias.getFaction()); // joined after eachother, would never be on same team
-		assertNotEquals(doji.getFaction(), alot.getFaction());
-		assertNotEquals(abe.getFaction(), jjnguy.getFaction());
+		assertNotEquals(summit.getTeam(), sivias.getTeam()); // joined after eachother, would never be on same team
+		assertNotEquals(doji.getTeam(), alot.getTeam());
+		assertNotEquals(abe.getTeam(), jjnguy.getTeam());
 	}
 
 	@Test
@@ -160,10 +160,10 @@ class UserServiceTest {
 		User alot = userService.loadOfflineUser("PlayedAlot");
 		assertTeamsNotEqual();
 
-		assertNotEquals(summit.getFaction(), sivias.getFaction()); // 1 and 2nd active players, should not be on same team
-		assertNotEquals(summit.getFaction(), jjnguy.getFaction()); // first non-active to join, should have balanced numbers
-		assertEquals(summit.getFaction(), never.getFaction()); // second non-active to join, should have balanced numbers
-		assertNotEquals(doji.getFaction(), abe.getFaction()); // last non-active to join, should have balanced numbers
+		assertNotEquals(summit.getTeam(), sivias.getTeam()); // 1 and 2nd active players, should not be on same team
+		assertNotEquals(summit.getTeam(), jjnguy.getTeam()); // first non-active to join, should have balanced numbers
+		assertEquals(summit.getTeam(), never.getTeam()); // second non-active to join, should have balanced numbers
+		assertNotEquals(doji.getTeam(), abe.getTeam()); // last non-active to join, should have balanced numbers
 	}
 
 	@Test
@@ -178,9 +178,9 @@ class UserServiceTest {
 		User doji = userService.loadOfflineUser("DojiSuave"); // not on Sivias' team
 		assertTeamsEqual();
 
-		assertNotEquals(summit.getFaction(), alot.getFaction());
-		assertNotEquals(abe.getFaction(), never.getFaction());
-		assertNotEquals(sivias.getFaction(), doji.getFaction());
+		assertNotEquals(summit.getTeam(), alot.getTeam());
+		assertNotEquals(abe.getTeam(), never.getTeam());
+		assertNotEquals(sivias.getTeam(), doji.getTeam());
 	}
 
 	@Test
@@ -196,12 +196,12 @@ class UserServiceTest {
 		assertTeamsEqual();
 		User alot = userService.loadOfflineUser("PlayedAlot"); // not on Doji's team, actives now even
 
-		assertNotEquals(summit.getFaction(), never.getFaction());
-		assertNotEquals(summit.getFaction(), sivias.getFaction());
-		assertEquals(never.getFaction(), sivias.getFaction());
-		assertEquals(summit.getFaction(), abe.getFaction());
-		assertNotEquals(jjnguy.getFaction(), doji.getFaction());
-		assertNotEquals(doji.getFaction(), alot.getFaction());
+		assertNotEquals(summit.getTeam(), never.getTeam());
+		assertNotEquals(summit.getTeam(), sivias.getTeam());
+		assertEquals(never.getTeam(), sivias.getTeam());
+		assertEquals(summit.getTeam(), abe.getTeam());
+		assertNotEquals(jjnguy.getTeam(), doji.getTeam());
+		assertNotEquals(doji.getTeam(), alot.getTeam());
 	}
 
 	private void assertTeamsEqual() {

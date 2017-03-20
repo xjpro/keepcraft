@@ -71,7 +71,7 @@ public class PlotAttackListener implements Listener {
 		if (plot != null) {
 			Server server = Bukkit.getServer();
 			for (User user : userService.getOnlineUsers()) {
-				if (plot == user.getCurrentPlot() && plot.isFactionProtected(user.getFaction())) {
+				if (plot == user.getCurrentPlot() && plot.isFactionProtected(user.getTeam())) {
 
 					Player p = server.getPlayer(user.getName());
 					Location locationTo = Direction.lookAt(p.getLocation(), eventLocation);
@@ -97,7 +97,7 @@ public class PlotAttackListener implements Listener {
 				.filter(entity -> entity.getType() == EntityType.PLAYER)
 				.filter(playerEntity -> {
 					Player player = (Player) playerEntity;
-					return !plot.isFactionProtected(userService.getOnlineUser(player.getName()).getFaction());
+					return !plot.isFactionProtected(userService.getOnlineUser(player.getName()).getTeam());
 				})
 				.map(entity -> (LivingEntity) entity)
 				.collect(Collectors.toList());

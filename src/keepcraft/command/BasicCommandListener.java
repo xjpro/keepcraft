@@ -68,11 +68,11 @@ public class BasicCommandListener extends CommandListener {
 			List<User> otherUsers = new ArrayList<>();
 
 			for (User user : allUsers) {
-				if (user.getFaction() == UserTeam.RED) {
+				if (user.getTeam() == UserTeam.RED) {
 					redUsers.add(user);
-				} else if (user.getFaction() == UserTeam.BLUE) {
+				} else if (user.getTeam() == UserTeam.BLUE) {
 					blueUsers.add(user);
-				} else if (user.getFaction() == UserTeam.GREEN) {
+				} else if (user.getTeam() == UserTeam.GREEN) {
 					greenUsers.add(user);
 				} else {
 					otherUsers.add(user);
@@ -147,7 +147,7 @@ public class BasicCommandListener extends CommandListener {
 				Plot requestedPlot;
 				// Could not parse into a number, we'll just assume it's a request to base because all points except base require numbers
 				if (orderNumber < 1) {
-					Plot base = plotService.getPlots().stream().filter(plot -> plot.isBasePlot() && plot.isFactionProtected(sender.getFaction())).findFirst().orElse(null);
+					Plot base = plotService.getPlots().stream().filter(plot -> plot.isBasePlot() && plot.isFactionProtected(sender.getTeam())).findFirst().orElse(null);
 					if (base == null) {
 						chatService.sendFailureMessage(sender, "Your team does not have a base to rally to");
 						return true;

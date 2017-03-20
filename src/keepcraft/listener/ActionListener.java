@@ -43,7 +43,7 @@ public class ActionListener implements Listener {
 			Block clicked = event.getClickedBlock();
 			Plot plot = plotService.getIntersectedPlot(clicked != null ? clicked.getLocation() : player.getLocation());
 			User user = userService.getOnlineUser(player.getName());
-			if (plot != null && !plot.isFactionProtected(user.getFaction())) {
+			if (plot != null && !plot.isFactionProtected(user.getTeam())) {
 				event.setCancelled(true);
 			}
 		}

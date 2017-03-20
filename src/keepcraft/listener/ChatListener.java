@@ -34,7 +34,7 @@ public class ChatListener implements Listener {
         if (sender.isAdmin()) {
             chatService.sendAdminMessage(sender, connectedUsers, message);
         } else {
-            chatService.sendFactionMessage(sender, connectedUsers, sender.getFaction(), message);
+            chatService.sendFactionMessage(sender, connectedUsers, sender.getTeam(), message);
         }
     }
 

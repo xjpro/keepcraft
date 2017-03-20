@@ -39,7 +39,7 @@ public class MovementListener implements Listener {
 		handleMovement(user, event.getTo(), event.getFrom());
 
 		Plot currentPlot = user.getCurrentPlot();
-		if (currentPlot != null && !currentPlot.isFactionProtected(user.getFaction()) && player.getGameMode() != GameMode.CREATIVE) {
+		if (currentPlot != null && !currentPlot.isFactionProtected(user.getTeam()) && player.getGameMode() != GameMode.CREATIVE) {
 			// Begin invalid teleportation and float prevention
 			Location from = event.getFrom();
 			if ((from.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR)

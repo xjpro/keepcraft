@@ -41,7 +41,7 @@ public class SiegeCommandListener extends CommandListener {
 					|| currentPlot.isAdminProtected()) {
 				chatService.sendFailureMessage(sender, "This area is not capturable");
 				return true;
-			} else if (currentPlot.isFactionProtected(sender.getFaction()) && existingSiege == null) {
+			} else if (currentPlot.isFactionProtected(sender.getTeam()) && existingSiege == null) {
 				chatService.sendFailureMessage(sender, "This area is already secured");
 				return true;
 			} else if (!currentPlot.isInTriggerRadius(player.getLocation())) {
@@ -50,10 +50,10 @@ public class SiegeCommandListener extends CommandListener {
 			} else {
 				// We're in a plot, it can be triggered, and we're close to center
 				if (existingSiege != null) {
-					if (existingSiege.getDefendingFaction() == sender.getFaction().getId()) { // the sender is a defender
+					if (existingSiege.getDefendingFaction() == sender.getTeam().getId()) { // the sender is a defender
 						existingSiege.cancel(sender);
 						return true;
-					} else if (existingSiege.getAttackingFaction() == sender.getFaction().getId()) {
+					} else if (existingSiege.getAttackingFaction() == sender.getTeam().getId()) {
 						chatService.sendFailureMessage(sender, "This area is already being captured");
 						return true;
 					} else { // A third faction is attacking

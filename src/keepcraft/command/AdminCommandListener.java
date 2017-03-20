@@ -108,7 +108,7 @@ public class AdminCommandListener extends CommandListener {
 				return false;
 			}
 
-			target.setFaction(UserTeam.getFaction(factionId));
+			target.setTeam(UserTeam.getFaction(factionId));
 			userService.updateUser(target);
 
 			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserTeam.getChatColoredName(factionId));

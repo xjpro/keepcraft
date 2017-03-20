@@ -37,7 +37,7 @@ public class Plot {
 	}
 
 	public boolean canBeRalliedTo(User user) {
-		return isFactionProtected(user.getFaction()) && !protection.isCaptureInProgress();
+		return isFactionProtected(user.getTeam()) && !protection.isCaptureInProgress();
 	}
 
 	public Location getLocation() {

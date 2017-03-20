@@ -37,7 +37,7 @@ public class Siege implements Runnable {
 		this.plot = plot;
 		this.initiatingUser = initiatingUser;
 
-		attackingFaction = initiatingUser.getFaction().getId();
+		attackingFaction = initiatingUser.getTeam().getId();
 		defendingFaction = plot.getProtection().getType();
 	}
 
@@ -66,7 +66,7 @@ public class Siege implements Runnable {
 			Collection<User> users = userService.getOnlineUsers();
 			for (User user : users) {
 				// todo ensure they aren't dead
-				if (user.getCurrentPlot() == plot && !user.isAdmin() && user.getFaction().getId() == attackingFaction) {
+				if (user.getCurrentPlot() == plot && !user.isAdmin() && user.getTeam().getId() == attackingFaction) {
 					// they are in the plot
 					attackers.add(user);
 				}
@@ -104,7 +104,7 @@ public class Siege implements Runnable {
 		Bukkit.getServer().getScheduler().cancelTask(taskId);
 
 		PlotProtection protection = plot.getProtection();
-		protection.setType(initiatingUser.getFaction().getId());
+		protection.setType(initiatingUser.getTeam().getId());
 		protection.setCaptureInProgress(false);
 		plot.setSiege(null);
 		plotService.updatePlot(plot);

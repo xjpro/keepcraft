@@ -154,7 +154,7 @@ public class PlotProtectionListener implements Listener {
 
 	private void handlePistonPlacement(BlockPlaceEvent event, Plot plot, User user) {
 		boolean cancelPlacement = false;
-		if (plot == null || !plot.isFactionProtected(user.getFaction())) {
+		if (plot == null || !plot.isFactionProtected(user.getTeam())) {
 			// Not in a plot or plot is not a friendly plot
 			chatService.sendFailureMessage(user, "Pistons can only be placed in your team protected area");
 			cancelPlacement = true;
@@ -174,7 +174,7 @@ public class PlotProtectionListener implements Listener {
 		boolean cancelPlacement = false;
 
 		// Placement in own plot...
-		if (plot.isFactionProtected(user.getFaction())) {
+		if (plot.isFactionProtected(user.getTeam())) {
 			chatService.sendFailureMessage(user, "Cannot place attack blocks in your own base");
 			cancelPlacement = true;
 		}

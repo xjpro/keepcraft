@@ -2,10 +2,7 @@ package keepcraft.listener;
 
 import keepcraft.Keepcraft;
 import keepcraft.data.models.*;
-import keepcraft.services.ChatService;
-import keepcraft.services.FactionSpawnService;
-import keepcraft.services.PlotService;
-import keepcraft.services.UserService;
+import keepcraft.services.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -26,12 +23,14 @@ public class UserListener implements Listener {
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
 	private final ChatService chatService;
+	private final TeamService teamService;
 
 	public UserListener(UserService userService, PlotService plotService, FactionSpawnService factionSpawnService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
 		this.chatService = chatService;
+		this.teamService = new TeamService();
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -47,7 +46,7 @@ public class UserListener implements Listener {
 		if (firstTimeUser || user.getPrivilege() == UserPrivilege.INIT) {
 			if (player.isOp()) {
 				user.setPrivilege(UserPrivilege.ADMIN);
-				//user.setFaction(UserTeam.FactionGold);
+				//user.setTeam(UserTeam.FactionGold);
 			} else {
 				user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 			}
@@ -66,13 +65,15 @@ public class UserListener implements Listener {
 		if (player.isOp()) {
 			player.setPlayerListName(ChatService.NameAdmin + player.getDisplayName());
 		} else {
-			player.setPlayerListName(user.getFaction().getChatColor() + player.getDisplayName());
+			player.setPlayerListName(user.getTeam().getChatColor() + player.getDisplayName());
 		}
 
-		//player.setDisplayName(UserTeam.getChatColor(user.getFaction()) + player.getDisplayName());
+		teamService.addPlayerToTeam(user.getTeam(), player);
+
+		//player.setDisplayName(UserTeam.getChatColor(user.getTeam()) + player.getDisplayName());
 
 		Plot loggedOffFriendlyPlot = plotService.getPlot(user.getLoggedOffFriendlyPlotId());
-		if (loggedOffFriendlyPlot != null && !loggedOffFriendlyPlot.isFactionProtected(user.getFaction())) {
+		if (loggedOffFriendlyPlot != null && !loggedOffFriendlyPlot.isFactionProtected(user.getTeam())) {
 			// loggedOffFriendlyPlot is only stored when we logged off in an owned plot
 			// This plot is now longer secured so teleport home
 			Keepcraft.log(String.format("%s logged into a formerly secured area, teleporting home", player.getName()));
@@ -89,7 +90,7 @@ public class UserListener implements Listener {
 		User user = userService.getOnlineUser(player.getName());
 
 		Plot currentPlot = user.getCurrentPlot();
-		if (currentPlot != null && currentPlot.isFactionProtected(user.getFaction())) {
+		if (currentPlot != null && currentPlot.isFactionProtected(user.getTeam())) {
 			// User is logging off in owned territory, make a note of this so
 			// we can later warp them home if the territory switches control
 			user.setLoggedOffFriendlyPlotId(currentPlot.getId());
@@ -149,17 +150,17 @@ public class UserListener implements Listener {
 	}
 
 	private FactionSpawn safelyGetFactionSpawn(User user) {
-		FactionSpawn spawn = factionSpawnService.getFactionSpawn(user.getFaction());
+		FactionSpawn spawn = factionSpawnService.getFactionSpawn(user.getTeam());
 
 		if (spawn == null) {
-			if (user.getFaction() == UserTeam.GOLD) {
+			if (user.getTeam() == UserTeam.GOLD) {
 				return factionSpawnService.getFactionSpawn(UserTeam.RED);
 			}
 
 			// A very bad thing has happened and we apparently have no spawn data, refresh cache in an attempt to recover
-			Keepcraft.error(String.format("Could not find spawn for %s of faction %s", user.getName(), user.getFaction()));
+			Keepcraft.error(String.format("Could not find spawn for %s of faction %s", user.getName(), user.getTeam()));
 			factionSpawnService.refreshCache(); // Attempt to restore things as they should be
-			spawn = factionSpawnService.getFactionSpawn(user.getFaction());
+			spawn = factionSpawnService.getFactionSpawn(user.getTeam());
 
 			if (spawn == null) {
 				// Something has gone horribly, wrong... no data is available, we have no choice but to shutdown server

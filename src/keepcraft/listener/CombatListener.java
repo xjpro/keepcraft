@@ -82,7 +82,7 @@ public class CombatListener implements Listener {
 		Player damaged = (Player) event.getEntity();
 		User damagerUser = userService.getOnlineUser(damager.getName());
 		User damagedUser = userService.getOnlineUser(damaged.getName());
-		if (damagerUser.getFaction() == damagedUser.getFaction()) {
+		if (damagerUser.getTeam() == damagedUser.getTeam()) {
 			// Team members cannot damage each other
 			event.setCancelled(true);
 			return;

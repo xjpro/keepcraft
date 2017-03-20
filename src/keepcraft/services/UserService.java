@@ -50,7 +50,7 @@ public class UserService {
 //	public Player loadMetadata(Player player) {
 //		User user = getUser(player.getName());
 //		player.setMetadata("privilege", new FixedMetadataValue(Keepcraft.getPlugin(), user.getPrivilege()));
-//		player.setMetadata("faction", new FixedMetadataValue(Keepcraft.getPlugin(), user.getFaction()));
+//		player.setMetadata("faction", new FixedMetadataValue(Keepcraft.getPlugin(), user.getTeam()));
 //		player.setMetadata("loggedOffFriendlyPlotId", new FixedMetadataValue(Keepcraft.getPlugin(), user.getLoggedOffFriendlyPlotId()));
 //		return player;
 //	}
@@ -110,7 +110,7 @@ public class UserService {
 
 		User user = new User(userName);
 		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
-		user.setFaction(UserTeam.getFaction(faction));
+		user.setTeam(UserTeam.getFaction(faction));
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(0);
 		userDataManager.putData(user);

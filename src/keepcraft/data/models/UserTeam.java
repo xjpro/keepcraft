@@ -25,7 +25,7 @@ public enum UserTeam {
 	}
 
 	public static UserTeam getFaction(int id) {
-		return Arrays.stream(UserTeam.values()).filter(faction -> faction.getId() == id).findFirst().orElse(null);
+		return Arrays.stream(UserTeam.values()).filter(team -> team.getId() == id).findFirst().orElse(null);
 	}
 
 	public int getId() {
@@ -36,8 +36,8 @@ public enum UserTeam {
 		return name;
 	}
 
-	public static String getName(int faction) {
-		UserTeam userTeam = getFaction(faction);
+	public static String getName(int teamId) {
+		UserTeam userTeam = getFaction(teamId);
 		return userTeam != null ? userTeam.getName() : "Other";
 	}
 
@@ -45,8 +45,8 @@ public enum UserTeam {
 		return chatColor;
 	}
 
-	public static ChatColor getChatColor(int faction) {
-		UserTeam userTeam = getFaction(faction);
+	public static ChatColor getChatColor(int teamId) {
+		UserTeam userTeam = getFaction(teamId);
 		return userTeam != null ? userTeam.getChatColor() : ChatService.NameOther;
 	}
 
@@ -54,8 +54,8 @@ public enum UserTeam {
 		return getChatColor() + getName();
 	}
 
-	public static String getChatColoredName(int faction) {
-		return getChatColor(faction) + getName(faction);
+	public static String getChatColoredName(int teamId) {
+		return getChatColor(teamId) + getName(teamId);
 	}
 
 	public static int getRandomFaction() {
