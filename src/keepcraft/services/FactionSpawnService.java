@@ -2,7 +2,7 @@ package keepcraft.services;
 
 import keepcraft.data.FactionSpawnDataManager;
 import keepcraft.data.models.FactionSpawn;
-import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.WorldPoint;
 
 import java.util.HashMap;
@@ -24,11 +24,11 @@ public class FactionSpawnService {
 		}
 	}
 
-	public FactionSpawn getFactionSpawn(UserFaction faction) {
+	public FactionSpawn getFactionSpawn(UserTeam faction) {
 		return factionSpawns.get(faction.getId());
 	}
 
-	public FactionSpawn createFactionSpawn(UserFaction faction, WorldPoint worldPoint) {
+	public FactionSpawn createFactionSpawn(UserTeam faction, WorldPoint worldPoint) {
 		FactionSpawn factionSpawn = new FactionSpawn(faction.getId(), worldPoint);
 		factionSpawnDataManager.putData(factionSpawn);
 		factionSpawns.put(factionSpawn.getFactionValue(), factionSpawn);

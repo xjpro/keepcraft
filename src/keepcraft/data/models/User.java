@@ -15,7 +15,7 @@ public class User {
 	// Persistent data, from database
 	private final String name;
 	private UserPrivilege privilege;
-	private UserFaction faction;
+	private UserTeam faction;
 	private int money;
 	private int loggedOffFriendlyPlotId;
 
@@ -58,7 +58,7 @@ public class User {
 		}
 	}
 
-	public String getChatTag(UserFaction faction) {
+	public String getChatTag(UserTeam faction) {
 		if (privilege == UserPrivilege.ADMIN) {
 			ChatColor factionChatColor = faction.getChatColor();
 			return factionChatColor + "<" + ChatService.NameAdmin + name + factionChatColor + ">";
@@ -78,11 +78,11 @@ public class User {
 		privilege = value;
 	}
 
-	public UserFaction getFaction() {
+	public UserTeam getFaction() {
 		return faction;
 	}
 
-	public void setFaction(UserFaction value) {
+	public void setFaction(UserTeam value) {
 		faction = value;
 	}
 

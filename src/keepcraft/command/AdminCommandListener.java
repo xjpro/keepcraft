@@ -4,7 +4,7 @@ import keepcraft.Keepcraft;
 import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserTeam;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
@@ -108,11 +108,11 @@ public class AdminCommandListener extends CommandListener {
 				return false;
 			}
 
-			target.setFaction(UserFaction.getFaction(factionId));
+			target.setFaction(UserTeam.getFaction(factionId));
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserFaction.asString(factionId));
-			commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserFaction.asString(factionId));
+			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserTeam.asString(factionId));
+			commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserTeam.asString(factionId));
 			return true;
 		} // Delete a user's record
 		else if (commandName.equals("delete") && args.length == 1) {

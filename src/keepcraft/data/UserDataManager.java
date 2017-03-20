@@ -2,7 +2,7 @@ package keepcraft.data;
 
 import keepcraft.Keepcraft;
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.UserPrivilege;
 
 import java.sql.PreparedStatement;
@@ -65,7 +65,7 @@ public class UserDataManager {
 			} else {
 				user = new User(name);
 				user.setPrivilege(UserPrivilege.getPrivilege(result.getInt("Privilege")));
-				user.setFaction(UserFaction.getFaction(result.getInt("Faction")));
+				user.setFaction(UserTeam.getFaction(result.getInt("Faction")));
 				user.setMoney(result.getInt("Money"));
 				user.setLoggedOffFriendlyPlotId(result.getInt("LastPlotId"));
 				Keepcraft.log("User data was retrieved with values: " + user);
@@ -230,7 +230,7 @@ public class UserDataManager {
 			database.close();
 		}
 
-		Keepcraft.log("Active member count for " + UserFaction.asString(faction) + " is " + memberCount);
+		Keepcraft.log("Active member count for " + UserTeam.asString(faction) + " is " + memberCount);
 
 		return memberCount;
 	}
@@ -257,7 +257,7 @@ public class UserDataManager {
 			database.close();
 		}
 
-		Keepcraft.log(String.format("Previously active member count for %s is %s", UserFaction.asString(team), count));
+		Keepcraft.log(String.format("Previously active member count for %s is %s", UserTeam.asString(team), count));
 
 		return count;
 	}

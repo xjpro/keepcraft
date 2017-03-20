@@ -1,7 +1,7 @@
 package keepcraft.command;
 
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.UserPrivilege;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
@@ -34,7 +34,7 @@ public class InitCommandListener extends CommandListener {
 				return true;
 			}
 			if (targetUser.getPrivilege() == UserPrivilege.INIT || targetUser.getPrivilege() == UserPrivilege.ADMIN ||
-					(targetUser.getFaction() != UserFaction.RED && targetUser.getFaction() != UserFaction.BLUE && targetUser.getFaction() != UserFaction.GREEN)) {
+					(targetUser.getFaction() != UserTeam.RED && targetUser.getFaction() != UserTeam.BLUE && targetUser.getFaction() != UserTeam.GREEN)) {
 				chatService.sendFailureMessage(sender, String.format("%s is not on a joinable team", targetUserName));
 				return true;
 			}

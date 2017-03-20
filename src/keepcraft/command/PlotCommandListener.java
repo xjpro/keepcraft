@@ -1,5 +1,6 @@
 package keepcraft.command;
 
+import keepcraft.data.models.*;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
@@ -8,12 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import keepcraft.Keepcraft;
 import keepcraft.Privilege;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.PlotProtection;
-import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
-import keepcraft.data.models.UserPrivilege;
-import keepcraft.data.models.WorldPoint;
+import keepcraft.data.models.UserTeam;
 
 public class PlotCommandListener extends CommandListener {
 
@@ -187,7 +183,7 @@ public class PlotCommandListener extends CommandListener {
 						currentPlot.getProtection().setType(faction);
 						plotService.updatePlot(currentPlot);
 
-						commandSender.sendMessage(ChatService.Success + "Plot protection set to faction " + UserFaction.asString(faction));
+						commandSender.sendMessage(ChatService.Success + "Plot protection set to faction " + UserTeam.asString(faction));
 						return true;
 					}
 				} // Set it as protection admin

@@ -4,7 +4,7 @@ import keepcraft.Keepcraft;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.UserStatsDataManager;
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.UserPrivilege;
 import org.bukkit.plugin.Plugin;
 
@@ -93,15 +93,15 @@ public class UserService {
 
 		if (previouslyActiveUserNames.stream().anyMatch(previouslyActiveUserName -> previouslyActiveUserName.equals(userName))) {
 			// This user identified as a previously active user, balance these users so they are even on both teams
-			int prevActiveReds = userDataManager.getPreviouslyActiveTeamCount(UserFaction.RED.getId(), previouslyActiveUserNames);
-			int prevActiveBlues = userDataManager.getPreviouslyActiveTeamCount(UserFaction.BLUE.getId(), previouslyActiveUserNames);
-			int prevActiveGreens = 9999;//userDataManager.getPreviouslyActiveTeamCount(UserFaction.GREEN.getId(), previouslyActiveUserNames);
+			int prevActiveReds = userDataManager.getPreviouslyActiveTeamCount(UserTeam.RED.getId(), previouslyActiveUserNames);
+			int prevActiveBlues = userDataManager.getPreviouslyActiveTeamCount(UserTeam.BLUE.getId(), previouslyActiveUserNames);
+			int prevActiveGreens = 9999;//userDataManager.getPreviouslyActiveTeamCount(UserTeam.GREEN.getId(), previouslyActiveUserNames);
 
 			if (prevActiveReds == prevActiveBlues) {
 				// Previously actives are equal, select based on current numbers instead
 				faction = selectTeamUsingCurrentUserCount();
 			} else {
-				faction = UserFaction.getSmallestFaction(prevActiveReds, prevActiveBlues, prevActiveGreens);
+				faction = UserTeam.getSmallestFaction(prevActiveReds, prevActiveBlues, prevActiveGreens);
 			}
 		} else {
 			// This user has not been previously active, place them on the smallest team based on current numbers
@@ -110,7 +110,7 @@ public class UserService {
 
 		User user = new User(userName);
 		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
-		user.setFaction(UserFaction.getFaction(faction));
+		user.setFaction(UserTeam.getFaction(faction));
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(0);
 		userDataManager.putData(user);
@@ -119,14 +119,14 @@ public class UserService {
 
 	private int selectTeamUsingCurrentUserCount() {
 		// This user has not been previously active, place them on the smallest team
-		int redCount = userDataManager.getFactionCount(UserFaction.RED.getId());
-		int blueCount = userDataManager.getFactionCount(UserFaction.BLUE.getId());
-		int greenCount = 9999;//this.getFactionCount(UserFaction.GREEN.getId());
+		int redCount = userDataManager.getFactionCount(UserTeam.RED.getId());
+		int blueCount = userDataManager.getFactionCount(UserTeam.BLUE.getId());
+		int greenCount = 9999;//this.getFactionCount(UserTeam.GREEN.getId());
 
 		if (redCount == blueCount) {
-			return UserFaction.getRandomFaction();
+			return UserTeam.getRandomFaction();
 		} else {
-			return UserFaction.getSmallestFaction(redCount, blueCount, greenCount);
+			return UserTeam.getSmallestFaction(redCount, blueCount, greenCount);
 		}
 	}
 }

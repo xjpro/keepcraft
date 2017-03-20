@@ -7,10 +7,10 @@ public class PlotProtection {
 	public final static int ADMIN = 900;
 	public final static int EVENT = 700;
 	public final static int PRIVATE = 500;
-	public final static int FACTION_B = UserFaction.BLUE.getId();
-	public final static int FACTION_A = UserFaction.RED.getId();
-	public final static int FACTION_C = UserFaction.GREEN.getId();
-	public final static int FACTION_E = UserFaction.GOLD.getId();
+	public final static int FACTION_B = UserTeam.BLUE.getId();
+	public final static int FACTION_A = UserTeam.RED.getId();
+	public final static int FACTION_C = UserTeam.GREEN.getId();
+	public final static int FACTION_E = UserTeam.GOLD.getId();
 	public final static int PUBLIC = 0;
 
 	private final int plotId;
@@ -111,8 +111,8 @@ public class PlotProtection {
 			case PUBLIC:
 				return "Public";
 			default:
-				UserFaction userFaction = UserFaction.getFaction(type);
-				return userFaction != null ? userFaction.getChatColor() + userFaction.getName() : "Unknown";
+				UserTeam userTeam = UserTeam.getFaction(type);
+				return userTeam != null ? userTeam.getChatColor() + userTeam.getName() : "Unknown";
 		}
 	}
 }

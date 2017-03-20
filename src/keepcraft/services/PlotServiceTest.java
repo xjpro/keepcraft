@@ -4,7 +4,7 @@ import keepcraft.data.Database;
 import keepcraft.data.PlotDataManager;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
-import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.WorldPoint;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,7 +97,7 @@ class PlotServiceTest {
 
 	@Test
 	void createTeamPlot() {
-		plotService.createTeamPlot(new WorldPoint(1000, 100, -1000), UserFaction.GOLD, 99);
+		plotService.createTeamPlot(new WorldPoint(1000, 100, -1000), UserTeam.GOLD, 99);
 		Plot plot = plotService.getPlot("Gold Castle");
 		assertTrue(plot.getId() > 0);
 		assertEquals("Gold Castle", plot.getName());

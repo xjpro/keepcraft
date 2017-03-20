@@ -47,7 +47,7 @@ public class UserListener implements Listener {
 		if (firstTimeUser || user.getPrivilege() == UserPrivilege.INIT) {
 			if (player.isOp()) {
 				user.setPrivilege(UserPrivilege.ADMIN);
-				//user.setFaction(UserFaction.FactionGold);
+				//user.setFaction(UserTeam.FactionGold);
 			} else {
 				user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 			}
@@ -69,7 +69,7 @@ public class UserListener implements Listener {
 			player.setPlayerListName(user.getFaction().getChatColor() + player.getDisplayName());
 		}
 
-		//player.setDisplayName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
+		//player.setDisplayName(UserTeam.getChatColor(user.getFaction()) + player.getDisplayName());
 
 		Plot loggedOffFriendlyPlot = plotService.getPlot(user.getLoggedOffFriendlyPlotId());
 		if (loggedOffFriendlyPlot != null && !loggedOffFriendlyPlot.isFactionProtected(user.getFaction())) {
@@ -152,8 +152,8 @@ public class UserListener implements Listener {
 		FactionSpawn spawn = factionSpawnService.getFactionSpawn(user.getFaction());
 
 		if (spawn == null) {
-			if (user.getFaction() == UserFaction.GOLD) {
-				return factionSpawnService.getFactionSpawn(UserFaction.RED);
+			if (user.getFaction() == UserTeam.GOLD) {
+				return factionSpawnService.getFactionSpawn(UserTeam.RED);
 			}
 
 			// A very bad thing has happened and we apparently have no spawn data, refresh cache in an attempt to recover

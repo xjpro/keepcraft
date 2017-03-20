@@ -4,7 +4,7 @@ import keepcraft.data.Database;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.UserStatsDataManager;
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.UserStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -205,14 +205,14 @@ class UserServiceTest {
 	}
 
 	private void assertTeamsEqual() {
-		int redCount = userDataManager.getFactionCount(UserFaction.RED.getId());
-		int blueCount = userDataManager.getFactionCount(UserFaction.BLUE.getId());
+		int redCount = userDataManager.getFactionCount(UserTeam.RED.getId());
+		int blueCount = userDataManager.getFactionCount(UserTeam.BLUE.getId());
 		assertEquals(redCount, blueCount);
 	}
 
 	private void assertTeamsNotEqual() {
-		int redCount = userDataManager.getFactionCount(UserFaction.RED.getId());
-		int blueCount = userDataManager.getFactionCount(UserFaction.BLUE.getId());
+		int redCount = userDataManager.getFactionCount(UserTeam.RED.getId());
+		int blueCount = userDataManager.getFactionCount(UserTeam.BLUE.getId());
 		assertNotEquals(redCount, blueCount);
 	}
 }

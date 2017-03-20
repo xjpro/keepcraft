@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import keepcraft.data.models.UserTeam;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
@@ -11,7 +12,6 @@ import org.bukkit.Bukkit;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
 
 public class Siege implements Runnable {
 
@@ -100,7 +100,7 @@ public class Siege implements Runnable {
 	}
 
 	private void finish() {
-		chatService.sendGlobalAlertMessage(UserFaction.asColoredString(attackingFaction) + ChatService.Info + " has secured " + plot.getColoredName());
+		chatService.sendGlobalAlertMessage(UserTeam.asColoredString(attackingFaction) + ChatService.Info + " has secured " + plot.getColoredName());
 		Bukkit.getServer().getScheduler().cancelTask(taskId);
 
 		PlotProtection protection = plot.getProtection();
@@ -111,7 +111,7 @@ public class Siege implements Runnable {
 	}
 
 	public void cancel() {
-		chatService.sendGlobalAlertMessage(UserFaction.asColoredString(attackingFaction) + ChatService.Info + " failed to capture " + plot.getColoredName());
+		chatService.sendGlobalAlertMessage(UserTeam.asColoredString(attackingFaction) + ChatService.Info + " failed to capture " + plot.getColoredName());
 		Bukkit.getServer().getScheduler().cancelTask(taskId);
 		plot.setSiege(null);
 		plot.getProtection().setCaptureInProgress(false);

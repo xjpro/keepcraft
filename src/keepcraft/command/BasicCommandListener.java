@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import keepcraft.data.models.UserTeam;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.RallyService;
@@ -12,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
 import keepcraft.data.models.UserPrivilege;
 
 public class BasicCommandListener extends CommandListener {
@@ -68,11 +68,11 @@ public class BasicCommandListener extends CommandListener {
 			List<User> otherUsers = new ArrayList<>();
 
 			for (User user : allUsers) {
-				if (user.getFaction() == UserFaction.RED) {
+				if (user.getFaction() == UserTeam.RED) {
 					redUsers.add(user);
-				} else if (user.getFaction() == UserFaction.BLUE) {
+				} else if (user.getFaction() == UserTeam.BLUE) {
 					blueUsers.add(user);
-				} else if (user.getFaction() == UserFaction.GREEN) {
+				} else if (user.getFaction() == UserTeam.GREEN) {
 					greenUsers.add(user);
 				} else {
 					otherUsers.add(user);

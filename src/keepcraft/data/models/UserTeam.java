@@ -6,7 +6,7 @@ import java.util.Random;
 import keepcraft.services.ChatService;
 import org.bukkit.ChatColor;
 
-public enum UserFaction {
+public enum UserTeam {
 
 	RED(100, "Red", ChatService.NameRed),
 	BLUE(200, "Blue", ChatService.NameBlue),
@@ -18,14 +18,14 @@ public enum UserFaction {
 	private final String name;
 	private final ChatColor chatColor;
 
-	UserFaction(int id, String name, ChatColor chatColor) {
+	UserTeam(int id, String name, ChatColor chatColor) {
 		this.id = id;
 		this.name = name;
 		this.chatColor = chatColor;
 	}
 
-	public static UserFaction getFaction(int id) {
-		return Arrays.stream(UserFaction.values()).filter(faction -> faction.getId() == id).findFirst().orElse(null);
+	public static UserTeam getFaction(int id) {
+		return Arrays.stream(UserTeam.values()).filter(faction -> faction.getId() == id).findFirst().orElse(null);
 	}
 
 	public int getId() {
@@ -45,13 +45,13 @@ public enum UserFaction {
 	}
 
 	public static ChatColor getChatColor(int faction) {
-		UserFaction userFaction = getFaction(faction);
-		return userFaction != null ? userFaction.getChatColor() : ChatService.NameOther;
+		UserTeam userTeam = getFaction(faction);
+		return userTeam != null ? userTeam.getChatColor() : ChatService.NameOther;
 	}
 
 	public static String getName(int faction) {
-		UserFaction userFaction = getFaction(faction);
-		return userFaction != null ? userFaction.getName() : "Other";
+		UserTeam userTeam = getFaction(faction);
+		return userTeam != null ? userTeam.getName() : "Other";
 	}
 
 	public static int getRandomFaction() {
@@ -77,7 +77,7 @@ public enum UserFaction {
 	}
 
 	public static String asString(int faction) {
-		return UserFaction.getName(faction);
+		return UserTeam.getName(faction);
 	}
 
 	public static String asColoredString(int faction) {

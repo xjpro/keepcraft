@@ -36,8 +36,8 @@ public abstract class Privilege {
 						return true;
 					default:
 
-						UserFaction userFaction = UserFaction.getFaction(protectionType);
-						if (userFaction != null) {
+						UserTeam userTeam = UserTeam.getFaction(protectionType);
+						if (userTeam != null) {
 							// In a team protected plot
 
 							if (plot.isInAdminProtectedRadius(modifyingLocation)) {

@@ -1,7 +1,7 @@
 package keepcraft;
 
 import keepcraft.data.models.Container;
-import keepcraft.data.models.UserFaction;
+import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.WorldPoint;
 import keepcraft.services.ContainerService;
 import keepcraft.services.FactionSpawnService;
@@ -57,13 +57,13 @@ public class WorldSetter {
 		world.getWorldBorder().setCenter(center);
 		world.getWorldBorder().setSize(WORLD_BORDER);
 
-		setBase(UserFaction.RED, redBase);
-		setBase(UserFaction.BLUE, blueBase);
+		setBase(UserTeam.RED, redBase);
+		setBase(UserTeam.BLUE, blueBase);
 		prepareCenterTrench(center);
 		return world;
 	}
 
-	private void setBase(UserFaction faction, Location location) {
+	private void setBase(UserTeam faction, Location location) {
 		Keepcraft.log(String.format("Setting up %s faction...", faction.getName()));
 
 		World world = location.getWorld();

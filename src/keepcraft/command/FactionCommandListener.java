@@ -2,11 +2,11 @@ package keepcraft.command;
 
 import java.util.Collection;
 
+import keepcraft.data.models.UserTeam;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
 import org.bukkit.command.CommandSender;
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserFaction;
 
 public class FactionCommandListener extends CommandListener {
 
@@ -48,7 +48,7 @@ public class FactionCommandListener extends CommandListener {
             for (String arg : args) {
                 message += arg + " ";
             }
-            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.RED, message);
+            chatService.sendFactionMessage(sender, connectedUsers, UserTeam.RED, message);
             return true;
         } // Blue team chat
         else if (commandName.equals("2") && sender.isAdmin()) {
@@ -57,7 +57,7 @@ public class FactionCommandListener extends CommandListener {
             for (String arg : args) {
                 message += arg + " ";
             }
-            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.BLUE, message);
+            chatService.sendFactionMessage(sender, connectedUsers, UserTeam.BLUE, message);
             return true;
         } // Green team chat
         else if (commandName.equals("3") && sender.isAdmin()) {
@@ -66,7 +66,7 @@ public class FactionCommandListener extends CommandListener {
             for (String arg : args) {
                 message += arg + " ";
             }
-            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.GREEN, message);
+            chatService.sendFactionMessage(sender, connectedUsers, UserTeam.GREEN, message);
             return true;
         }
 

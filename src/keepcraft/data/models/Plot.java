@@ -118,7 +118,7 @@ public class Plot {
 	}
 
 	public String getColoredName() {
-		return UserFaction.getChatColor(getProtection().getType()) + name;
+		return UserTeam.getChatColor(getProtection().getType()) + name;
 	}
 
 	public void setName(String value) {
@@ -137,16 +137,16 @@ public class Plot {
 		return protection != null && protection.getType() == PlotProtection.ADMIN;
 	}
 
-	public boolean isFactionProtected(UserFaction faction) {
+	public boolean isFactionProtected(UserTeam faction) {
 		return protection != null && protection.getType() == faction.getId();
 	}
 
 	public boolean isFactionProtected() {
 		return protection != null &&
-				(protection.getType() == UserFaction.RED.getId() ||
-						protection.getType() == UserFaction.BLUE.getId() ||
-						protection.getType() == UserFaction.GREEN.getId() ||
-						protection.getType() == UserFaction.GOLD.getId()
+				(protection.getType() == UserTeam.RED.getId() ||
+						protection.getType() == UserTeam.BLUE.getId() ||
+						protection.getType() == UserTeam.GREEN.getId() ||
+						protection.getType() == UserTeam.GOLD.getId()
 				);
 	}
 
