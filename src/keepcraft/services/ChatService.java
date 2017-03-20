@@ -3,6 +3,7 @@ package keepcraft.services;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import keepcraft.data.models.UserFaction;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -65,7 +66,7 @@ public class ChatService {
 		logger.info(message);
 	}
 
-	public void sendFactionMessage(User sender, Collection<User> connectedUsers, int faction, String text) {
+	public void sendFactionMessage(User sender, Collection<User> connectedUsers, UserFaction faction, String text) {
 		if (text == null || text.length() == 0) {
 			return;
 		}

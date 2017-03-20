@@ -93,9 +93,9 @@ public class UserService {
 
 		if (previouslyActiveUserNames.stream().anyMatch(previouslyActiveUserName -> previouslyActiveUserName.equals(userName))) {
 			// This user identified as a previously active user, balance these users so they are even on both teams
-			int prevActiveReds = userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionRed, previouslyActiveUserNames);
-			int prevActiveBlues = userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionBlue, previouslyActiveUserNames);
-			int prevActiveGreens = 9999;//userDataManager.getPreviouslyActiveTeamCount(UserFaction.FactionGreen, previouslyActiveUserNames);
+			int prevActiveReds = userDataManager.getPreviouslyActiveTeamCount(UserFaction.RED.getId(), previouslyActiveUserNames);
+			int prevActiveBlues = userDataManager.getPreviouslyActiveTeamCount(UserFaction.BLUE.getId(), previouslyActiveUserNames);
+			int prevActiveGreens = 9999;//userDataManager.getPreviouslyActiveTeamCount(UserFaction.GREEN.getId(), previouslyActiveUserNames);
 
 			if (prevActiveReds == prevActiveBlues) {
 				// Previously actives are equal, select based on current numbers instead
@@ -110,7 +110,7 @@ public class UserService {
 
 		User user = new User(userName);
 		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
-		user.setFaction(faction);
+		user.setFaction(UserFaction.getFaction(faction));
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(0);
 		userDataManager.putData(user);
@@ -119,9 +119,9 @@ public class UserService {
 
 	private int selectTeamUsingCurrentUserCount() {
 		// This user has not been previously active, place them on the smallest team
-		int redCount = userDataManager.getFactionCount(UserFaction.FactionRed);
-		int blueCount = userDataManager.getFactionCount(UserFaction.FactionBlue);
-		int greenCount = 9999;//this.getFactionCount(UserFaction.FactionGreen);
+		int redCount = userDataManager.getFactionCount(UserFaction.RED.getId());
+		int blueCount = userDataManager.getFactionCount(UserFaction.BLUE.getId());
+		int greenCount = 9999;//this.getFactionCount(UserFaction.GREEN.getId());
 
 		if (redCount == blueCount) {
 			return UserFaction.getRandomFaction();

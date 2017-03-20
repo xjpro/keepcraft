@@ -57,14 +57,14 @@ public class WorldSetter {
 		world.getWorldBorder().setCenter(center);
 		world.getWorldBorder().setSize(WORLD_BORDER);
 
-		setBase(UserFaction.FactionRed, redBase);
-		setBase(UserFaction.FactionBlue, blueBase);
+		setBase(UserFaction.RED, redBase);
+		setBase(UserFaction.BLUE, blueBase);
 		prepareCenterTrench(center);
 		return world;
 	}
 
-	private void setBase(int faction, Location location) {
-		Keepcraft.log(String.format("Setting up %s faction...", UserFaction.getName(faction)));
+	private void setBase(UserFaction faction, Location location) {
+		Keepcraft.log(String.format("Setting up %s faction...", faction.getName()));
 
 		World world = location.getWorld();
 

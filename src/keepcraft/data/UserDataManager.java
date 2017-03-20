@@ -36,7 +36,7 @@ public class UserDataManager {
 			PreparedStatement statement
 					= database.createStatement("UPDATE users SET Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, LastOnline = datetime('now') WHERE Name = ?");
 			statement.setInt(1, user.getPrivilege().getId());
-			statement.setInt(2, user.getFaction());
+			statement.setInt(2, user.getFaction().getId());
 			statement.setInt(3, user.getMoney());
 			statement.setInt(4, user.getLoggedOffFriendlyPlotId());
 			statement.setString(5, user.getName());
@@ -65,7 +65,7 @@ public class UserDataManager {
 			} else {
 				user = new User(name);
 				user.setPrivilege(UserPrivilege.getPrivilege(result.getInt("Privilege")));
-				user.setFaction(result.getInt("Faction"));
+				user.setFaction(UserFaction.getFaction(result.getInt("Faction")));
 				user.setMoney(result.getInt("Money"));
 				user.setLoggedOffFriendlyPlotId(result.getInt("LastPlotId"));
 				Keepcraft.log("User data was retrieved with values: " + user);
@@ -127,7 +127,7 @@ public class UserDataManager {
 					= database.createStatement("INSERT INTO users (Name, Privilege, Faction, Money, LastPlotId, FirstOnline, LastOnline) VALUES(?, ?, ?, ?, ?, datetime('now'), datetime('now'))");
 			statement.setString(1, user.getName());
 			statement.setInt(2, user.getPrivilege().getId());
-			statement.setInt(3, user.getFaction());
+			statement.setInt(3, user.getFaction().getId());
 			statement.setInt(4, user.getMoney());
 			statement.setInt(5, user.getLoggedOffFriendlyPlotId());
 			statement.execute();

@@ -66,7 +66,7 @@ public class UserListener implements Listener {
 		if (player.isOp()) {
 			player.setPlayerListName(ChatService.NameAdmin + player.getDisplayName());
 		} else {
-			player.setPlayerListName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
+			player.setPlayerListName(user.getFaction().getChatColor() + player.getDisplayName());
 		}
 
 		//player.setDisplayName(UserFaction.getChatColor(user.getFaction()) + player.getDisplayName());
@@ -152,8 +152,8 @@ public class UserListener implements Listener {
 		FactionSpawn spawn = factionSpawnService.getFactionSpawn(user.getFaction());
 
 		if (spawn == null) {
-			if (user.getFaction() == UserFaction.FactionGold) {
-				return factionSpawnService.getFactionSpawn(UserFaction.FactionRed);
+			if (user.getFaction() == UserFaction.GOLD) {
+				return factionSpawnService.getFactionSpawn(UserFaction.RED);
 			}
 
 			// A very bad thing has happened and we apparently have no spawn data, refresh cache in an attempt to recover

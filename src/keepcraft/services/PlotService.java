@@ -61,12 +61,12 @@ public class PlotService {
 		plotDataManager.updatePlot(plot);
 	}
 
-	public Plot createTeamPlot(WorldPoint worldPoint, int userFaction, int radius) {
-		String plotName = String.format("%s Castle", UserFaction.asString(userFaction));
+	public Plot createTeamPlot(WorldPoint worldPoint, UserFaction userFaction, int radius) {
+		String plotName = String.format("%s Castle", userFaction.getName());
 
 		Plot plot = plotDataManager.createPlot(worldPoint, plotName, radius);
 		PlotProtection protection = plot.getProtection();
-		protection.setType(userFaction);
+		protection.setType(userFaction.getId());
 		protection.setAdminRadius(3);
 
 		plotDataManager.updatePlot(plot);

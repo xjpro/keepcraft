@@ -1,46 +1,57 @@
 package keepcraft.data.models;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import keepcraft.services.ChatService;
 import org.bukkit.ChatColor;
 
-public abstract class UserFaction {
+public enum UserFaction {
+
+	RED(100, "Red", ChatService.NameRed),
+	BLUE(200, "Blue", ChatService.NameBlue),
+	GREEN(300, "Green", ChatService.NameGreen),
+	GOLD(50, "Gold", ChatService.NameGold);
 
 	private final static Random Random = new Random();
-	public final static int FactionRed = 100;
-	public final static int FactionBlue = 200;
-	public final static int FactionGreen = 300;
-	public final static int FactionGold = 50;
+	private final int id;
+	private final String name;
+	private final ChatColor chatColor;
+
+	UserFaction(int id, String name, ChatColor chatColor) {
+		this.id = id;
+		this.name = name;
+		this.chatColor = chatColor;
+	}
+
+	public static UserFaction getFaction(int id) {
+		return Arrays.stream(UserFaction.values()).filter(faction -> faction.getId() == id).findFirst().orElse(null);
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public ChatColor getChatColor() {
+		return chatColor;
+	}
+
+	public String getChatColoredNamed() {
+		return getChatColor() + getName();
+	}
 
 	public static ChatColor getChatColor(int faction) {
-		switch (faction) {
-			case FactionRed:
-				return ChatService.NameRed;
-			case FactionBlue:
-				return ChatService.NameBlue;
-			case FactionGreen:
-				return ChatService.NameGreen;
-			case FactionGold:
-				return ChatService.NameGold;
-			default:
-				return ChatService.NameOther;
-		}
+		UserFaction userFaction = getFaction(faction);
+		return userFaction != null ? userFaction.getChatColor() : ChatService.NameOther;
 	}
 
 	public static String getName(int faction) {
-		switch (faction) {
-			case FactionRed:
-				return "Red";
-			case FactionBlue:
-				return "Blue";
-			case FactionGreen:
-				return "Green";
-			case FactionGold:
-				return "Gold";
-			default:
-				return "Other";
-		}
+		UserFaction userFaction = getFaction(faction);
+		return userFaction != null ? userFaction.getName() : "Other";
 	}
 
 	public static int getRandomFaction() {
@@ -53,15 +64,15 @@ public abstract class UserFaction {
 			// blue is one of the smaller
 			if (blueCount > greenCount) {
 				// green is smallest
-				return FactionGreen;
+				return GREEN.getId();
 			}
-			return FactionBlue;
+			return BLUE.getId();
 		} else {
 			// red is one of the smaller
 			if (redCount > greenCount) { // green is the smallest
-				return FactionGreen;
+				return GREEN.getId();
 			}
-			return FactionRed;
+			return RED.getId();
 		}
 	}
 

@@ -34,7 +34,7 @@ public class InitCommandListener extends CommandListener {
 				return true;
 			}
 			if (targetUser.getPrivilege() == UserPrivilege.INIT || targetUser.getPrivilege() == UserPrivilege.ADMIN ||
-					(targetUser.getFaction() != UserFaction.FactionRed && targetUser.getFaction() != UserFaction.FactionBlue && targetUser.getFaction() != UserFaction.FactionGreen)) {
+					(targetUser.getFaction() != UserFaction.RED && targetUser.getFaction() != UserFaction.BLUE && targetUser.getFaction() != UserFaction.GREEN)) {
 				chatService.sendFailureMessage(sender, String.format("%s is not on a joinable team", targetUserName));
 				return true;
 			}
@@ -42,7 +42,7 @@ public class InitCommandListener extends CommandListener {
 			// Set faction
 			//todo sender.setFaction(targetUser.getFaction());
 			userService.updateUser(sender);
-			chatService.sendAlertMessage(sender, String.format("You have joined %s", UserFaction.asColoredString(sender.getFaction())));
+			chatService.sendAlertMessage(sender, String.format("You have joined %s", sender.getFaction().getChatColoredNamed()));
 
 			// Kill player to force respawn
 			Player player = (Player) commandSender;

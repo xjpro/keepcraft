@@ -99,20 +99,20 @@ public class AdminCommandListener extends CommandListener {
 				return true;
 			}
 
-			int faction;
+			int factionId;
 			try {
-				faction = Integer.parseInt(args[1]);
+				factionId = Integer.parseInt(args[1]);
 			} catch (NumberFormatException e) {
 				// invalid input
 				commandSender.sendMessage(ChatService.Failure + "Options for factions are 100 or 200");
 				return false;
 			}
 
-			target.setFaction(faction);
+			target.setFaction(UserFaction.getFaction(factionId));
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserFaction.asString(faction));
-			commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserFaction.asString(faction));
+			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserFaction.asString(factionId));
+			commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserFaction.asString(factionId));
 			return true;
 		} // Delete a user's record
 		else if (commandName.equals("delete") && args.length == 1) {

@@ -97,7 +97,7 @@ class PlotServiceTest {
 
 	@Test
 	void createTeamPlot() {
-		plotService.createTeamPlot(new WorldPoint(1000, 100, -1000), UserFaction.FactionGold, 99);
+		plotService.createTeamPlot(new WorldPoint(1000, 100, -1000), UserFaction.GOLD, 99);
 		Plot plot = plotService.getPlot("Gold Castle");
 		assertTrue(plot.getId() > 0);
 		assertEquals("Gold Castle", plot.getName());

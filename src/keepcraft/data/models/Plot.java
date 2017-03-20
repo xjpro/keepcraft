@@ -1,9 +1,8 @@
 package keepcraft.data.models;
 
-import keepcraft.WorldSetter;
 import keepcraft.services.ChatService;
-import org.bukkit.Location;
 import keepcraft.tasks.Siege;
+import org.bukkit.Location;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -138,16 +137,16 @@ public class Plot {
 		return protection != null && protection.getType() == PlotProtection.ADMIN;
 	}
 
-	public boolean isFactionProtected(int faction) {
-		return protection != null && protection.getType() == faction;
+	public boolean isFactionProtected(UserFaction faction) {
+		return protection != null && protection.getType() == faction.getId();
 	}
 
 	public boolean isFactionProtected() {
 		return protection != null &&
-				(protection.getType() == UserFaction.FactionRed ||
-						protection.getType() == UserFaction.FactionBlue ||
-						protection.getType() == UserFaction.FactionGreen ||
-						protection.getType() == UserFaction.FactionGold
+				(protection.getType() == UserFaction.RED.getId() ||
+						protection.getType() == UserFaction.BLUE.getId() ||
+						protection.getType() == UserFaction.GREEN.getId() ||
+						protection.getType() == UserFaction.GOLD.getId()
 				);
 	}
 

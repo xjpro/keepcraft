@@ -48,7 +48,7 @@ public class FactionCommandListener extends CommandListener {
             for (String arg : args) {
                 message += arg + " ";
             }
-            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.FactionRed, message);
+            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.RED, message);
             return true;
         } // Blue team chat
         else if (commandName.equals("2") && sender.isAdmin()) {
@@ -57,7 +57,7 @@ public class FactionCommandListener extends CommandListener {
             for (String arg : args) {
                 message += arg + " ";
             }
-            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.FactionBlue, message);
+            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.BLUE, message);
             return true;
         } // Green team chat
         else if (commandName.equals("3") && sender.isAdmin()) {
@@ -66,7 +66,7 @@ public class FactionCommandListener extends CommandListener {
             for (String arg : args) {
                 message += arg + " ";
             }
-            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.FactionGreen, message);
+            chatService.sendFactionMessage(sender, connectedUsers, UserFaction.GREEN, message);
             return true;
         }
 

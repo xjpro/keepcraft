@@ -50,10 +50,10 @@ public class SiegeCommandListener extends CommandListener {
 			} else {
 				// We're in a plot, it can be triggered, and we're close to center
 				if (existingSiege != null) {
-					if (existingSiege.getDefendingFaction() == sender.getFaction()) { // the sender is a defender
+					if (existingSiege.getDefendingFaction() == sender.getFaction().getId()) { // the sender is a defender
 						existingSiege.cancel(sender);
 						return true;
-					} else if (existingSiege.getAttackingFaction() == sender.getFaction()) {
+					} else if (existingSiege.getAttackingFaction() == sender.getFaction().getId()) {
 						chatService.sendFailureMessage(sender, "This area is already being captured");
 						return true;
 					} else { // A third faction is attacking

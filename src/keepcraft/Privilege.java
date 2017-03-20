@@ -1,10 +1,7 @@
 package keepcraft;
 
+import keepcraft.data.models.*;
 import org.bukkit.Location;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.PlotProtection;
-import keepcraft.data.models.User;
-import keepcraft.data.models.UserPrivilege;
 
 public abstract class Privilege {
 
@@ -35,31 +32,32 @@ public abstract class Privilege {
 					case PlotProtection.PRIVATE:
 						// TODO implement private plots, search for permissions
 						return false;
-					case PlotProtection.FACTION_A:
-					case PlotProtection.FACTION_B:
-					case PlotProtection.FACTION_C:
-					case PlotProtection.FACTION_E:
-						// In a team protected plot
-
-						if (plot.isInAdminProtectedRadius(modifyingLocation)) {
-							return false; // Only admin can modify admin protected radius
-						}
-						if (plot.isUnderCenter(modifyingLocation)) {
-							// No one may modify the core underneath center of the team plot
-							return false;
-						}
-						if (plot.isInKeepRadius(modifyingLocation)) {
-							// TODO this would be used for an inner area for higher level faction members, same as team protection for now
-							return user.getFaction() == protectionType;
-						}
-						if (plot.isInTeamProtectedRadius(modifyingLocation)) {
-							return user.getFaction() == protectionType;
-						}
-						return true; // In plot but not in any protected radius
 					case PlotProtection.PUBLIC:
 						return true;
+					default:
+
+						UserFaction userFaction = UserFaction.getFaction(protectionType);
+						if (userFaction != null) {
+							// In a team protected plot
+
+							if (plot.isInAdminProtectedRadius(modifyingLocation)) {
+								return false; // Only admin can modify admin protected radius
+							}
+							if (plot.isUnderCenter(modifyingLocation)) {
+								// No one may modify the core underneath center of the team plot
+								return false;
+							}
+							if (plot.isInKeepRadius(modifyingLocation)) {
+								// TODO this would be used for an inner area for higher level faction members, same as team protection for now
+								return user.getFaction().getId() == protectionType;
+							}
+							if (plot.isInTeamProtectedRadius(modifyingLocation)) {
+								return user.getFaction().getId() == protectionType;
+							}
+						}
+
+						return true; // In plot but not in any protected radius
 				}
-				break;
 		}
 
 		// Didn't meet any allowed conditions

@@ -68,11 +68,11 @@ public class BasicCommandListener extends CommandListener {
 			List<User> otherUsers = new ArrayList<>();
 
 			for (User user : allUsers) {
-				if (user.getFaction() == UserFaction.FactionRed) {
+				if (user.getFaction() == UserFaction.RED) {
 					redUsers.add(user);
-				} else if (user.getFaction() == UserFaction.FactionBlue) {
+				} else if (user.getFaction() == UserFaction.BLUE) {
 					blueUsers.add(user);
-				} else if (user.getFaction() == UserFaction.FactionGreen) {
+				} else if (user.getFaction() == UserFaction.GREEN) {
 					greenUsers.add(user);
 				} else {
 					otherUsers.add(user);
