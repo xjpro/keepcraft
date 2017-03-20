@@ -111,8 +111,8 @@ public class AdminCommandListener extends CommandListener {
 			target.setFaction(UserTeam.getFaction(factionId));
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserTeam.asString(factionId));
-			commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserTeam.asString(factionId));
+			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserTeam.getChatColoredName(factionId));
+			commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserTeam.getChatColoredName(factionId));
 			return true;
 		} // Delete a user's record
 		else if (commandName.equals("delete") && args.length == 1) {

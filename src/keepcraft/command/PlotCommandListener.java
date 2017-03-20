@@ -183,7 +183,7 @@ public class PlotCommandListener extends CommandListener {
 						currentPlot.getProtection().setType(faction);
 						plotService.updatePlot(currentPlot);
 
-						commandSender.sendMessage(ChatService.Success + "Plot protection set to faction " + UserTeam.asString(faction));
+						commandSender.sendMessage(ChatService.Success + "Plot protection set to faction " + UserTeam.getChatColoredName(faction));
 						return true;
 					}
 				} // Set it as protection admin

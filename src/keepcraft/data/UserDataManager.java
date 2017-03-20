@@ -230,7 +230,7 @@ public class UserDataManager {
 			database.close();
 		}
 
-		Keepcraft.log("Active member count for " + UserTeam.asString(faction) + " is " + memberCount);
+		Keepcraft.log("Active member count for " + UserTeam.getName(faction) + " is " + memberCount);
 
 		return memberCount;
 	}
@@ -257,7 +257,7 @@ public class UserDataManager {
 			database.close();
 		}
 
-		Keepcraft.log(String.format("Previously active member count for %s is %s", UserTeam.asString(team), count));
+		Keepcraft.log(String.format("Previously active member count for %s is %s", UserTeam.getName(team), count));
 
 		return count;
 	}

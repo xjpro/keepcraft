@@ -36,12 +36,13 @@ public enum UserTeam {
 		return name;
 	}
 
-	public ChatColor getChatColor() {
-		return chatColor;
+	public static String getName(int faction) {
+		UserTeam userTeam = getFaction(faction);
+		return userTeam != null ? userTeam.getName() : "Other";
 	}
 
-	public String getChatColoredNamed() {
-		return getChatColor() + getName();
+	public ChatColor getChatColor() {
+		return chatColor;
 	}
 
 	public static ChatColor getChatColor(int faction) {
@@ -49,9 +50,12 @@ public enum UserTeam {
 		return userTeam != null ? userTeam.getChatColor() : ChatService.NameOther;
 	}
 
-	public static String getName(int faction) {
-		UserTeam userTeam = getFaction(faction);
-		return userTeam != null ? userTeam.getName() : "Other";
+	public String getChatColoredNamed() {
+		return getChatColor() + getName();
+	}
+
+	public static String getChatColoredName(int faction) {
+		return getChatColor(faction) + getName(faction);
 	}
 
 	public static int getRandomFaction() {
@@ -74,13 +78,5 @@ public enum UserTeam {
 			}
 			return RED.getId();
 		}
-	}
-
-	public static String asString(int faction) {
-		return UserTeam.getName(faction);
-	}
-
-	public static String asColoredString(int faction) {
-		return getChatColor(faction) + asString(faction);
 	}
 }

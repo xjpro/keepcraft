@@ -100,7 +100,7 @@ public class Siege implements Runnable {
 	}
 
 	private void finish() {
-		chatService.sendGlobalAlertMessage(UserTeam.asColoredString(attackingFaction) + ChatService.Info + " has secured " + plot.getColoredName());
+		chatService.sendGlobalAlertMessage(UserTeam.getChatColoredName(attackingFaction) + ChatService.Info + " has secured " + plot.getColoredName());
 		Bukkit.getServer().getScheduler().cancelTask(taskId);
 
 		PlotProtection protection = plot.getProtection();
@@ -111,7 +111,7 @@ public class Siege implements Runnable {
 	}
 
 	public void cancel() {
-		chatService.sendGlobalAlertMessage(UserTeam.asColoredString(attackingFaction) + ChatService.Info + " failed to capture " + plot.getColoredName());
+		chatService.sendGlobalAlertMessage(UserTeam.getChatColoredName(attackingFaction) + ChatService.Info + " failed to capture " + plot.getColoredName());
 		Bukkit.getServer().getScheduler().cancelTask(taskId);
 		plot.setSiege(null);
 		plot.getProtection().setCaptureInProgress(false);
