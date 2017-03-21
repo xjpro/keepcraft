@@ -68,6 +68,10 @@ public class UserService {
 		userDataManager.updateData(user);
 	}
 
+	public void setFirstLogin(User user) {
+		userDataManager.updateFirstLogin(user);
+	}
+
 	public boolean removeUser(User user) {
 		if (!userDataManager.exists(user.getName())) {
 			return false;
@@ -107,6 +111,7 @@ public class UserService {
 		user.setTeam(UserTeam.getFaction(selectTeamUsingCurrentUserCount()));
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(-1);
+		user.setFirstTimeLogin(true);
 		userDataManager.putData(user);
 		return user;
 	}

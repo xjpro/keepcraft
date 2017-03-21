@@ -34,7 +34,7 @@ public class UserDataManager {
 		Keepcraft.log("Updating data for " + user.getName());
 		try {
 			PreparedStatement statement = database.createStatement("UPDATE users SET " +
-					"Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, FirstOnline = datetime('now') WHEN FirstOnline IS NULL, LastOnline = datetime('now') " +
+					"Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, LastOnline = datetime('now') " +
 					"WHERE Name = ?");
 			statement.setInt(1, user.getPrivilege().getId());
 			statement.setInt(2, user.getTeam().getId());
@@ -44,6 +44,18 @@ public class UserDataManager {
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error setting user data: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+	}
+
+	public void updateFirstLogin(User user) {
+		try {
+			PreparedStatement statement = database.createStatement("UPDATE users SET FirstOnline = datetime('now') WHERE Name = ?");
+			statement.setString(1, user.getName());
+			statement.execute();
+		} catch (Exception e) {
+			Keepcraft.error("Error setting user first time login data: " + e.getMessage());
 		} finally {
 			database.close();
 		}
@@ -69,7 +81,7 @@ public class UserDataManager {
 				user.setTeam(UserTeam.getFaction(result.getInt("Faction")));
 				user.setMoney(result.getInt("Money"));
 				user.setLoggedOffFriendlyPlotId(result.getInt("LastPlotId"));
-				user.setFirstTimeLogin(result.getString("FirstOnline") == null);
+				user.setFirstTimeLogin(result.getString("FirstOnline") == null || result.getString("FirstOnline").length() == 0);
 				Keepcraft.log("User data was retrieved with values: " + user);
 			}
 
@@ -213,7 +225,7 @@ public class UserDataManager {
 		int memberCount = 0;
 		try {
 			PreparedStatement statement = database.createStatement(
-					"SELECT ROWID FROM users WHERE Faction = ? AND Privilege != ? AND LastOnline IS NOT NULL"
+					"SELECT ROWID FROM users WHERE Faction = ? AND Privilege != ? AND LastOnline IS NOT NULL AND "
 							+ "((julianday(datetime('now')) - julianday(LastOnline)) < ?)"
 			);
 			statement.setInt(1, faction);

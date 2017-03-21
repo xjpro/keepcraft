@@ -47,6 +47,7 @@ public class UserListener implements Listener {
 				user.setPrivilege(UserPrivilege.ADMIN);
 			}
 
+			userService.setFirstLogin(user);
 			userService.updateUser(user);
 
 			teleportHome(player, user);
