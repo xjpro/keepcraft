@@ -213,7 +213,7 @@ public class UserDataManager {
 		int memberCount = 0;
 		try {
 			PreparedStatement statement = database.createStatement(
-					"SELECT ROWID FROM users WHERE Faction = ? AND Privilege != ? AND "
+					"SELECT ROWID FROM users WHERE Faction = ? AND Privilege != ? AND LastOnline IS NOT NULL"
 							+ "((julianday(datetime('now')) - julianday(LastOnline)) < ?)"
 			);
 			statement.setInt(1, faction);
