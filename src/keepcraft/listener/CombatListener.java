@@ -83,6 +83,7 @@ public class CombatListener implements Listener {
 		User damagerUser = userService.getOnlineUser(damager.getName());
 		User damagedUser = userService.getOnlineUser(damaged.getName());
 		if (damagerUser.getTeam() == damagedUser.getTeam()) {
+			// todo Since the addition of teams (see: TeamService) this if block should no longer be necessary
 			// Team members cannot damage each other
 			event.setCancelled(true);
 			return;

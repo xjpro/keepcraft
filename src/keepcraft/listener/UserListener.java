@@ -62,12 +62,6 @@ public class UserListener implements Listener {
 			respawnAfterTimeout(player, user);
 		}
 
-		if (player.isOp()) {
-			player.setPlayerListName(ChatService.NameAdmin + player.getDisplayName());
-		} else {
-			player.setPlayerListName(user.getTeam().getChatColor() + player.getDisplayName());
-		}
-
 		teamService.addPlayerToTeam(user.getTeam(), player);
 
 		//player.setDisplayName(UserTeam.getChatColor(user.getTeam()) + player.getDisplayName());

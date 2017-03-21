@@ -7,7 +7,9 @@ import keepcraft.data.models.User;
 import keepcraft.data.models.UserTeam;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
+import keepcraft.services.TeamService;
 import keepcraft.services.UserService;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -17,10 +19,12 @@ public class AdminCommandListener extends CommandListener {
 
 	private final UserService userService;
 	private final PlotService plotService;
+	private final TeamService teamService;
 
 	public AdminCommandListener(UserService userService, PlotService plotService) {
 		this.userService = userService;
 		this.plotService = plotService;
+		this.teamService = new TeamService();
 	}
 
 	@Override
@@ -109,6 +113,7 @@ public class AdminCommandListener extends CommandListener {
 			}
 
 			target.setTeam(UserTeam.getFaction(factionId));
+			teamService.addPlayerToTeam(UserTeam.getFaction(factionId), Bukkit.getPlayer(targetName));
 			userService.updateUser(target);
 
 			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserTeam.getChatColoredName(factionId));

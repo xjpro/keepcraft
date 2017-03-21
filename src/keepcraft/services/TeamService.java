@@ -13,17 +13,24 @@ public class TeamService {
 
 	public TeamService() {
 		scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-//		if (scoreboard.getObjective("team_below_Name") == null) {
-//			// Register team below name objective
-//			//Objective objective = scoreboard.registerNewObjective("team_below_name", "dummy");
-//			//objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-//		}
 	}
 
 	public void addPlayerToTeam(UserTeam userTeam, Player player) {
-		Team team = getTeam(userTeam);
-		team.addPlayer(player);
-		//player.setScoreboard(scoreboard);
+		// Remove from current teams, if any
+		for (Team otherTeam : scoreboard.getTeams()) {
+			if (otherTeam.hasPlayer(player)) {
+				otherTeam.removePlayer(player);
+			}
+		}
+
+		// Add to new team
+		getTeam(userTeam).addPlayer(player);
+
+		if (player.isOp()) {
+			player.setPlayerListName(ChatService.NameAdmin + player.getDisplayName());
+		} else {
+			player.setPlayerListName(userTeam.getChatColor().toString() + player.getDisplayName());
+		}
 	}
 
 	private Team getTeam(UserTeam userTeam) {
@@ -31,7 +38,8 @@ public class TeamService {
 		if (team == null) {
 			team = scoreboard.registerNewTeam(userTeam.getName());
 			team.setDisplayName(userTeam.getName());
-			team.setPrefix(userTeam.getChatColor().toString() + "[" + userTeam.getName().substring(0, 1) + "]" + ChatColor.RESET);
+			team.setPrefix(userTeam.getChatColor().toString() + "<" + ChatColor.RESET);
+			team.setSuffix(userTeam.getChatColor().toString() + ">");
 			team.setAllowFriendlyFire(false);
 			team.setCanSeeFriendlyInvisibles(true);
 		}
