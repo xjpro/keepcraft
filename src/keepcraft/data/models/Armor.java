@@ -35,6 +35,8 @@ public class Armor {
 		static short DiamondBoots = 3;
 	}
 
+	public static int FULL_IRON_ARMOR = ArmorValue.IronHelm + ArmorValue.IronChest + ArmorValue.IronLegs + ArmorValue.IronBoots;
+
 	public static boolean isWearingFullLeatherArmor(LivingEntity entity) {
 		EntityEquipment equipment = entity.getEquipment();
 		if (equipment.getHelmet() == null || equipment.getHelmet().getType() != Material.LEATHER_HELMET)

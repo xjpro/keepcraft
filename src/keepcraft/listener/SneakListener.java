@@ -3,10 +3,12 @@ package keepcraft.listener;
 import keepcraft.data.models.Armor;
 import keepcraft.data.models.User;
 import keepcraft.services.UserService;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
@@ -31,6 +33,20 @@ public class SneakListener implements Listener {
 			user.setStealth(false);
 			player.setSneaking(false);
 			player.setWalkSpeed(0.2f);
+		}
+
+		if (Armor.getDefensePoints(player) > Armor.FULL_IRON_ARMOR && player.isSneaking()) {
+			//player.setSneaking(false);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onPlayerSneakInteract(PlayerInteractEvent event) {
+		if (event.isCancelled() || !event.getPlayer().isSneaking()) return;
+
+		Block block = event.getClickedBlock();
+		if (block != null) {
+			event.getPlayer().setSneaking(false);
 		}
 	}
 

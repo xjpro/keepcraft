@@ -84,11 +84,6 @@ public class ContainerListener implements Listener {
 			User user = userService.getOnlineUser(player.getName());
 
 			if (container.canAccess(user)) {
-				if (user.hasStealth()) {
-					// User has permanent stealth, they won't be able to access chests unless we break their sneaking
-					player.setSneaking(false);
-				}
-
 				if (container != user.getTargetContainer()) {
 					user.setTargetContainer(container);
 					// todo can't target chests in enemy territory
