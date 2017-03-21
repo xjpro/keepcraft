@@ -58,7 +58,7 @@ public enum UserTeam {
 		return getChatColor(teamId) + getName(teamId);
 	}
 
-	public static int getRandomFaction() {
+	public static int getRandomTeamId() {
 		return (1 + Random.nextInt(2)) * 100;
 	}
 

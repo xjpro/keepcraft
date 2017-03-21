@@ -34,10 +34,6 @@ public class UserService {
 		return onlineUsers.values();
 	}
 
-	public boolean userIsRegistered(String name) {
-		return userDataManager.exists(name);
-	}
-
 	public User getUser(String name) {
 		return userDataManager.getData(name);
 	}
@@ -80,39 +76,34 @@ public class UserService {
 		return true;
 	}
 
-	private User createUser(String userName) {
-		int faction;
-
-		// Determine which team to place the new user on, using two strategies
-
+	public void distributeKnownUsers() {
 		UUID worldGUID = plugin != null ? plugin.getServer().getWorld("world").getUID() : null;
 		List<String> recentlyPlayedUserNamesByPlayTime = userStatsDataManager.getRecentlyPlayedUserNamesByPlayTime(worldGUID);
+		// We now have a list a users sorted by their play time A B C D E F
 
-		// Take the first half of the previously played user names as our list of "active" users
-		List<String> previouslyActiveUserNames = recentlyPlayedUserNamesByPlayTime.subList(0, (int) Math.ceil(recentlyPlayedUserNamesByPlayTime.size() * 0.5));
+		// Alternate through the list, placing users in each team
+		// Teams will be A C E and B D F
+		UserTeam userTeam = UserTeam.getFaction(UserTeam.getRandomTeamId());
+		for (String userName : recentlyPlayedUserNamesByPlayTime) {
+			User user = new User(userName);
+			user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
+			user.setTeam(userTeam);
+			user.setMoney(0);
+			user.setLoggedOffFriendlyPlotId(-1);
+			userDataManager.putData(user);
 
-		if (previouslyActiveUserNames.stream().anyMatch(previouslyActiveUserName -> previouslyActiveUserName.equals(userName))) {
-			// This user identified as a previously active user, balance these users so they are even on both teams
-			int prevActiveReds = userDataManager.getPreviouslyActiveTeamCount(UserTeam.RED.getId(), previouslyActiveUserNames);
-			int prevActiveBlues = userDataManager.getPreviouslyActiveTeamCount(UserTeam.BLUE.getId(), previouslyActiveUserNames);
-			int prevActiveGreens = 9999;//userDataManager.getPreviouslyActiveTeamCount(UserTeam.GREEN.getId(), previouslyActiveUserNames);
-
-			if (prevActiveReds == prevActiveBlues) {
-				// Previously actives are equal, select based on current numbers instead
-				faction = selectTeamUsingCurrentUserCount();
-			} else {
-				faction = UserTeam.getSmallestFaction(prevActiveReds, prevActiveBlues, prevActiveGreens);
-			}
-		} else {
-			// This user has not been previously active, place them on the smallest team based on current numbers
-			faction = selectTeamUsingCurrentUserCount();
+			// switch to next team for next user
+			userTeam = userTeam == UserTeam.RED ? UserTeam.BLUE : UserTeam.RED;
 		}
+	}
 
+	// Create a user not distributed at start of map
+	private User createUser(String userName) {
 		User user = new User(userName);
 		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
-		user.setTeam(UserTeam.getFaction(faction));
+		user.setTeam(UserTeam.getFaction(selectTeamUsingCurrentUserCount()));
 		user.setMoney(0);
-		user.setLoggedOffFriendlyPlotId(0);
+		user.setLoggedOffFriendlyPlotId(-1);
 		userDataManager.putData(user);
 		return user;
 	}
@@ -124,7 +115,7 @@ public class UserService {
 		int greenCount = 9999;//this.getFactionCount(UserTeam.GREEN.getId());
 
 		if (redCount == blueCount) {
-			return UserTeam.getRandomFaction();
+			return UserTeam.getRandomTeamId();
 		} else {
 			return UserTeam.getSmallestFaction(redCount, blueCount, greenCount);
 		}

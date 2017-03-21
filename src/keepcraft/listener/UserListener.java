@@ -40,15 +40,11 @@ public class UserListener implements Listener {
 		Player player = event.getPlayer();
 		//Player player = userService.loadMetadata(event.getPlayer());
 
-		boolean firstTimeUser = !userService.userIsRegistered(player.getName());
 		User user = userService.loadOfflineUser(player.getName());
 
-		if (firstTimeUser || user.getPrivilege() == UserPrivilege.INIT) {
+		if (user.isFirstTimeLogin()) {
 			if (player.isOp()) {
 				user.setPrivilege(UserPrivilege.ADMIN);
-				//user.setTeam(UserTeam.FactionGold);
-			} else {
-				user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 			}
 
 			userService.updateUser(user);

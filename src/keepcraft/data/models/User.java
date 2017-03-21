@@ -18,6 +18,7 @@ public class User {
 	private UserTeam team;
 	private int money;
 	private int loggedOffFriendlyPlotId;
+	private boolean firstTimeLogin;
 
 	// Non persistent real time data
 	private Date logOnDateTime = null;
@@ -173,6 +174,14 @@ public class User {
 
 	public UserStats getUserStats() {
 		return userStats;
+	}
+
+	public boolean isFirstTimeLogin() {
+		return firstTimeLogin;
+	}
+
+	public void setFirstTimeLogin(boolean value) {
+		firstTimeLogin = value;
 	}
 
 	public boolean hasStealth() {

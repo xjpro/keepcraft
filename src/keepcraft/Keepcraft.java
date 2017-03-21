@@ -156,6 +156,7 @@ public class Keepcraft extends JavaPlugin {
 		World world = setter.setupWorld(Keepcraft.getWorld());
 		mapDataManager.createWorldRecord(world.getUID(), new WorldPoint(world.getSpawnLocation()));
 
+		userService.distributeKnownUsers();
 		userService.refreshCache();
 		plotService.refreshCache();
 		factionSpawnService.refreshCache();

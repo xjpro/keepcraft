@@ -33,8 +33,9 @@ public class UserDataManager {
 	public void updateData(User user) {
 		Keepcraft.log("Updating data for " + user.getName());
 		try {
-			PreparedStatement statement
-					= database.createStatement("UPDATE users SET Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, LastOnline = datetime('now') WHERE Name = ?");
+			PreparedStatement statement = database.createStatement("UPDATE users SET " +
+					"Privilege = ?, Faction = ?, Money = ?, LastPlotId = ?, FirstOnline = datetime('now') WHEN FirstOnline IS NULL, LastOnline = datetime('now') " +
+					"WHERE Name = ?");
 			statement.setInt(1, user.getPrivilege().getId());
 			statement.setInt(2, user.getTeam().getId());
 			statement.setInt(3, user.getMoney());
@@ -54,7 +55,7 @@ public class UserDataManager {
 		User user = null;
 
 		try {
-			PreparedStatement statement = database.createStatement("SELECT Privilege, Faction, Money, LastPlotId FROM users WHERE Name = ? LIMIT 1");
+			PreparedStatement statement = database.createStatement("SELECT Privilege, Faction, Money, LastPlotId, FirstOnline FROM users WHERE Name = ? LIMIT 1");
 			statement.setString(1, name);
 			ResultSet result = statement.executeQuery();
 
@@ -68,6 +69,7 @@ public class UserDataManager {
 				user.setTeam(UserTeam.getFaction(result.getInt("Faction")));
 				user.setMoney(result.getInt("Money"));
 				user.setLoggedOffFriendlyPlotId(result.getInt("LastPlotId"));
+				user.setFirstTimeLogin(result.getString("FirstOnline") == null);
 				Keepcraft.log("User data was retrieved with values: " + user);
 			}
 
@@ -124,7 +126,7 @@ public class UserDataManager {
 		Keepcraft.log("Creating record for " + user.getName());
 		try {
 			PreparedStatement statement
-					= database.createStatement("INSERT INTO users (Name, Privilege, Faction, Money, LastPlotId, FirstOnline, LastOnline) VALUES(?, ?, ?, ?, ?, datetime('now'), datetime('now'))");
+					= database.createStatement("INSERT INTO users (Name, Privilege, Faction, Money, LastPlotId) VALUES(?, ?, ?, ?, ?)");
 			statement.setString(1, user.getName());
 			statement.setInt(2, user.getPrivilege().getId());
 			statement.setInt(3, user.getTeam().getId());
