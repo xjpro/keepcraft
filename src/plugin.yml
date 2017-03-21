@@ -40,7 +40,7 @@ commands:
         usage: /faction <#> etc.
     setteam:
         description: Change a user's team
-        usage: /setteam <username> [team #]
+        usage: /setteam <username> <#>
     ptp:
         description: Teleport to a plot by name
         usage: /ptp <plot name>
