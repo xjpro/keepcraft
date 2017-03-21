@@ -94,7 +94,7 @@ public class AdminCommandListener extends CommandListener {
 			return true;
 		}
 		// Set team
-		else if (commandName.equals("setfaction") && args.length == 2) {
+		else if (commandName.equals("setteam") && args.length == 2) {
 			String targetName = args[0];
 			User target = userService.getOnlineUser(targetName);
 

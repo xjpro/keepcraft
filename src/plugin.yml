@@ -38,9 +38,9 @@ commands:
     faction:
         description: Set faction properties
         usage: /faction <#> etc.
-    setfaction:
-        description: Change a user's faction
-        usage: /setfaction <username> [faction #]
+    setteam:
+        description: Change a user's team
+        usage: /setteam <username> [team #]
     ptp:
         description: Teleport to a plot by name
         usage: /ptp <plot name>
