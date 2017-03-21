@@ -32,6 +32,11 @@ public class StatsListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		user.getUserStats().playSeconds = user.getPlayedSeconds();
+
+		if (event.getPlayer().isOp()) {
+			// Clear tracked playtime for admins
+			user.getUserStats().playSeconds = 0;
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

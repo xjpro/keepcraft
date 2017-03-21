@@ -85,6 +85,9 @@ public class UserService {
 		// Teams will be A C E and B D F
 		UserTeam userTeam = UserTeam.getFaction(UserTeam.getRandomTeamId());
 		for (String userName : recentlyPlayedUserNamesByPlayTime) {
+			// todo temporary hack to ignore admins in stats, will be resolved in a few maps as changes were made to clear admin playtime
+			if (userName.equalsIgnoreCase("SummitMC") || userName.equalsIgnoreCase("Sivias")) continue;
+
 			User user = new User(userName);
 			user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 			user.setTeam(userTeam);
