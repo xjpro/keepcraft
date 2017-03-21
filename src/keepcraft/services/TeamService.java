@@ -16,6 +16,9 @@ public class TeamService {
 	}
 
 	public void addPlayerToTeam(UserTeam userTeam, Player player) {
+
+		// TODO teams might persist through server reboots, meaning it would only be necessary to do this when the user is first created
+
 		// Remove from current teams, if any
 		for (Team otherTeam : scoreboard.getTeams()) {
 			if (otherTeam.hasPlayer(player)) {
