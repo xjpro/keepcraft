@@ -63,8 +63,8 @@ public class WorldSetter {
 		return world;
 	}
 
-	private void setBase(UserTeam faction, Location location) {
-		Keepcraft.log(String.format("Setting up %s faction...", faction.getName()));
+	private void setBase(UserTeam userTeam, Location location) {
+		Keepcraft.log(String.format("Setting up %s team...", userTeam.getName()));
 
 		World world = location.getWorld();
 
@@ -78,10 +78,10 @@ public class WorldSetter {
 
 		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 15);
 		prepareSpawnArea(goodSpawnLocation);
-		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), faction, TEAM_PLOT_RADIUS);
+		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), userTeam, TEAM_PLOT_RADIUS);
 
 		// Go in air one block and center on block so spawn is not buried
-		factionSpawnService.createFactionSpawn(faction, new WorldPoint(goodSpawnLocation.clone().add(0, 1, 0)));
+		factionSpawnService.createFactionSpawn(userTeam, new WorldPoint(goodSpawnLocation.clone().add(0, 1, 0)));
 	}
 
 	private void prepareBaseArea(Location center, int radius) {

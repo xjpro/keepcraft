@@ -44,7 +44,7 @@ public class ExplosionListener implements Listener {
 		Location location = event.getBlock().getLocation();
 		Plot plot = plotService.getIntersectedPlot(location);
 
-		if (plot != null && plot.isUnderCenter(location) && plot.isFactionProtected()) {
+		if (plot != null && plot.isUnderCenter(location) && plot.isTeamProtected()) {
 
 			Keepcraft.log("Team plot core destroyed");
 			chatService.sendGlobalAlertMessage(String.format("%s has been destroyed!", plot.getName()));

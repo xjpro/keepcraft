@@ -121,7 +121,7 @@ public class PlotProtectionListener implements Listener {
 	public void onPistonExtend(BlockPistonExtendEvent event) {
 		Plot plot = plotService.getIntersectedPlot(event.getBlock().getLocation());
 		// Piston itself would need to be near center to affect center so we're fine checking the piston block
-		if (plot == null || !plot.isFactionProtected()) return;
+		if (plot == null || !plot.isTeamProtected()) return;
 
 		event.getBlocks().forEach(block -> {
 			if (plot.isUnderCenter(block.getLocation())) {
@@ -139,7 +139,7 @@ public class PlotProtectionListener implements Listener {
 			// This could only really happen if a team member was dispensing TNT into their own plot
 
 			Plot plot = plotService.getIntersectedPlot(event.getBlock().getLocation());
-			if (plot != null && plot.isFactionProtected()) {
+			if (plot != null && plot.isTeamProtected()) {
 				event.setCancelled(true);
 			}
 		} else if (material == Material.LAVA_BUCKET) {
@@ -154,7 +154,7 @@ public class PlotProtectionListener implements Listener {
 
 	private void handlePistonPlacement(BlockPlaceEvent event, Plot plot, User user) {
 		boolean cancelPlacement = false;
-		if (plot == null || !plot.isFactionProtected(user.getTeam())) {
+		if (plot == null || !plot.isTeamProtected(user.getTeam())) {
 			// Not in a plot or plot is not a friendly plot
 			chatService.sendFailureMessage(user, "Pistons can only be placed in your team protected area");
 			cancelPlacement = true;
@@ -174,7 +174,7 @@ public class PlotProtectionListener implements Listener {
 		boolean cancelPlacement = false;
 
 		// Placement in own plot...
-		if (plot.isFactionProtected(user.getTeam())) {
+		if (plot.isTeamProtected(user.getTeam())) {
 			chatService.sendFailureMessage(user, "Cannot place attack blocks in your own base");
 			cancelPlacement = true;
 		}

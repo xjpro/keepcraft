@@ -71,7 +71,7 @@ public class PlotAttackListener implements Listener {
 		if (plot != null) {
 			Server server = Bukkit.getServer();
 			for (User user : userService.getOnlineUsers()) {
-				if (plot == user.getCurrentPlot() && plot.isFactionProtected(user.getTeam())) {
+				if (plot == user.getCurrentPlot() && plot.isTeamProtected(user.getTeam())) {
 
 					Player p = server.getPlayer(user.getName());
 					Location locationTo = Direction.lookAt(p.getLocation(), eventLocation);
@@ -88,7 +88,7 @@ public class PlotAttackListener implements Listener {
 	// Send wolves in the plot to attack players around a given location
 	private void setDefendingAnimalsToCounterAttack(Location location) {
 		Plot plot = plotService.getIntersectedPlot(location);
-		if (plot == null || !plot.isFactionProtected()) return; // Counter attacks only occur in faction protected plots
+		if (plot == null || !plot.isTeamProtected()) return; // Counter attacks only occur in team protected plots
 
 		Collection<Entity> nearbyEntities = Keepcraft.getWorld().getNearbyEntities(location, 25, 25, 25);
 
@@ -97,7 +97,7 @@ public class PlotAttackListener implements Listener {
 				.filter(entity -> entity.getType() == EntityType.PLAYER)
 				.filter(playerEntity -> {
 					Player player = (Player) playerEntity;
-					return !plot.isFactionProtected(userService.getOnlineUser(player.getName()).getTeam());
+					return !plot.isTeamProtected(userService.getOnlineUser(player.getName()).getTeam());
 				})
 				.map(entity -> (LivingEntity) entity)
 				.collect(Collectors.toList());

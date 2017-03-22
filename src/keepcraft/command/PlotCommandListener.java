@@ -169,21 +169,21 @@ public class PlotCommandListener extends CommandListener {
 					}
 				}
 			} else if (args[0].equals("type") && args.length > 1) {
-				// Set it as protection faction
-				if (args[1].equals("faction") && args.length == 3) {
+				// Set it as team protection
+				if (args[1].equals("team") && args.length == 3) {
 					if (privilege == UserPrivilege.ADMIN) {
-						int faction;
+						int teamId;
 						try {
-							faction = Integer.parseInt(args[2]);
+							teamId = Integer.parseInt(args[2]);
 						} catch (Exception e) {
 							// invalid input
-							Keepcraft.log("Error while setting plot type to faction: " + e.getMessage());
+							Keepcraft.log("Error while setting plot type to team: " + e.getMessage());
 							return false;
 						}
-						currentPlot.getProtection().setType(faction);
+						currentPlot.getProtection().setType(teamId);
 						plotService.updatePlot(currentPlot);
 
-						commandSender.sendMessage(ChatService.Success + "Plot protection set to faction " + UserTeam.getChatColoredName(faction));
+						commandSender.sendMessage(ChatService.Success + "Plot protection set to " + UserTeam.getChatColoredName(teamId));
 						return true;
 					}
 				} // Set it as protection admin

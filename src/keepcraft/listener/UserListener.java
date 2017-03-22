@@ -64,7 +64,7 @@ public class UserListener implements Listener {
 		//player.setDisplayName(UserTeam.getChatColor(user.getTeam()) + player.getDisplayName());
 
 		Plot loggedOffFriendlyPlot = plotService.getPlot(user.getLoggedOffFriendlyPlotId());
-		if (loggedOffFriendlyPlot != null && !loggedOffFriendlyPlot.isFactionProtected(user.getTeam())) {
+		if (loggedOffFriendlyPlot != null && !loggedOffFriendlyPlot.isTeamProtected(user.getTeam())) {
 			// loggedOffFriendlyPlot is only stored when we logged off in an owned plot
 			// This plot is now longer secured so teleport home
 			Keepcraft.log(String.format("%s logged into a formerly secured area, teleporting home", player.getName()));
@@ -81,7 +81,7 @@ public class UserListener implements Listener {
 		User user = userService.getOnlineUser(player.getName());
 
 		Plot currentPlot = user.getCurrentPlot();
-		if (currentPlot != null && currentPlot.isFactionProtected(user.getTeam())) {
+		if (currentPlot != null && currentPlot.isTeamProtected(user.getTeam())) {
 			// User is logging off in owned territory, make a note of this so
 			// we can later warp them home if the territory switches control
 			user.setLoggedOffFriendlyPlotId(currentPlot.getId());
@@ -149,7 +149,7 @@ public class UserListener implements Listener {
 			}
 
 			// A very bad thing has happened and we apparently have no spawn data, refresh cache in an attempt to recover
-			Keepcraft.error(String.format("Could not find spawn for %s of faction %s", user.getName(), user.getTeam()));
+			Keepcraft.error(String.format("Could not find spawn for %s of team %s", user.getName(), user.getTeam()));
 			factionSpawnService.refreshCache(); // Attempt to restore things as they should be
 			spawn = factionSpawnService.getFactionSpawn(user.getTeam());
 

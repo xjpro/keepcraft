@@ -147,7 +147,7 @@ public class BasicCommandListener extends CommandListener {
 				Plot requestedPlot;
 				// Could not parse into a number, we'll just assume it's a request to base because all points except base require numbers
 				if (orderNumber < 1) {
-					Plot base = plotService.getPlots().stream().filter(plot -> plot.isBasePlot() && plot.isFactionProtected(sender.getTeam())).findFirst().orElse(null);
+					Plot base = plotService.getPlots().stream().filter(plot -> plot.isBasePlot() && plot.isTeamProtected(sender.getTeam())).findFirst().orElse(null);
 					if (base == null) {
 						chatService.sendFailureMessage(sender, "Your team does not have a base to rally to");
 						return true;

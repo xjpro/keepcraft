@@ -39,7 +39,7 @@ public class InitCommandListener extends CommandListener {
 				return true;
 			}
 
-			// Set faction
+			// Set team
 			//todo sender.setTeam(targetUser.getTeam());
 			userService.updateUser(sender);
 			chatService.sendAlertMessage(sender, String.format("You have joined %s", sender.getTeam().getChatColoredNamed()));

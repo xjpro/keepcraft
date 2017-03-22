@@ -41,7 +41,7 @@ public class SiegeCommandListener extends CommandListener {
 					|| currentPlot.isAdminProtected()) {
 				chatService.sendFailureMessage(sender, "This area is not capturable");
 				return true;
-			} else if (currentPlot.isFactionProtected(sender.getTeam()) && existingSiege == null) {
+			} else if (currentPlot.isTeamProtected(sender.getTeam()) && existingSiege == null) {
 				chatService.sendFailureMessage(sender, "This area is already secured");
 				return true;
 			} else if (!currentPlot.isInTriggerRadius(player.getLocation())) {
@@ -56,7 +56,7 @@ public class SiegeCommandListener extends CommandListener {
 					} else if (existingSiege.getAttackingFaction() == sender.getTeam().getId()) {
 						chatService.sendFailureMessage(sender, "This area is already being captured");
 						return true;
-					} else { // A third faction is attacking
+					} else { // A third team is attacking
 						existingSiege.cancel();
 						chatService.sendSuccessMessage(sender, "You begin capturing " + currentPlot.getName());
 						siegeService.startSiege(currentPlot, sender);

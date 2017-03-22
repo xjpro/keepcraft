@@ -33,11 +33,11 @@ public class Plot {
 	}
 
 	public boolean isBasePlot() {
-		return isFactionProtected() && !protection.isCapturable();
+		return isTeamProtected() && !protection.isCapturable();
 	}
 
 	public boolean canBeRalliedTo(User user) {
-		return isFactionProtected(user.getTeam()) && !protection.isCaptureInProgress();
+		return isTeamProtected(user.getTeam()) && !protection.isCaptureInProgress();
 	}
 
 	public Location getLocation() {
@@ -137,11 +137,11 @@ public class Plot {
 		return protection != null && protection.getType() == PlotProtection.ADMIN;
 	}
 
-	public boolean isFactionProtected(UserTeam faction) {
-		return protection != null && protection.getType() == faction.getId();
+	public boolean isTeamProtected(UserTeam userTeam) {
+		return protection != null && protection.getType() == userTeam.getId();
 	}
 
-	public boolean isFactionProtected() {
+	public boolean isTeamProtected() {
 		return protection != null &&
 				(protection.getType() == UserTeam.RED.getId() ||
 						protection.getType() == UserTeam.BLUE.getId() ||

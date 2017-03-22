@@ -222,14 +222,14 @@ public class UserDataManager {
 		return found;
 	}
 
-	public int getFactionCount(int faction) {
+	public int getTeamCount(int teamId) {
 		int memberCount = 0;
 		try {
 			PreparedStatement statement = database.createStatement(
 					"SELECT ROWID FROM users WHERE Faction = ? AND Privilege != ? AND LastOnline IS NOT NULL AND "
 							+ "((julianday(datetime('now')) - julianday(LastOnline)) < ?)"
 			);
-			statement.setInt(1, faction);
+			statement.setInt(1, teamId);
 			statement.setInt(2, UserPrivilege.ADMIN.getId());
 			statement.setFloat(3, 3.0f);
 			ResultSet result = statement.executeQuery();
@@ -240,12 +240,12 @@ public class UserDataManager {
 
 			result.close();
 		} catch (Exception e) {
-			Keepcraft.error("Error counting faction members: " + e.getMessage());
+			Keepcraft.error("Error counting team members: " + e.getMessage());
 		} finally {
 			database.close();
 		}
 
-		Keepcraft.log("Active member count for " + UserTeam.getName(faction) + " is " + memberCount);
+		Keepcraft.log("Active member count for " + UserTeam.getName(teamId) + " is " + memberCount);
 
 		return memberCount;
 	}

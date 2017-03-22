@@ -70,7 +70,7 @@ public class StatsListener implements Listener {
 //				user.getUserStats().blocksAddedToChests += event.getCurrentItem().getAmount();
 //
 //				Plot plot = plotService.getIntersectedPlot(event.getAction() == InvegetDestination().getLocation());
-//				if (plot != null && plot.isFactionProtected(user.getTeam())) {
+//				if (plot != null && plot.isTeamProtected(user.getTeam())) {
 //					user.getUserStats().blocksAddedToTeamChests += event.getItem().getAmount();
 //				}
 //			}
@@ -79,7 +79,7 @@ public class StatsListener implements Listener {
 //				user.getUserStats().blocksRemovedFromChests += event.getItem().getAmount();
 //
 //				Plot plot = plotService.getIntersectedPlot(event.getDestination().getLocation());
-//				if (plot != null && plot.isFactionProtected(user.getTeam())) {
+//				if (plot != null && plot.isTeamProtected(user.getTeam())) {
 //					user.getUserStats().blocksRemovedFromTeamChests += event.getItem().getAmount();
 //				}
 //			}
@@ -100,11 +100,11 @@ public class StatsListener implements Listener {
 		killerUser.getUserStats().playerKills++;
 
 		if (plot != null) {
-			if (plot.isFactionProtected(diedUser.getTeam())) {
+			if (plot.isTeamProtected(diedUser.getTeam())) {
 				// Died user died in their own territory
 				diedUser.getUserStats().defendingDeaths++;
 				killerUser.getUserStats().attackingKills++;
-			} else if (plot.isFactionProtected(killerUser.getTeam())) {
+			} else if (plot.isTeamProtected(killerUser.getTeam())) {
 				// Died user died in killer's territory
 				diedUser.getUserStats().attackingDeaths++;
 				killerUser.getUserStats().defendingKills++;

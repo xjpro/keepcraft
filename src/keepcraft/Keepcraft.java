@@ -93,7 +93,7 @@ public class Keepcraft extends JavaPlugin {
 		}
 
 		// Admin commands
-		AdminCommandListener adminCommandListener = new AdminCommandListener(userService, plotService);
+		AdminCommandListener adminCommandListener = new AdminCommandListener(userService, plotService, chatService);
 		String[] adminCommands = {"promote", "demote", "delete", "setteam", "ptp", "dawn", "noon", "dusk"};
 		for (String adminCommand : adminCommands) {
 			getCommand(adminCommand).setExecutor(adminCommandListener);

@@ -105,22 +105,22 @@ public class AdminCommandListener extends CommandListener {
 				return true;
 			}
 
-			int factionId;
+			int teamId;
 			try {
-				factionId = Integer.parseInt(args[1]);
+				teamId = Integer.parseInt(args[1]);
 			} catch (NumberFormatException e) {
 				// invalid input
 				chatService.sendFailureMessage(userSender, "Options for teams are 100 (Red) or 200 (Blue)");
 				return false;
 			}
 
-			target.setTeam(UserTeam.getTeam(factionId));
+			target.setTeam(UserTeam.getTeam(teamId));
 			userService.updateUser(target);
 			chatService.sendSuccessMessage(userSender, String.format("Set '%s' to team %s", target.getName(), target.getTeam().getChatColoredNamed()));
 
 			Player player = Bukkit.getPlayer(targetName);
 			if (player != null) {
-				teamService.addPlayerToTeam(UserTeam.getTeam(factionId), player);
+				teamService.addPlayerToTeam(UserTeam.getTeam(teamId), player);
 				chatService.sendChangeMessage(target, String.format("Your faction was changed to %s", target.getTeam().getChatColoredNamed()));
 			}
 

@@ -123,9 +123,9 @@ public class UserService {
 
 	private int selectTeamUsingCurrentUserCount() {
 		// This user has not been previously active, place them on the smallest team
-		int redCount = userDataManager.getFactionCount(UserTeam.RED.getId());
-		int blueCount = userDataManager.getFactionCount(UserTeam.BLUE.getId());
-		int greenCount = 9999;//this.getFactionCount(UserTeam.GREEN.getId());
+		int redCount = userDataManager.getTeamCount(UserTeam.RED.getId());
+		int blueCount = userDataManager.getTeamCount(UserTeam.BLUE.getId());
+		int greenCount = 9999;//this.getTeamCount(UserTeam.GREEN.getId());
 
 		if (redCount == blueCount) {
 			return UserTeam.getRandomTeamId();

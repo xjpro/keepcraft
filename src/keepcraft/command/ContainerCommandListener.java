@@ -42,7 +42,7 @@ public class ContainerCommandListener extends CommandListener {
 				// Check that container is not in enemy plot
 				if (user.getPrivilege() != UserPrivilege.ADMIN) {
 					Plot plot = plotService.getIntersectedPlot(container.getBlock().getLocation());
-					if (plot != null && !plot.isFactionProtected(user.getTeam())) {
+					if (plot != null && !plot.isTeamProtected(user.getTeam())) {
 						chatService.sendFailureMessage(user, "You do not have permission to modify this");
 						return true;
 					}

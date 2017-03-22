@@ -205,14 +205,14 @@ class UserServiceTest {
 	}
 
 	private void assertTeamsEqual() {
-		int redCount = userDataManager.getFactionCount(UserTeam.RED.getId());
-		int blueCount = userDataManager.getFactionCount(UserTeam.BLUE.getId());
+		int redCount = userDataManager.getTeamCount(UserTeam.RED.getId());
+		int blueCount = userDataManager.getTeamCount(UserTeam.BLUE.getId());
 		assertEquals(redCount, blueCount);
 	}
 
 	private void assertTeamsNotEqual() {
-		int redCount = userDataManager.getFactionCount(UserTeam.RED.getId());
-		int blueCount = userDataManager.getFactionCount(UserTeam.BLUE.getId());
+		int redCount = userDataManager.getTeamCount(UserTeam.RED.getId());
+		int blueCount = userDataManager.getTeamCount(UserTeam.BLUE.getId());
 		assertNotEquals(redCount, blueCount);
 	}
 }

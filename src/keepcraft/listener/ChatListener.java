@@ -13,29 +13,29 @@ import keepcraft.data.models.User;
 
 public class ChatListener implements Listener {
 
-    private final UserService userService;
-    private final ChatService chatService;
+	private final UserService userService;
+	private final ChatService chatService;
 
-    public ChatListener(UserService userService, ChatService chatService) {
-        this.userService = userService;
-        this.chatService = chatService;
-    }
+	public ChatListener(UserService userService, ChatService chatService) {
+		this.userService = userService;
+		this.chatService = chatService;
+	}
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerChat(PlayerChatEvent event) {
-        event.setCancelled(true); // Chats only go to faction, use /g for global chat
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerChat(PlayerChatEvent event) {
+		event.setCancelled(true); // Chats only go to team, use /g for global chat
 
-        Player p = event.getPlayer();
-        String message = event.getMessage();
-        User sender = userService.getOnlineUser(p.getName());
+		Player player = event.getPlayer();
+		String message = event.getMessage();
+		User sender = userService.getOnlineUser(player.getName());
 
-        Collection<User> connectedUsers = userService.getOnlineUsers();
+		Collection<User> connectedUsers = userService.getOnlineUsers();
 
-        if (sender.isAdmin()) {
-            chatService.sendAdminMessage(sender, connectedUsers, message);
-        } else {
-            chatService.sendFactionMessage(sender, connectedUsers, sender.getTeam(), message);
-        }
-    }
+		if (sender.isAdmin()) {
+			chatService.sendAdminMessage(sender, connectedUsers, message);
+		} else {
+			chatService.sendFactionMessage(sender, connectedUsers, sender.getTeam(), message);
+		}
+	}
 
 }

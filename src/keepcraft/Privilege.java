@@ -48,7 +48,7 @@ public abstract class Privilege {
 								return false;
 							}
 							if (plot.isInKeepRadius(modifyingLocation)) {
-								// TODO this would be used for an inner area for higher level faction members, same as team protection for now
+								// TODO this would be used for an inner area for higher level team members, same as team protection for now
 								return user.getTeam().getId() == protectionType;
 							}
 							if (plot.isInTeamProtectedRadius(modifyingLocation)) {
