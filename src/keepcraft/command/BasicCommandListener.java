@@ -40,10 +40,10 @@ public class BasicCommandListener extends CommandListener {
 		// Char info
 		if ((commandName.equalsIgnoreCase("who")) && args.length == 1) {
 			String targetName = args[0];
-			User target = userService.getOnlineUser(targetName);
+			User target = userService.getUser(targetName);
 
 			if (target == null) {
-				chatService.sendFailureMessage(sender, "That user does not exist"); // no user
+				chatService.sendFailureMessage(sender, String.format("'%s' is not a known user", targetName));
 				return true;
 			}
 

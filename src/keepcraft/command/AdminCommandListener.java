@@ -20,11 +20,13 @@ public class AdminCommandListener extends CommandListener {
 	private final UserService userService;
 	private final PlotService plotService;
 	private final TeamService teamService;
+	private final ChatService chatService;
 
-	public AdminCommandListener(UserService userService, PlotService plotService) {
+	public AdminCommandListener(UserService userService, PlotService plotService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
 		this.teamService = new TeamService();
+		this.chatService = chatService;
 	}
 
 	@Override
@@ -96,10 +98,10 @@ public class AdminCommandListener extends CommandListener {
 		// Set team
 		else if (commandName.equals("setteam") && args.length == 2) {
 			String targetName = args[0];
-			User target = userService.getOnlineUser(targetName);
+			User target = userService.getUser(targetName);
 
 			if (target == null) {
-				commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
+				chatService.sendFailureMessage(userSender, String.format("'%s' is not a known user", targetName));
 				return true;
 			}
 
@@ -108,16 +110,20 @@ public class AdminCommandListener extends CommandListener {
 				factionId = Integer.parseInt(args[1]);
 			} catch (NumberFormatException e) {
 				// invalid input
-				commandSender.sendMessage(ChatService.Failure + "Options for factions are 100 or 200");
+				chatService.sendFailureMessage(userSender, "Options for teams are 100 (Red) or 200 (Blue)");
 				return false;
 			}
 
 			target.setTeam(UserTeam.getTeam(factionId));
-			teamService.addPlayerToTeam(UserTeam.getTeam(factionId), Bukkit.getPlayer(targetName));
 			userService.updateUser(target);
+			chatService.sendSuccessMessage(userSender, String.format("Set '%s' to team %s", target.getName(), target.getTeam().getChatColoredNamed()));
 
-			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserTeam.getChatColoredName(factionId));
-			commandSender.getServer().getPlayer(targetName).sendMessage(ChatService.Change + "Your faction was changed to " + UserTeam.getChatColoredName(factionId));
+			Player player = Bukkit.getPlayer(targetName);
+			if (player != null) {
+				teamService.addPlayerToTeam(UserTeam.getTeam(factionId), player);
+				chatService.sendChangeMessage(target, String.format("Your faction was changed to %s", target.getTeam().getChatColoredNamed()));
+			}
+
 			return true;
 		} // Delete a user's record
 		else if (commandName.equals("delete") && args.length == 1) {

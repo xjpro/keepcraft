@@ -1,15 +1,15 @@
 package keepcraft.services;
 
-import java.util.Collection;
-import java.util.logging.Logger;
-
+import keepcraft.data.models.Plot;
+import keepcraft.data.models.User;
+import keepcraft.data.models.UserPrivilege;
 import keepcraft.data.models.UserTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.User;
-import keepcraft.data.models.UserPrivilege;
+
+import java.util.Collection;
+import java.util.logging.Logger;
 
 public class ChatService {
 
@@ -99,23 +99,23 @@ public class ChatService {
 	}
 
 	public void sendAlertMessage(User target, String text) {
-		String message = String.format(ChatService.AlertFormat, ChatService.Info, text);
-		Bukkit.getPlayer(target.getName()).sendMessage(message);
+		sendBasicColoredMessage(target.getName(), ChatService.Info, text);
 	}
 
 	public void sendInfoMessage(User target, String text) {
-		String message = String.format(ChatService.AlertFormat, ChatService.RequestedInfo, text);
-		Bukkit.getPlayer(target.getName()).sendMessage(message);
+		sendBasicColoredMessage(target.getName(), ChatService.RequestedInfo, text);
+	}
+
+	public void sendChangeMessage(User target, String text) {
+		sendBasicColoredMessage(target.getName(), ChatService.Change, text);
 	}
 
 	public void sendSuccessMessage(User target, String text) {
-		String message = String.format(ChatService.AlertFormat, ChatService.Success, text);
-		Bukkit.getPlayer(target.getName()).sendMessage(message);
+		sendBasicColoredMessage(target.getName(), ChatService.Success, text);
 	}
 
 	public void sendFailureMessage(User target, String text) {
-		String message = String.format(ChatService.AlertFormat, ChatService.Failure, text);
-		Bukkit.getPlayer(target.getName()).sendMessage(message);
+		sendBasicColoredMessage(target.getName(), ChatService.Failure, text);
 	}
 
 	public void sendGlobalAlertMessage(String text) {
@@ -160,5 +160,17 @@ public class ChatService {
 		target.setLastPrivateMessageSender(sender.getName());
 
 		logger.info(sentBy.getName() + " " + feedback);
+	}
+
+	private void sendBasicColoredMessage(String playerName, ChatColor color, String text) {
+		String message = String.format(ChatService.AlertFormat, color, text);
+		if (playerName.equals("CONSOLE")) {
+			logger.info(message);
+		} else {
+			Player player = Bukkit.getPlayer(playerName);
+			if (player != null) {
+				player.sendMessage(message);
+			}
+		}
 	}
 }

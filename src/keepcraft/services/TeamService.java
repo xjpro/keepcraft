@@ -16,6 +16,7 @@ public class TeamService {
 	}
 
 	public void addPlayerToTeam(UserTeam userTeam, Player player) {
+		if (player == null) return;
 
 		// TODO teams might persist through server reboots, meaning it would only be necessary to do this when the user is first created
 

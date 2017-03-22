@@ -39,7 +39,8 @@ public class UserService {
 	}
 
 	public User getUser(String name) {
-		return userDataManager.getData(name);
+		User onlineUser = getOnlineUser(name);
+		return onlineUser != null ? onlineUser : userDataManager.getData(name);
 	}
 
 	public User getOnlineUser(String name) {
