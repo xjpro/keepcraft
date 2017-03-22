@@ -42,7 +42,7 @@ public class TeamService {
 			team = scoreboard.registerNewTeam(userTeam.getName());
 			team.setDisplayName(userTeam.getName());
 			team.setPrefix(userTeam.getChatColor().toString() + "<" + ChatColor.RESET);
-			team.setSuffix(userTeam.getChatColor().toString() + ">");
+			team.setSuffix(userTeam.getChatColor().toString() + ">" + ChatColor.RESET);
 			team.setAllowFriendlyFire(false);
 			team.setCanSeeFriendlyInvisibles(true);
 		}
