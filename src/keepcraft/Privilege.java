@@ -5,14 +5,7 @@ import org.bukkit.Location;
 
 public abstract class Privilege {
 
-	private static final int MAP_RADIUS = 3000;
-
 	public static boolean canInteract(User user, Location modifyingLocation, Plot plot) {
-//		Location worldCenter = new Location(Keepcraft.getWorld(), 0, 64, 0);
-//		if (worldCenter.distance(modifyingLocation) > MAP_RADIUS) {
-//			return false; // maximum map size exceeded
-//		}
-
 		if (plot == null || plot.getProtection() == null) {
 			return true; // Not in a plot
 		}

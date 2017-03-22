@@ -111,8 +111,10 @@ public class UserService {
 
 	// Create a user not distributed at start of map
 	private User createUser(String userName) {
+		boolean hasHistoricalRecord = true;//userStatsDataManager.hasHistoricalRecord(userName);
+
 		User user = new User(userName);
-		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
+		user.setPrivilege(hasHistoricalRecord ? UserPrivilege.MEMBER_VETERAN : UserPrivilege.MEMBER_START);
 		user.setTeam(UserTeam.getTeam(selectTeamUsingCurrentUserCount()));
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(-1);

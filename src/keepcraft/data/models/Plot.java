@@ -3,6 +3,7 @@ package keepcraft.data.models;
 import keepcraft.services.ChatService;
 import keepcraft.tasks.Siege;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -226,4 +227,82 @@ public class Plot {
 		return info;
 	}
 
+	// Can interact, i.e. open chests, activate switches, etc.
+	public boolean canInteract(User user, Block interactedWith) {
+		UserPrivilege userPrivilege = user.getPrivilege();
+		if (userPrivilege == UserPrivilege.ADMIN) return true;
+
+		int plotProtectionId = getProtection().getType();
+		switch (plotProtectionId) {
+			case PlotProtection.PUBLIC:
+			case PlotProtection.PRIVATE: // todo unsupported at the moment
+				return true;
+			default:
+				// Team protection
+				if (isInTeamProtectedRadius(interactedWith.getLocation()) && user.getTeam().getId() == plotProtectionId) {
+					if (userPrivilege == UserPrivilege.NONMEMBER) {
+						return false; // Exception: non-members cannot interact with anything
+					}
+
+					if (userPrivilege == UserPrivilege.MEMBER_START) {
+						// Special rules for starting members: can interact with basic doors, switches, vehicles
+						switch (interactedWith.getType()) {
+							case DARK_OAK_DOOR:
+							case ACACIA_DOOR:
+							case BIRCH_DOOR:
+							case JUNGLE_DOOR:
+							case SPRUCE_DOOR:
+							case WOOD_DOOR:
+							case TRAP_DOOR:
+							case WOOD_PLATE:
+							case STONE_PLATE:
+							case LEVER:
+							case WOOD_BUTTON:
+							case STONE_BUTTON:
+							case BOAT:
+							case BOAT_ACACIA:
+							case BOAT_BIRCH:
+							case BOAT_DARK_OAK:
+							case BOAT_JUNGLE:
+							case BOAT_SPRUCE:
+							case MINECART:
+								return true;
+							default:
+								return false;
+						}
+					}
+
+					if (userPrivilege == UserPrivilege.MEMBER_NORMAL || userPrivilege == UserPrivilege.MEMBER_VETERAN) {
+						// Normal and veteran members can access anything in team protected area
+						return true;
+					}
+				}
+				return false; // No known cases matched
+		}
+	}
+
+	// Can modify, i.e. place and remove blocks
+	public boolean canModify(User user, Location location) {
+		UserPrivilege userPrivilege = user.getPrivilege();
+		if (userPrivilege == UserPrivilege.ADMIN) return true;
+
+		int plotProtectionId = getProtection().getType();
+		switch (plotProtectionId) {
+			case PlotProtection.PUBLIC:
+			case PlotProtection.PRIVATE: // todo unsupported at the moment
+				return true;
+			default:
+				// Team protection
+				if (isInTeamProtectedRadius(location) && user.getTeam().getId() == plotProtectionId) {
+					if (userPrivilege == UserPrivilege.NONMEMBER || userPrivilege == UserPrivilege.MEMBER_START) {
+						return false; // Exception: non-members and starting members cannot interact with anything
+					}
+					if (userPrivilege == UserPrivilege.MEMBER_NORMAL || userPrivilege == UserPrivilege.MEMBER_VETERAN) {
+						// Normal and veteran members can access anything in team protected area
+						return true;
+					}
+				}
+				return false; // No known cases matched
+		}
+	}
 }
