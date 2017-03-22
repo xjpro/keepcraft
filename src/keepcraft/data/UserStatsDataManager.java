@@ -158,24 +158,28 @@ public class UserStatsDataManager {
 		return previouslyPlayedUserNames;
 	}
 
-	public boolean hasHistoricalRecord(String userName) {
-		boolean found = false;
-		Keepcraft.log(String.format("Checking for existence of %s", userName));
+	public long getSecondsPlayedOnServer(String userName) {
+		long secondsPlayed = 0;
+		Keepcraft.log(String.format("Checking for time spent on server for '%s'", userName));
 		try {
 			PreparedStatement statement
-					= database.createStatement("SELECT ROWID FROM userStats WHERE UserName = ? LIMIT 1");
+					= database.createStatement("SELECT SUM(PlaySeconds) AS TotalPlayed FROM userStats WHERE UserName = ?");
 			statement.setString(1, userName);
 			ResultSet result = statement.executeQuery();
 
-			found = result.next();
+			boolean found = result.next();
+
+			if (found) {
+				secondsPlayed = result.getLong("TotalPlayed");
+			}
 
 			result.close();
 		} catch (Exception e) {
-			Keepcraft.error("Error during first time lookup: " + e.getMessage());
+			Keepcraft.error("Error during time spent on server lookup: " + e.getMessage());
 		} finally {
 			database.close();
 		}
 
-		return found;
+		return secondsPlayed;
 	}
 }

@@ -19,6 +19,7 @@ public class User {
 	private int money;
 	private int loggedOffFriendlyPlotId;
 	private boolean firstTimeLogin;
+	private long secondsPlayedOnServer;
 
 	// Non persistent real time data
 	private Date logOnDateTime = null;
@@ -206,5 +207,13 @@ public class User {
 
 	public void setPersistentSneak(boolean sneak) {
 		this.persistentSneak = sneak;
+	}
+
+	public long getSecondsPlayedOnServer() {
+		return secondsPlayedOnServer;
+	}
+
+	public void setSecondsPlayedOnServer(long seconds) {
+		secondsPlayedOnServer = seconds;
 	}
 }
