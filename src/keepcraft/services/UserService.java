@@ -34,6 +34,10 @@ public class UserService {
 		return onlineUsers.values();
 	}
 
+	public Collection<User> getUsers() {
+		return userDataManager.getAllUsers();
+	}
+
 	public User getUser(String name) {
 		return userDataManager.getData(name);
 	}
@@ -87,7 +91,7 @@ public class UserService {
 
 		// Alternate through the list, placing users in each team
 		// Teams will be A C E and B D F
-		UserTeam userTeam = UserTeam.getFaction(UserTeam.getRandomTeamId());
+		UserTeam userTeam = UserTeam.getTeam(UserTeam.getRandomTeamId());
 		for (String userName : recentlyPlayedUserNamesByPlayTime) {
 			// todo temporary hack to ignore admins in stats, will be resolved in a few maps as changes were made to clear admin playtime
 			if (userName.equalsIgnoreCase("SummitMC") || userName.equalsIgnoreCase("Sivias")) continue;
@@ -108,7 +112,7 @@ public class UserService {
 	private User createUser(String userName) {
 		User user = new User(userName);
 		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
-		user.setTeam(UserTeam.getFaction(selectTeamUsingCurrentUserCount()));
+		user.setTeam(UserTeam.getTeam(selectTeamUsingCurrentUserCount()));
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(-1);
 		user.setFirstTimeLogin(true);

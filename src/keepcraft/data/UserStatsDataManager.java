@@ -118,12 +118,12 @@ public class UserStatsDataManager {
 
 		List<String> previouslyPlayedUserNames = new ArrayList<>();
 
-		// Gather all users from the past 3 maps, excluding the current map
+		// Gather all users from the past map
 		try {
 			PreparedStatement statement = database.createStatement("SELECT WorldGUID FROM userStats " +
 					"WHERE WorldGUID IS NOT NULL AND WorldGUID != ? " +
 					"GROUP BY WorldGUID " +
-					"ORDER BY RecordStart DESC LIMIT 3");
+					"ORDER BY RecordStart DESC LIMIT 1");
 			// Fake UUID if one not provided, used for testing
 			statement.setString(1, currentWorldGUID != null ? currentWorldGUID.toString() : "2b79c281-7287-4627-96fc-788a03901345");
 			ResultSet result = statement.executeQuery();

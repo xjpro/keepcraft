@@ -2,7 +2,9 @@ package keepcraft.command;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import keepcraft.data.models.UserTeam;
 import keepcraft.services.ChatService;
@@ -58,36 +60,34 @@ public class BasicCommandListener extends CommandListener {
 			}
 
 			return true;
-		} // Full server listing
+		}
+		// Full server listing of users online and offline
 		else if (commandName.equalsIgnoreCase("who") && args.length == 0) {
-			Collection<User> allUsers = userService.getOnlineUsers();
+			Collection<User> allUsers = userService.getUsers();
 
-			List<User> redUsers = new ArrayList<>();
-			List<User> blueUsers = new ArrayList<>();
-			List<User> greenUsers = new ArrayList<>();
-			List<User> otherUsers = new ArrayList<>();
+			List<User> redUsers = allUsers.stream()
+					.filter(user -> user.getTeam() == UserTeam.RED)
+					.sorted(Comparator.comparing(User::getName))
+					.collect(Collectors.toList());
 
-			for (User user : allUsers) {
-				if (user.getTeam() == UserTeam.RED) {
-					redUsers.add(user);
-				} else if (user.getTeam() == UserTeam.BLUE) {
-					blueUsers.add(user);
-				} else if (user.getTeam() == UserTeam.GREEN) {
-					greenUsers.add(user);
-				} else {
-					otherUsers.add(user);
-				}
-			}
+			List<User> blueUsers = allUsers.stream()
+					.filter(user -> user.getTeam() == UserTeam.BLUE)
+					.sorted(Comparator.comparing(User::getName))
+					.collect(Collectors.toList());
 
-			String message = "Online players:\n";
+			List<User> greenUsers = allUsers.stream()
+					.filter(user -> user.getTeam() == UserTeam.GREEN)
+					.sorted(Comparator.comparing(User::getName))
+					.collect(Collectors.toList());
+
+			String message = "Teams:\n";
 			message += this.getPlayersServerListing(redUsers);
 			message += this.getPlayersServerListing(blueUsers);
 			message += this.getPlayersServerListing(greenUsers);
-			message += this.getPlayersServerListing(otherUsers);
 
 			String[] messages = message.split("\n");
 			for (String message1 : messages) {
-				chatService.sendInfoMessage(sender, message1); // all info
+				chatService.sendInfoMessage(sender, message1);
 			}
 			return true;
 		} else if (commandName.equalsIgnoreCase("die") && args.length == 0) {
@@ -154,8 +154,7 @@ public class BasicCommandListener extends CommandListener {
 					} else {
 						requestedPlot = base;
 					}
-				}
-				else {
+				} else {
 					// /rally # with a good number, try to find the plot with that order number
 					int finalOrderNumber = orderNumber;
 					requestedPlot = plotService.getPlots().stream().filter(plot -> plot.getOrderNumber() == finalOrderNumber).findFirst().orElse(null);

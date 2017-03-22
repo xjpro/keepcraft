@@ -112,8 +112,8 @@ public class AdminCommandListener extends CommandListener {
 				return false;
 			}
 
-			target.setTeam(UserTeam.getFaction(factionId));
-			teamService.addPlayerToTeam(UserTeam.getFaction(factionId), Bukkit.getPlayer(targetName));
+			target.setTeam(UserTeam.getTeam(factionId));
+			teamService.addPlayerToTeam(UserTeam.getTeam(factionId), Bukkit.getPlayer(targetName));
 			userService.updateUser(target);
 
 			commandSender.sendMessage(ChatService.Success + "Set " + targetName + " to faction " + UserTeam.getChatColoredName(factionId));

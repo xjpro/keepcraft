@@ -111,7 +111,7 @@ public class PlotProtection {
 			case PUBLIC:
 				return "Public";
 			default:
-				UserTeam userTeam = UserTeam.getFaction(type);
+				UserTeam userTeam = UserTeam.getTeam(type);
 				return userTeam != null ? userTeam.getChatColor() + userTeam.getName() : "Unknown";
 		}
 	}

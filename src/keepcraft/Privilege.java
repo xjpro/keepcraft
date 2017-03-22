@@ -36,7 +36,7 @@ public abstract class Privilege {
 						return true;
 					default:
 
-						UserTeam userTeam = UserTeam.getFaction(protectionType);
+						UserTeam userTeam = UserTeam.getTeam(protectionType);
 						if (userTeam != null) {
 							// In a team protected plot
 

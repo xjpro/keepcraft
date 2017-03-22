@@ -7,6 +7,8 @@ import keepcraft.data.models.UserPrivilege;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class UserDataManager {
@@ -78,7 +80,7 @@ public class UserDataManager {
 			} else {
 				user = new User(name);
 				user.setPrivilege(UserPrivilege.getPrivilege(result.getInt("Privilege")));
-				user.setTeam(UserTeam.getFaction(result.getInt("Faction")));
+				user.setTeam(UserTeam.getTeam(result.getInt("Faction")));
 				user.setMoney(result.getInt("Money"));
 				user.setLoggedOffFriendlyPlotId(result.getInt("LastPlotId"));
 				user.setFirstTimeLogin(result.getString("FirstOnline") == null || result.getString("FirstOnline").length() == 0);
@@ -95,43 +97,42 @@ public class UserDataManager {
 		return user;
 	}
 
-//	public Collection<User> getAllData() {
-//		ArrayList<User> allData = new ArrayList<>();
-//
-//		Keepcraft.log("Beginning lookup of all user data");
-//
-//		try {
-//			PreparedStatement statement
-//					= database.createStatement("SELECT ROWID, Name, Privilege, Faction, Money FROM users");
-//			ResultSet result = statement.executeQuery();
-//
-//			while (result.next()) {
-//				int id = result.getInt("ROWID");
-//				String name = result.getString("Name");
-//				int privilege = result.getInt("Privilege");
-//				int faction = result.getInt("Faction");
-//				int money = result.getInt("Money");
-//				int lastPlotId = result.getInt("LastPlotId");
-//
-//				User user = new User(id);
-//				user.setName(name);
-//				user.setPrivilege(privilege);
-//				user.setTeam(faction);
-//				user.setMoney(money);
-//				user.setLoggedOffFriendlyPlotId(lastPlotId);
-//
-//				allData.add(user);
-//			}
-//
-//			result.close();
-//		} catch (Exception e) {
-//			Keepcraft.error("Error during all user data lookup: " + e.getMessage());
-//		} finally {
-//			database.close();
-//		}
-//
-//		return allData;
-//	}
+	public Collection<User> getAllUsers() {
+		ArrayList<User> allData = new ArrayList<>();
+
+		Keepcraft.log("Beginning lookup of all user data");
+
+		try {
+			PreparedStatement statement
+					= database.createStatement("SELECT ROWID, Name, Privilege, Faction, Money FROM users");
+			ResultSet result = statement.executeQuery();
+
+			while (result.next()) {
+				String name = result.getString("Name");
+				int privilegeId = result.getInt("Privilege");
+				int teamId = result.getInt("Faction");
+				int money = result.getInt("Money");
+				int lastPlotId = result.getInt("LastPlotId");
+
+				User user = new User(name);
+				user.setPrivilege(UserPrivilege.getPrivilege(privilegeId));
+				user.setTeam(UserTeam.getTeam(teamId));
+				user.setMoney(money);
+				user.setLoggedOffFriendlyPlotId(lastPlotId);
+				user.setFirstTimeLogin(result.getString("FirstOnline") == null || result.getString("FirstOnline").length() == 0);
+
+				allData.add(user);
+			}
+
+			result.close();
+		} catch (Exception e) {
+			Keepcraft.error("Error during all user data lookup: " + e.getMessage());
+		} finally {
+			database.close();
+		}
+
+		return allData;
+	}
 
 	public void putData(User user) {
 
