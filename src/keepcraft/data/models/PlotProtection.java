@@ -100,7 +100,7 @@ public class PlotProtection {
 		captureInProgress = value;
 	}
 
-	public String asString() {
+	String asString() {
 		switch (type) {
 			case ADMIN:
 				return ChatService.NameAdmin + "Admin";
@@ -112,7 +112,7 @@ public class PlotProtection {
 				return "Public";
 			default:
 				UserTeam userTeam = UserTeam.getTeam(type);
-				return userTeam != null ? userTeam.getChatColor() + userTeam.getName() : "Unknown";
+				return userTeam != null ? userTeam.getChatColoredNamed() : "Unknown";
 		}
 	}
 }
