@@ -2,6 +2,7 @@ package keepcraft.data.models;
 
 import keepcraft.services.ChatService;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 
 import java.util.Date;
 
@@ -32,6 +33,7 @@ public class User {
 	private boolean hasStealth = false;
 	private boolean toggleSneak = false; // todo persist in db
 	private boolean persistentSneak = false;
+	private Location lastFishLocation = null;
 
 	// Stats (persisted on log off)
 	private UserStats userStats = new UserStats();
@@ -215,5 +217,13 @@ public class User {
 
 	public void setSecondsPlayedOnServer(long seconds) {
 		secondsPlayedOnServer = seconds;
+	}
+
+	public Location getLastFishLocation() {
+		return lastFishLocation;
+	}
+
+	public void setLastFishLocation(Location location) {
+		lastFishLocation = location;
 	}
 }

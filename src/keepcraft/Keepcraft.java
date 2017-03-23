@@ -67,6 +67,7 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new CraftItemListener(), this);
 		manager.registerEvents(new StormListener(), this);
 		manager.registerEvents(new StatsListener(userService, plotService), this);
+		manager.registerEvents(new FishingListener(userService, chatService), this);
 
 		// Start any tasks
 		containerService.startDispensing();
