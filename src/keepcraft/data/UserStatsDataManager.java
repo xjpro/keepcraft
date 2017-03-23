@@ -133,15 +133,15 @@ public class UserStatsDataManager {
 				recentWorldGUIDs.add(result.getString("WorldGUID"));
 			}
 
-			if (recentWorldGUIDs.size() > 2) {
+			if (recentWorldGUIDs.size() > 0) {
 				// We have enough data to make this determination
 				statement = database.createStatement("SELECT UserName, SUM(PlaySeconds) AS TotalPlayed FROM userStats " +
-						"WHERE WorldGUID = ? OR WorldGUID = ? OR WorldGUID = ? " +
+						"WHERE WorldGUID = ? " +
 						"GROUP BY UserName " +
 						"ORDER BY TotalPlayed DESC");
 				statement.setString(1, recentWorldGUIDs.get(0));
-				statement.setString(2, recentWorldGUIDs.get(1));
-				statement.setString(3, recentWorldGUIDs.get(2));
+//				statement.setString(2, recentWorldGUIDs.get(1));
+//				statement.setString(3, recentWorldGUIDs.get(2));
 				result = statement.executeQuery();
 
 				while (result.next()) {

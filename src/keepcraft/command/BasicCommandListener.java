@@ -66,17 +66,17 @@ public class BasicCommandListener extends CommandListener {
 			Collection<User> allUsers = userService.getUsers();
 
 			List<User> redUsers = allUsers.stream()
-					.filter(user -> user.getTeam() == UserTeam.RED)
+					.filter(user -> user.getTeam() == UserTeam.RED && !user.isAdmin())
 					.sorted(Comparator.comparing(User::getName))
 					.collect(Collectors.toList());
 
 			List<User> blueUsers = allUsers.stream()
-					.filter(user -> user.getTeam() == UserTeam.BLUE)
+					.filter(user -> user.getTeam() == UserTeam.BLUE && !user.isAdmin())
 					.sorted(Comparator.comparing(User::getName))
 					.collect(Collectors.toList());
 
 			List<User> greenUsers = allUsers.stream()
-					.filter(user -> user.getTeam() == UserTeam.GREEN)
+					.filter(user -> user.getTeam() == UserTeam.GREEN && !user.isAdmin())
 					.sorted(Comparator.comparing(User::getName))
 					.collect(Collectors.toList());
 

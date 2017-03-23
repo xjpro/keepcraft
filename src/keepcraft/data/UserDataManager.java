@@ -147,7 +147,7 @@ public class UserDataManager {
 	}
 
 	public void deleteData(User user) {
-		Keepcraft.log("Deleting record for " + user.getName());
+		Keepcraft.log(String.format("Deleting record for '%s'", user.getName()));
 		try {
 			PreparedStatement statement
 					= database.createStatement("DELETE FROM users WHERE Name = ?");
