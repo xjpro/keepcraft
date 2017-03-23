@@ -4,6 +4,7 @@ import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
 import org.bukkit.Location;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -20,7 +21,7 @@ public class FishingListener implements Listener {
 
 	@EventHandler
 	public void onPlayerCaughtFish(PlayerFishEvent event) {
-		if (event.isCancelled()) return;
+		if (event.isCancelled() || event.getCaught() == null) return;
 
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		Location location = event.getHook().getLocation();
@@ -28,8 +29,12 @@ public class FishingListener implements Listener {
 		if (user.getLastFishLocation() != null) {
 			Location lastFishLocation = user.getLastFishLocation();
 			if (location.distance(lastFishLocation) < 3) {
+				event.setExpToDrop(0);
+				if (event.getCaught() instanceof Item) {
+					((Item) event.getCaught()).getItemStack().setAmount(0);
+				}
+
 				chatService.sendAlertMessage(user, "There are no more fish at this location");
-				event.setCancelled(true);
 			}
 		}
 
