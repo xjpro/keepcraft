@@ -49,7 +49,7 @@ public class Keepcraft extends JavaPlugin {
 
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
 			// Ensure user is loaded in cache
-			userService.loadOfflineUser(player.getName(), player.getAddress().toString());
+			userService.loadOfflineUser(player.getName(), player.getAddress().getHostString());
 		});
 
 		PluginManager manager = this.getServer().getPluginManager();
