@@ -1,6 +1,7 @@
 package keepcraft.services;
 
 import keepcraft.Keepcraft;
+import keepcraft.data.UserConnectionDataManager;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.UserStatsDataManager;
 import keepcraft.data.models.User;
@@ -18,12 +19,14 @@ public class UserService {
 	private final Plugin plugin;
 	private final UserDataManager userDataManager;
 	private final UserStatsDataManager userStatsDataManager;
+	private final UserConnectionDataManager userConnectionDataManager;
 	private HashMap<String, User> onlineUsers = new HashMap<>();
 
-	public UserService(Plugin plugin, UserDataManager userDataManager, UserStatsDataManager userStatsDataManager) {
+	public UserService(Plugin plugin, UserDataManager userDataManager, UserStatsDataManager userStatsDataManager, UserConnectionDataManager userConnectionDataManager) {
 		this.plugin = plugin;
 		this.userDataManager = userDataManager;
 		this.userStatsDataManager = userStatsDataManager;
+		this.userConnectionDataManager = userConnectionDataManager;
 	}
 
 	public void refreshCache() {
@@ -56,10 +59,14 @@ public class UserService {
 //		return player;
 //	}
 
-	public User loadOfflineUser(String name) {
+	public User loadOfflineUser(String name, String ip) {
 		User user = userDataManager.exists(name) ? userDataManager.getData(name) : createUser(name);
 		user.startPlayTime();
 		onlineUsers.put(user.getName(), user);
+
+		// Log ip
+		userConnectionDataManager.saveIP(name, ip);
+
 		return user;
 	}
 

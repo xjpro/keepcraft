@@ -1,6 +1,7 @@
 package keepcraft.services;
 
 import keepcraft.data.Database;
+import keepcraft.data.UserConnectionDataManager;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.UserStatsDataManager;
 import keepcraft.data.models.User;
@@ -25,6 +26,7 @@ class UserServiceTest {
 		Database database = new Database("keepcraft_test.db");
 		userDataManager = new UserDataManager(database);
 		UserStatsDataManager userStatsDataManager = new UserStatsDataManager(database);
+		UserConnectionDataManager userConnectionDataManager = new UserConnectionDataManager(database);
 
 		// World 1
 		UUID uuid = UUID.randomUUID();
@@ -104,22 +106,22 @@ class UserServiceTest {
 
 		// PlayedAlot: 500, Doji: 150, SummitMC: 90, Sivias: 80 | jjnguy: 60, AbeFrohman: 30, NeverPlays: 15
 
-		userService = new UserService(null, userDataManager, userStatsDataManager);
+		userService = new UserService(null, userDataManager, userStatsDataManager, userConnectionDataManager);
 	}
 
 	@Test
 	void teamAssignmentNonActivesFirst() {
 
-		User abe = userService.loadOfflineUser("AbeFrohman"); // A or B
-		User jjnguy = userService.loadOfflineUser("jjnguy"); // not on abe's team
+		User abe = userService.loadOfflineUser("AbeFrohman", "localhost"); // A or B
+		User jjnguy = userService.loadOfflineUser("jjnguy", "localhost"); // not on abe's team
 		assertTeamsEqual();
-		User never = userService.loadOfflineUser("NeverPlays"); // A or B
-		User summit = userService.loadOfflineUser("SummitMC"); // first active, no other actives present so we can expect summit to be put on small team
+		User never = userService.loadOfflineUser("NeverPlays", "localhost"); // A or B
+		User summit = userService.loadOfflineUser("SummitMC", "localhost"); // first active, no other actives present so we can expect summit to be put on small team
 		assertTeamsEqual();
-		User sivias = userService.loadOfflineUser("Sivias"); // second active: not Summit's team
-		User doji = userService.loadOfflineUser("DojiSuave"); // A or B
+		User sivias = userService.loadOfflineUser("Sivias", "localhost"); // second active: not Summit's team
+		User doji = userService.loadOfflineUser("DojiSuave", "localhost"); // A or B
 		assertTeamsEqual();
-		User alot = userService.loadOfflineUser("PlayedAlot"); // not on Doji's team
+		User alot = userService.loadOfflineUser("PlayedAlot", "localhost"); // not on Doji's team
 		assertTeamsNotEqual();
 
 		assertNotEquals(abe.getTeam(), jjnguy.getTeam()); // joined after eachother, would never be on same team
@@ -129,16 +131,16 @@ class UserServiceTest {
 
 	@Test
 	void teamAssignmentActivesFirst() {
-		User summit = userService.loadOfflineUser("SummitMC"); // A or B
-		User sivias = userService.loadOfflineUser("Sivias"); // not Summit's team
+		User summit = userService.loadOfflineUser("SummitMC", "localhost"); // A or B
+		User sivias = userService.loadOfflineUser("Sivias", "localhost"); // not Summit's team
 		assertTeamsEqual();
-		User doji = userService.loadOfflineUser("DojiSuave"); // A or B
-		User alot = userService.loadOfflineUser("PlayedAlot"); // not on Doji's team
+		User doji = userService.loadOfflineUser("DojiSuave", "localhost"); // A or B
+		User alot = userService.loadOfflineUser("PlayedAlot", "localhost"); // not on Doji's team
 		assertTeamsEqual();
-		User abe = userService.loadOfflineUser("AbeFrohman"); // A or B
-		User jjnguy = userService.loadOfflineUser("jjnguy"); // not on Abe's team
+		User abe = userService.loadOfflineUser("AbeFrohman", "localhost"); // A or B
+		User jjnguy = userService.loadOfflineUser("jjnguy", "localhost"); // not on Abe's team
 		assertTeamsEqual();
-		User never = userService.loadOfflineUser("NeverPlays"); // which team needs numbers
+		User never = userService.loadOfflineUser("NeverPlays", "localhost"); // which team needs numbers
 		assertTeamsNotEqual();
 
 		assertNotEquals(summit.getTeam(), sivias.getTeam()); // joined after eachother, would never be on same team
@@ -149,15 +151,15 @@ class UserServiceTest {
 	@Test
 	void teamAssignment1() {
 
-		User summit = userService.loadOfflineUser("SummitMC"); // put on team A
-		User jjnguy = userService.loadOfflineUser("jjnguy"); // as non-active, should be put on team B to balance numbers
+		User summit = userService.loadOfflineUser("SummitMC", "localhost"); // put on team A
+		User jjnguy = userService.loadOfflineUser("jjnguy", "localhost"); // as non-active, should be put on team B to balance numbers
 		assertTeamsEqual();
-		User sivias = userService.loadOfflineUser("Sivias"); // normally random but since active player, should be on team B
-		User never = userService.loadOfflineUser("NeverPlays"); // as non-active, should be put on team A to balance numbers
+		User sivias = userService.loadOfflineUser("Sivias", "localhost"); // normally random but since active player, should be on team B
+		User never = userService.loadOfflineUser("NeverPlays", "localhost"); // as non-active, should be put on team A to balance numbers
 		assertTeamsEqual();
-		User doji = userService.loadOfflineUser("DojiSuave"); // active players are even, selection random
-		User abe = userService.loadOfflineUser("AbeFrohman"); // should not be on doji's team
-		User alot = userService.loadOfflineUser("PlayedAlot");
+		User doji = userService.loadOfflineUser("DojiSuave", "localhost"); // active players are even, selection random
+		User abe = userService.loadOfflineUser("AbeFrohman", "localhost"); // should not be on doji's team
+		User alot = userService.loadOfflineUser("PlayedAlot", "localhost");
 		assertTeamsNotEqual();
 
 		assertNotEquals(summit.getTeam(), sivias.getTeam()); // 1 and 2nd active players, should not be on same team
@@ -168,14 +170,14 @@ class UserServiceTest {
 
 	@Test
 	void teamAssignmentMixed2() {
-		User alot = userService.loadOfflineUser("PlayedAlot"); // A or B
-		User summit = userService.loadOfflineUser("SummitMC"); // not on alot's team
+		User alot = userService.loadOfflineUser("PlayedAlot", "localhost"); // A or B
+		User summit = userService.loadOfflineUser("SummitMC", "localhost"); // not on alot's team
 		assertTeamsEqual();
-		User abe = userService.loadOfflineUser("AbeFrohman"); // A or B
-		User never = userService.loadOfflineUser("NeverPlays"); // not on abe's team
+		User abe = userService.loadOfflineUser("AbeFrohman", "localhost"); // A or B
+		User never = userService.loadOfflineUser("NeverPlays", "localhost"); // not on abe's team
 		assertTeamsEqual();
-		User sivias = userService.loadOfflineUser("Sivias"); // A or B
-		User doji = userService.loadOfflineUser("DojiSuave"); // not on Sivias' team
+		User sivias = userService.loadOfflineUser("Sivias", "localhost"); // A or B
+		User doji = userService.loadOfflineUser("DojiSuave", "localhost"); // not on Sivias' team
 		assertTeamsEqual();
 
 		assertNotEquals(summit.getTeam(), alot.getTeam());
@@ -185,16 +187,16 @@ class UserServiceTest {
 
 	@Test
 	void teamAssignmentMixed3() {
-		User summit = userService.loadOfflineUser("SummitMC"); // A or B
-		User never = userService.loadOfflineUser("NeverPlays"); // not on summit's team
+		User summit = userService.loadOfflineUser("SummitMC", "localhost"); // A or B
+		User never = userService.loadOfflineUser("NeverPlays", "localhost"); // not on summit's team
 		assertTeamsEqual();
-		User sivias = userService.loadOfflineUser("Sivias"); // not on summit's team, on Never's team
-		User abe = userService.loadOfflineUser("AbeFrohman"); // on summit's team to even things out
+		User sivias = userService.loadOfflineUser("Sivias", "localhost"); // not on summit's team, on Never's team
+		User abe = userService.loadOfflineUser("AbeFrohman", "localhost"); // on summit's team to even things out
 		assertTeamsEqual();
-		User jjnguy = userService.loadOfflineUser("jjnguy"); // A or B, random
-		User doji = userService.loadOfflineUser("DojiSuave"); // actives even, not on jjnguy's team, evening things again
+		User jjnguy = userService.loadOfflineUser("jjnguy", "localhost"); // A or B, random
+		User doji = userService.loadOfflineUser("DojiSuave", "localhost"); // actives even, not on jjnguy's team, evening things again
 		assertTeamsEqual();
-		User alot = userService.loadOfflineUser("PlayedAlot"); // not on Doji's team, actives now even
+		User alot = userService.loadOfflineUser("PlayedAlot", "localhost"); // not on Doji's team, actives now even
 
 		assertNotEquals(summit.getTeam(), never.getTeam());
 		assertNotEquals(summit.getTeam(), sivias.getTeam());

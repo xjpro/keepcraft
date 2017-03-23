@@ -27,9 +27,10 @@ public class Keepcraft extends JavaPlugin {
 
 	private final Database statsDatabase = new Database("keepcraft_stats.db");
 	private final UserStatsDataManager userStatsDataManager = new UserStatsDataManager(statsDatabase);
+	private final UserConnectionDataManager userConnectionDataManager = new UserConnectionDataManager(statsDatabase);
 
 	// Services
-	private final UserService userService = new UserService(this, userDataManager, userStatsDataManager);
+	private final UserService userService = new UserService(this, userDataManager, userStatsDataManager, userConnectionDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
 	private final ContainerService containerService = new ContainerService(this, containerDataManager, mapDataManager);
@@ -48,7 +49,7 @@ public class Keepcraft extends JavaPlugin {
 
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
 			// Ensure user is loaded in cache
-			userService.loadOfflineUser(player.getName());
+			userService.loadOfflineUser(player.getName(), player.getAddress().toString());
 		});
 
 		PluginManager manager = this.getServer().getPluginManager();

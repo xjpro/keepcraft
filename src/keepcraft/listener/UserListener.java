@@ -40,7 +40,7 @@ public class UserListener implements Listener {
 		Player player = event.getPlayer();
 		//Player player = userService.loadMetadata(event.getPlayer());
 
-		User user = userService.loadOfflineUser(player.getName());
+		User user = userService.loadOfflineUser(player.getName(), player.getAddress().toString());
 
 		if (user.isFirstTimeLogin()) {
 			if (player.isOp()) {
