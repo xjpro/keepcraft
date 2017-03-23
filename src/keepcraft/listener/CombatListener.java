@@ -109,18 +109,15 @@ public class CombatListener implements Listener {
 		// original formula
 		// damage = damage * ( 1 - min( 20, max( defensePoints / 5, defensePoints - damage / ( 2 + toughness / 4 ) ) ) / 25 )
 		// Note we completely ignore the toughness attribute that diamond gets, further reducing its effectiveness
-		double damageReductionFromArmor = baseDamage - (baseDamage * (1 - Math.min(20, Math.max(defensePoints / 5, defensePoints - baseDamage / (2))) / 25));
+		double damageReductionFromArmor = baseDamage - (baseDamage * (1 - Math.min(20, Math.max(defensePoints / 5, defensePoints - baseDamage / 2)) / 25));
 
 		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, -damageReductionFromArmor);
 
 		// Apply damage reduction for wearing enchantments
-		//int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
+		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
 		// Each point of enchantment protection provides 0.75% (vanilla is 4%) damage reduction, maxing out at 15%
-		//double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
-		//event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
-
-		// NO PROTECTION ANYMORE
-		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, 0);
+		double magicalArmorReduction = baseDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
+		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
 
 		if (isArrowHit && event.getFinalDamage() > 0) {
 			// Remove food when damaged by an arrow
