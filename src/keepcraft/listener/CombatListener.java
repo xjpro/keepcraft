@@ -100,12 +100,18 @@ public class CombatListener implements Listener {
 
 		// Apply damage reduction for wearing armor
 		double defensePoints = Armor.getDefensePoints(damaged);
-		// Reduction of armor on a sliding scale where more reduction is applied when more armor is present
+		// Reduce armor on a sliding scale where more reduction is applied when more armor is present
 		// Diamond armor (20 points) = 25% less effective than vanilla
 		// Iron armor (15 points) = 18.75% less effective than vanilla
 		// Leather armor (7 points) = 8.75% less effective than vanilla
-		double armorReduction = defensePoints / 80;
-		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, event.getDamage(EntityDamageEvent.DamageModifier.ARMOR) * (1 - armorReduction));
+		defensePoints *= 1 + (defensePoints / 80);
+
+		// original formula
+		// damage = damage * ( 1 - min( 20, max( defensePoints / 5, defensePoints - damage / ( 2 + toughness / 4 ) ) ) / 25 )
+		// Note we completely ignore the toughness attribute that diamond gets, further reducing its effectiveness
+		double damageReductionFromArmor = baseDamage - (baseDamage * (1 - Math.min(20, Math.max(defensePoints / 5, defensePoints - baseDamage / (2))) / 25));
+
+		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, -damageReductionFromArmor);
 
 		// Apply damage reduction for wearing enchantments
 		//int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
@@ -147,13 +153,13 @@ public class CombatListener implements Listener {
 			// Flame arrows, by default burn target for 5 seconds
 			// There's only one level to this so we don't need to check
 			// Reduce duration to 2 seconds
-			event.setDuration(2);
+			event.getCombuster().setFireTicks(40);
 		} else if (event.getEntityType().equals(EntityType.PLAYER)) {
 			// Fire Aspect weapons, by default burn target for 4 seconds (80 time tick) per level
 			int enchantmentLevel = ((Player) event.getEntity()).getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.FIRE_ASPECT);
 
 			// Reduce duration to 2 seconds per level
-			event.setDuration(enchantmentLevel * 2);
+			event.getCombuster().setFireTicks(enchantmentLevel * 40);
 		}
 	}
 
