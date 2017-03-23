@@ -108,10 +108,13 @@ public class CombatListener implements Listener {
 		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, event.getDamage(EntityDamageEvent.DamageModifier.ARMOR) * (1 - armorReduction));
 
 		// Apply damage reduction for wearing enchantments
-		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
+		//int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
 		// Each point of enchantment protection provides 0.75% (vanilla is 4%) damage reduction, maxing out at 15%
-		double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
-		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
+		//double magicalArmorReduction = originalDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
+		//event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
+
+		// NO PROTECTION ANYMORE
+		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, 0);
 
 		if (isArrowHit && event.getFinalDamage() > 0) {
 			// Remove food when damaged by an arrow
