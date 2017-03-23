@@ -104,23 +104,16 @@ public class UserDataManager {
 
 		try {
 			PreparedStatement statement
-					= database.createStatement("SELECT ROWID, Name, Privilege, Faction, Money FROM users");
+					= database.createStatement("SELECT ROWID, Name, Privilege, Faction, Money, LastPlotId, FirstOnline FROM users");
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				String name = result.getString("Name");
-				int privilegeId = result.getInt("Privilege");
-				int teamId = result.getInt("Faction");
-				int money = result.getInt("Money");
-				int lastPlotId = result.getInt("LastPlotId");
-
-				User user = new User(name);
-				user.setPrivilege(UserPrivilege.getPrivilege(privilegeId));
-				user.setTeam(UserTeam.getTeam(teamId));
-				user.setMoney(money);
-				user.setLoggedOffFriendlyPlotId(lastPlotId);
+				User user = new User(result.getString("Name"));
+				user.setPrivilege(UserPrivilege.getPrivilege(result.getInt("Privilege")));
+				user.setTeam(UserTeam.getTeam(result.getInt("Faction")));
+				user.setMoney(result.getInt("Money"));
+				user.setLoggedOffFriendlyPlotId(result.getInt("LastPlotId"));
 				user.setFirstTimeLogin(result.getString("FirstOnline") == null || result.getString("FirstOnline").length() == 0);
-
 				allData.add(user);
 			}
 
