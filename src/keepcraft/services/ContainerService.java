@@ -74,8 +74,6 @@ public class ContainerService {
 			@Override
 			public void run() {
 				long mapAgeInDays = mapDataManager.getMapAgeInSeconds() / 60 / 60 / 24;
-				System.out.println("map  is" + mapDataManager.getMapAgeInSeconds() + " seconds old");
-				System.out.println("map  is" + mapAgeInDays + " days old");
 				if (mapAgeInDays == 0) return;
 
 				for (Container container : getOutputtingContainers()) {

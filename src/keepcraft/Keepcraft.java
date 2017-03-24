@@ -37,6 +37,7 @@ public class Keepcraft extends JavaPlugin {
 	private final ChatService chatService = new ChatService(userService);
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 	private final RallyService rallyService = new RallyService(chatService);
+	private final AnnouncementService announcementService = new AnnouncementService(chatService);
 
 	@Override
 	public void onEnable() {
@@ -51,6 +52,8 @@ public class Keepcraft extends JavaPlugin {
 			// Ensure user is loaded in cache
 			userService.loadOfflineUser(player.getName(), player.getAddress().getHostString());
 		});
+
+		announcementService.queueAnnoucements();
 
 		PluginManager manager = this.getServer().getPluginManager();
 
