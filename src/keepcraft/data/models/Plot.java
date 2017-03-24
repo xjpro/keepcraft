@@ -2,6 +2,7 @@ package keepcraft.data.models;
 
 import keepcraft.services.ChatService;
 import keepcraft.tasks.Siege;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
@@ -118,7 +119,7 @@ public class Plot {
 	}
 
 	public String getColoredName() {
-		return UserTeam.getChatColor(getProtection().getType()) + name;
+		return UserTeam.getChatColor(getProtection().getType()) + name + ChatColor.RESET;
 	}
 
 	public void setName(String value) {

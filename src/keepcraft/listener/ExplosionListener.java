@@ -6,6 +6,8 @@ import keepcraft.data.models.PlotProtection;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -46,13 +48,15 @@ public class ExplosionListener implements Listener {
 
 		if (plot != null && plot.isUnderCenter(location) && plot.isTeamProtected()) {
 
-			Keepcraft.log("Team plot core destroyed");
-			chatService.sendGlobalAlertMessage(String.format("%s has been destroyed!", plot.getName()));
-			chatService.sendGlobalAlertMessage("The map will reset tomorrow at 8pm CST");
+			Location plotLocation = plot.getLocation();
 
-			// Make plot public
-			plot.getProtection().setType(PlotProtection.ADMIN);
-			plotService.updatePlot(plot);
+			// Remove diamond blocks
+			for (int y = 0; y < plotLocation.getBlockY(); y++) {
+				Block centerBlock = plotLocation.getWorld().getBlockAt(plotLocation.getBlockX(), y, plotLocation.getBlockZ());
+				if (centerBlock.getType() == Material.DIAMOND_BLOCK) {
+					centerBlock.setType(Material.AIR);
+				}
+			}
 
 			// Blow some shit up
 			Location explosionLocation = plot.getLocation().clone();
@@ -61,14 +65,28 @@ public class ExplosionListener implements Listener {
 				location.getWorld().createExplosion(explosionLocation.add(0, 4, 0), 8f);
 			}
 
-			// Create reset flag
-			File file = new File("reset-map.flag");
-			try {
-				// Drop a reset flag file as a signal to outside world to run the reset-map.sh script
-				file.createNewFile();
-			} catch (IOException e) {
-				Keepcraft.error("Error creating reset flag file");
-				e.printStackTrace();
+			chatService.sendGlobalAlertMessage(String.format("%s has been destroyed!", plot.getColoredName()));
+
+			if (plot.isBasePlot()) {
+				Keepcraft.log("Team base core destroyed");
+				chatService.sendGlobalAlertMessage("The map will reset tomorrow at 8pm CST");
+
+				// Make plot public
+				plot.getProtection().setType(PlotProtection.ADMIN);
+				plotService.updatePlot(plot);
+
+				// Create reset flag
+				File file = new File("reset-map.flag");
+				try {
+					// Drop a reset flag file as a signal to outside world to run the reset-map.sh script
+					file.createNewFile();
+				} catch (IOException e) {
+					Keepcraft.error("Error creating reset flag file");
+					e.printStackTrace();
+				}
+			} else {
+				// Remove outpost plot entirely
+				plotService.removePlot(plot);
 			}
 		}
 	}
