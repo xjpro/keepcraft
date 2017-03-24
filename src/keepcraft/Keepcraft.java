@@ -139,6 +139,7 @@ public class Keepcraft extends JavaPlugin {
 	public void onDisable() {
 		// Stop any tasks
 		containerService.stopDispensing();
+		announcementService.cancelQueuedAnnouncements();
 
 		// Save everybody's user data
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {

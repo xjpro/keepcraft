@@ -9,9 +9,11 @@ import java.util.TimerTask;
 public class AnnouncementService {
 
 	private final ChatService chatService;
+	private final Timer timer;
 
 	public AnnouncementService(ChatService chatService) {
 		this.chatService = chatService;
+		timer = new Timer();
 	}
 
 	public void queueAnnoucements() {
@@ -21,7 +23,7 @@ public class AnnouncementService {
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 
-		(new Timer()).schedule(new TimerTask() {
+		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				chatService.sendGlobalAlertMessage("Raiding hours are now open");
@@ -32,11 +34,15 @@ public class AnnouncementService {
 		calendar.set(Calendar.MINUTE, 59);
 		calendar.set(Calendar.SECOND, 59);
 
-		(new Timer()).schedule(new TimerTask() {
+		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				chatService.sendGlobalAlertMessage("Raiding hours are now closed");
 			}
 		}, calendar.getTime());
+	}
+
+	public void cancelQueuedAnnouncements() {
+		timer.cancel();
 	}
 }
