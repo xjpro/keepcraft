@@ -5,6 +5,9 @@ import keepcraft.data.models.*;
 import org.bukkit.Location;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlotService {
 
@@ -52,6 +55,17 @@ public class PlotService {
 		}
 	}
 
+	public int getUnusedOrderNumber() {
+		int orderNumber = 1;
+		List<Plot> plotsByOrderNumber = plots.stream()
+				.sorted(Comparator.comparing(Plot::getOrderNumber))
+				.collect(Collectors.toList());
+		for (Plot plot : plotsByOrderNumber) {
+			if (plot.getOrderNumber() == orderNumber) orderNumber++;
+		}
+		return orderNumber;
+	}
+
 	public void removePlot(Plot plot) {
 		plotDataManager.deletePlot(plot);
 		plots.remove(plot);
@@ -89,6 +103,7 @@ public class PlotService {
 		String plotName = String.format("Outpost de %s", user.getName());
 		Plot plot = plotDataManager.createPlot(worldPoint, plotName, Plot.DEFAULT_OUTPOST_RADIUS);
 		plot.setCreator(user.getName());
+		plot.setOrderNumber(getUnusedOrderNumber());
 		PlotProtection protection = plot.getProtection();
 		protection.setType(user.getTeam().getId());
 		protection.setCapturable(true);
