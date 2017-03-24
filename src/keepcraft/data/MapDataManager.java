@@ -57,6 +57,10 @@ public class MapDataManager {
 		return ageInSeconds;
 	}
 
+	public int getMapAgeInDays() {
+		return Math.round(getMapAgeInSeconds() / 60 / 60 / 24);
+	}
+
 	public WorldPoint getMapCenter() {
 		WorldPoint center = null;
 		try {

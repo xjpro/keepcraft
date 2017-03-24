@@ -70,7 +70,7 @@ public class ContainerService {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				long mapAgeInDays = Math.round(mapDataManager.getMapAgeInSeconds() / 60 / 60 / 24);
+				long mapAgeInDays = mapDataManager.getMapAgeInDays();
 				if (mapAgeInDays < 1) return;
 
 				for (Container container : getOutputtingContainers()) {
