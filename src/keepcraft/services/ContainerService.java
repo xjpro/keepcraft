@@ -7,7 +7,8 @@ import keepcraft.data.models.WorldPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Collection;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ContainerService {
@@ -63,23 +64,32 @@ public class ContainerService {
 	}
 
 	public void startDispensing() {
-		if (plugin == null) return;
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getTimeZone(ZoneId.of("America/Chicago")));
+		calendar.set(Calendar.HOUR_OF_DAY, 20);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 10);
 
-		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+		(new Timer()).schedule(new TimerTask() {
+			@Override
+			public void run() {
+				long mapAgeInDays = mapDataManager.getMapAgeInSeconds() / 60 / 60 / 24;
+				System.out.println("map  is" + mapDataManager.getMapAgeInSeconds() + " seconds old");
+				System.out.println("map  is" + mapAgeInDays + " days old");
+				if (mapAgeInDays == 0) return;
 
-			long mapAgeInDays = mapDataManager.getMapAgeInSeconds() / 60 / 60 / 24;
+				for (Container container : getOutputtingContainers()) {
+					double modifier = 1;
 
-			for (Container container : getOutputtingContainers()) {
-				double modifier = 1;
+					// Base loot output increasing daily
+					if (container.getOutputType() == Container.ContainerOutputType.BASE) {
+						modifier += mapAgeInDays * 0.20; // 20% more per day
+					}
 
-				// Base loot output increasing daily
-				if (container.getOutputType() == Container.ContainerOutputType.BASE) {
-					modifier += mapAgeInDays * 0.20; // 20% more per day
+					container.dispense(modifier);
 				}
-
-				container.dispense(modifier);
 			}
-		}, 1200, 1200);
+		}, calendar.getTime());
 	}
 
 	public void stopDispensing() {

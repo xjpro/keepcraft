@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class OutpostListener implements Listener {
 
+	public static Material OUTPOST_PLACEMENT_MATERIAL = Material.PURPUR_PILLAR;
 	private final UserService userService;
 	private final PlotService plotService;
 	private final ChatService chatService;
@@ -29,7 +30,7 @@ public class OutpostListener implements Listener {
 
 	@EventHandler
 	public void onOutpostPlace(BlockPlaceEvent event) {
-		if (event.isCancelled() || event.getBlock().getType() != Material.PURPUR_BLOCK) return;
+		if (event.isCancelled() || event.getBlock().getType() != OUTPOST_PLACEMENT_MATERIAL) return;
 
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		Location location = event.getBlock().getLocation();
@@ -52,7 +53,7 @@ public class OutpostListener implements Listener {
 		for (int x = location.getBlockX() - 3; x <= location.getBlockX() + 3; x++) {
 			for (int z = location.getBlockZ() - 3; z <= location.getBlockZ() + 3; z++) {
 				Block block = world.getBlockAt(x, location.getBlockY(), z);
-				if (block.getType() != Material.PURPUR_BLOCK) {
+				if (block.getType() != OUTPOST_PLACEMENT_MATERIAL) {
 					block.setType(Material.END_BRICKS);
 				}
 			}
@@ -61,7 +62,7 @@ public class OutpostListener implements Listener {
 
 	@EventHandler
 	public void onOutpostBreakBlock(BlockBreakEvent event) {
-		if (event.isCancelled() || event.getBlock().getType() != Material.PURPUR_BLOCK) return;
+		if (event.isCancelled() || event.getBlock().getType() != OUTPOST_PLACEMENT_MATERIAL) return;
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		if (!user.isAdmin()) {
 			event.setCancelled(true);

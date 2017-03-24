@@ -65,8 +65,6 @@ public class Container {
 
 	// Output in items generated per hour
 	private int outputPerHour = 0;
-	// Fractional output from previous run
-	private double leftoverOutput = 0;
 
 	public Container(WorldPoint worldPoint) {
 		this.worldPoint = worldPoint;
@@ -131,9 +129,8 @@ public class Container {
 		// We'll need to put (75/60) = 1.25 items into the chest per minute
 		// It's obviously impossible to put fractions of items into the chest
 		double outputWithModifier = outputPerHour * modifier;
-		double fullOutputThisRun = (outputWithModifier / 60.0) + leftoverOutput;
+		double fullOutputThisRun = outputWithModifier * 24;
 		long integerOutputThisRun = (long) fullOutputThisRun; // So calculate the integer amount we can put in
-		leftoverOutput = fullOutputThisRun - integerOutputThisRun; // And save the remainder to be used in the next run
 
 		for (int i = 0; i < integerOutputThisRun; i++) {
 			ItemStack item;
@@ -185,6 +182,10 @@ public class Container {
 			}
 
 			inventory.addItem(item);
+		}
+
+		if (outputType == ContainerOutputType.BASE) {
+			//inventory.addItem(new ItemStack(OutpostListener.OUTPOST_PLACEMENT_MATERIAL, 1));
 		}
 
 		// Make a little smoke effect
