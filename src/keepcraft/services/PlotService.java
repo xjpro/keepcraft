@@ -84,4 +84,17 @@ public class PlotService {
 		refreshCache();
 		return getPlot(plotName);
 	}
+
+	public Plot createOutpostPlot(WorldPoint worldPoint, User user) {
+		String plotName = String.format("Outpost de %s", user.getName());
+		Plot plot = plotDataManager.createPlot(worldPoint, plotName, Plot.DEFAULT_OUTPOST_RADIUS);
+		plot.setCreator(user.getName());
+		PlotProtection protection = plot.getProtection();
+		protection.setType(user.getTeam().getId());
+		protection.setAdminRadius(0);
+
+		plotDataManager.updatePlot(plot);
+		refreshCache();
+		return getPlot(plotName);
+	}
 }

@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
  */
 public class Plot {
 
+	public final static int DEFAULT_OUTPOST_RADIUS = 30;
 	public final static int DEFAULT_RADIUS = 10;
 	public final static int DEFAULT_TRIGGER_RADIUS = 10;
 
@@ -22,10 +23,8 @@ public class Plot {
 	private double radius;
 	private String name;
 	private int orderNumber = -1;
-	private int setterId = -1;
+	private String creator;
 
-	//private User setter;
-	//private Timestamp timestampSet;
 	private Siege activeSiege = null;
 
 	public Plot(int id, PlotProtection protection) {
@@ -191,12 +190,12 @@ public class Plot {
 		orderNumber = value;
 	}
 
-	public int getSetterId() {
-		return setterId;
+	public String getCreator() {
+		return creator;
 	}
 
-	public void setSetterId(int value) {
-		setterId = value;
+	public void setCreator(String value) {
+		creator = value;
 	}
 
 	public Siege getSiege() {

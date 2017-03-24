@@ -64,6 +64,7 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new ExplosionListener(plotService, chatService), this);
 		manager.registerEvents(new PlotAttackListener(userService, plotService, chatService), this);
 		manager.registerEvents(new PlotProtectionListener(userService, plotService, chatService), this);
+		manager.registerEvents(new OutpostListener(userService, plotService, chatService), this);
 		manager.registerEvents(new ContainerListener(userService, containerService, chatService), this);
 		manager.registerEvents(new CraftItemListener(), this);
 		manager.registerEvents(new StormListener(), this);

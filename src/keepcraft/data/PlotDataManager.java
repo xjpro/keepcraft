@@ -73,7 +73,7 @@ public class PlotDataManager {
 
 		try {
 			PreparedStatement statement = database.createStatement(
-					"SELECT plots.ROWID as PlotROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plots JOIN plotProtections ON PlotROWID = PlotId");
+					"SELECT plots.ROWID as PlotROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plots JOIN plotProtections ON PlotROWID = PlotId");
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
@@ -91,7 +91,7 @@ public class PlotDataManager {
 				plot.setRadius(result.getFloat("Radius"));
 				plot.setName(result.getString("Name"));
 				plot.setOrderNumber(result.getInt("OrderNumber"));
-				plot.setSetterId(result.getInt("SetterId"));
+				//plot.setSetterId(result.getInt("SetterId"));
 
 				Keepcraft.log(String.format("Plot %s was found at (%s, %s, %s)", plot.getName(), plot.getWorldPoint().x, plot.getWorldPoint().y, plot.getWorldPoint().z));
 
