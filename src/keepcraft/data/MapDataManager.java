@@ -5,7 +5,9 @@ import keepcraft.data.models.WorldPoint;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Date;
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class MapDataManager {
@@ -40,8 +42,9 @@ public class MapDataManager {
 			if (!found) {
 				Keepcraft.error("No map was found in data");
 			} else {
-				Date mapStart = database.getDateFormat().parse(result.getString("StartDateTime"));
-				ageInSeconds = ((new Date()).getTime() - mapStart.getTime()) / 1000;
+				ZonedDateTime mapStart = ZonedDateTime.parse(result.getString("StartDateTime"));
+				ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Chicago"));
+				ageInSeconds = Duration.between(mapStart, now).getSeconds();
 			}
 
 			result.close();
@@ -86,7 +89,7 @@ public class MapDataManager {
 					"(WorldGUID, StartDateTime, CenterPosX, CenterPosZ) " +
 					"VALUES(?, ?, ?, ?)");
 			statement.setString(1, worldGUID.toString());
-			statement.setString(2, database.getDateFormat().format(new Date()));
+			statement.setString(2, ZonedDateTime.now(ZoneId.of("America/Chicago")).toString());
 			statement.setInt(3, center.x);
 			statement.setInt(4, center.z);
 			statement.execute();

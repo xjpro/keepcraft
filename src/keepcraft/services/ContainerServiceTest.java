@@ -21,7 +21,7 @@ class ContainerServiceTest {
 		Database database = new Database("keepcraft_test.db");
 		containerDataManager = new ContainerDataManager(database);
 		containerDataManager.putData(new Container(new WorldPoint(238, 4, -239)));
-		containerService = new ContainerService(null, containerDataManager, new MapDataManager(database));
+		containerService = new ContainerService(containerDataManager, new MapDataManager(database));
 	}
 
 	@Test

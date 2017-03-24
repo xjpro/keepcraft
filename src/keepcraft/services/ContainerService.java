@@ -4,8 +4,6 @@ import keepcraft.data.ContainerDataManager;
 import keepcraft.data.MapDataManager;
 import keepcraft.data.models.Container;
 import keepcraft.data.models.WorldPoint;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import java.time.ZoneId;
 import java.util.*;
@@ -13,16 +11,15 @@ import java.util.stream.Collectors;
 
 public class ContainerService {
 
-	private final Plugin plugin;
 	private final ContainerDataManager containerDataManager;
 	private final MapDataManager mapDataManager;
 	private Collection<Container> containers;
-	private int taskId = 0;
+	private final Timer timer;
 
-	public ContainerService(Plugin plugin, ContainerDataManager containerDataManager, MapDataManager mapDataManager) {
-		this.plugin = plugin;
+	public ContainerService(ContainerDataManager containerDataManager, MapDataManager mapDataManager) {
 		this.containerDataManager = containerDataManager;
 		this.mapDataManager = mapDataManager;
+		this.timer = new Timer();
 		refreshCache();
 	}
 
@@ -70,7 +67,7 @@ public class ContainerService {
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 10);
 
-		(new Timer()).schedule(new TimerTask() {
+		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				long mapAgeInDays = mapDataManager.getMapAgeInSeconds() / 60 / 60 / 24;
@@ -91,6 +88,6 @@ public class ContainerService {
 	}
 
 	public void stopDispensing() {
-		Bukkit.getScheduler().cancelTask(taskId);
+		timer.cancel();
 	}
 }
