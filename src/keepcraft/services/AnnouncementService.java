@@ -30,7 +30,7 @@ public class AnnouncementService {
 			}
 		}, calendar.getTime());
 
-		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		calendar.set(Calendar.HOUR_OF_DAY, 22);
 		calendar.set(Calendar.MINUTE, 59);
 		calendar.set(Calendar.SECOND, 59);
 
