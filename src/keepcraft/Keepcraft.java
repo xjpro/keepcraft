@@ -35,6 +35,7 @@ public class Keepcraft extends JavaPlugin {
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
 	private final ContainerService containerService = new ContainerService(containerDataManager, mapDataManager);
 	private final ChatService chatService = new ChatService(userService);
+	private final WorldModifierService worldModifierService = new WorldModifierService(plotService, factionSpawnService, containerService);
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 	private final RallyService rallyService = new RallyService(chatService);
 	private final AnnouncementService announcementService = new AnnouncementService(chatService);
@@ -67,7 +68,7 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new ExplosionListener(plotService, chatService), this);
 		manager.registerEvents(new PlotAttackListener(userService, plotService, chatService), this);
 		manager.registerEvents(new PlotProtectionListener(userService, plotService, chatService), this);
-		manager.registerEvents(new OutpostListener(userService, plotService, chatService), this);
+		manager.registerEvents(new OutpostListener(userService, plotService, worldModifierService, chatService), this);
 		manager.registerEvents(new ContainerListener(userService, containerService, chatService), this);
 		manager.registerEvents(new CraftItemListener(), this);
 		manager.registerEvents(new StormListener(), this);
@@ -159,8 +160,7 @@ public class Keepcraft extends JavaPlugin {
 	}
 
 	private void setup() {
-		WorldSetter setter = new WorldSetter(plotService, factionSpawnService, containerService);
-		World world = setter.setupWorld(Keepcraft.getWorld());
+		World world = worldModifierService.setupWorld(Keepcraft.getWorld());
 		mapDataManager.createWorldRecord(world.getUID(), new WorldPoint(world.getSpawnLocation()));
 
 		userService.distributeKnownUsers();

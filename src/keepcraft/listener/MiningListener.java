@@ -1,6 +1,6 @@
 package keepcraft.listener;
 
-import keepcraft.WorldSetter;
+import keepcraft.services.WorldModifierService;
 import keepcraft.data.MapDataManager;
 import keepcraft.data.models.WorldPoint;
 import org.bukkit.Material;
@@ -63,7 +63,7 @@ public class MiningListener {
 
 		double distanceFromCenter = center.distanceIgnoreY(block.getX(), block.getZ());
 		// Calculate 0-100% of how close block is from center, stopping at team territory
-		double additionalItemsCreated = MAX_ADDITIONAL_ITEMS_CREATED * Math.max(1 - (distanceFromCenter / (WorldSetter.BASE_DISTANCE_FROM_CENTER - WorldSetter.TEAM_PLOT_RADIUS)), 0);
+		double additionalItemsCreated = MAX_ADDITIONAL_ITEMS_CREATED * Math.max(1 - (distanceFromCenter / (WorldModifierService.BASE_DISTANCE_FROM_CENTER - WorldModifierService.TEAM_PLOT_RADIUS)), 0);
 		if (additionalItemsCreated == 0) return;
 
 		int guaranteedItemsDropped = (int) additionalItemsCreated;

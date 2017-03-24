@@ -48,24 +48,24 @@ public class User {
 
 	public String getColoredName() {
 		if (privilege == UserPrivilege.ADMIN) {
-			return ChatService.NameAdmin + name;
+			return ChatService.NameAdmin + name + ChatColor.RESET;
 		} else {
-			return team.getChatColor() + name;
+			return team.getChatColor() + name + ChatColor.RESET;
 		}
 	}
 
 	public String getChatTag() {
 		if (privilege == UserPrivilege.ADMIN) {
-			return ChatService.NameAdmin + "<" + name + ">";
+			return ChatService.NameAdmin + "<" + name + ">" + ChatColor.RESET;
 		} else {
-			return team.getChatColor() + "<" + name + ">";
+			return team.getChatColor() + "<" + name + ">" + ChatColor.RESET;
 		}
 	}
 
 	public String getChatTag(UserTeam userTeam) {
 		if (privilege == UserPrivilege.ADMIN) {
 			ChatColor chatColor = userTeam.getChatColor();
-			return chatColor + "<" + ChatService.NameAdmin + name + chatColor + ">";
+			return chatColor + "<" + ChatService.NameAdmin + name + chatColor + ">" + ChatColor.RESET;
 		}
 		return getChatTag();
 	}

@@ -155,10 +155,10 @@ public class Plot {
 			// Admin plots always immune
 			return true;
 		}
-		if (protection.isCapturable()) {
-			// Capturable plots never immune
-			return false;
-		}
+//		if (protection.isCapturable()) {
+//			// Capturable plots never immune
+//			return false;
+//		}
 
 		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Chicago"));
 		int hour = now.getHour();

@@ -1,5 +1,6 @@
 package keepcraft.listener;
 
+import keepcraft.services.WorldModifierService;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.data.models.WorldPoint;
@@ -8,8 +9,6 @@ import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -20,11 +19,13 @@ public class OutpostListener implements Listener {
 	public static Material OUTPOST_PLACEMENT_MATERIAL = Material.PURPUR_PILLAR;
 	private final UserService userService;
 	private final PlotService plotService;
+	private final WorldModifierService worldModifierService;
 	private final ChatService chatService;
 
-	public OutpostListener(UserService userService, PlotService plotService, ChatService chatService) {
+	public OutpostListener(UserService userService, PlotService plotService, WorldModifierService worldModifierService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
+		this.worldModifierService = worldModifierService;
 		this.chatService = chatService;
 	}
 
@@ -47,17 +48,7 @@ public class OutpostListener implements Listener {
 		// Success! Make the new outpost plot
 		Plot outpostPlot = plotService.createOutpostPlot(new WorldPoint(location), user);
 		chatService.sendGlobalAlertMessage(String.format("%s created %s", user.getColoredName(), outpostPlot.getColoredName()));
-
-		// Build a really basic platform
-		World world = location.getWorld();
-		for (int x = location.getBlockX() - 3; x <= location.getBlockX() + 3; x++) {
-			for (int z = location.getBlockZ() - 3; z <= location.getBlockZ() + 3; z++) {
-				Block block = world.getBlockAt(x, location.getBlockY(), z);
-				if (block.getType() != OUTPOST_PLACEMENT_MATERIAL) {
-					block.setType(Material.END_BRICKS);
-				}
-			}
-		}
+		worldModifierService.prepareSpawnArea(location, false);
 	}
 
 	@EventHandler
