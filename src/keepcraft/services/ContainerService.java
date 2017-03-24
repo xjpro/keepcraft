@@ -65,13 +65,13 @@ public class ContainerService {
 		calendar.setTimeZone(TimeZone.getTimeZone(ZoneId.of("America/Chicago")));
 		calendar.set(Calendar.HOUR_OF_DAY, 20);
 		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 10);
+		calendar.set(Calendar.SECOND, 0);
 
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				long mapAgeInDays = mapDataManager.getMapAgeInSeconds() / 60 / 60 / 24;
-				if (mapAgeInDays == 0) return;
+				long mapAgeInDays = Math.round(mapDataManager.getMapAgeInSeconds() / 60 / 60 / 24);
+				if (mapAgeInDays < 1) return;
 
 				for (Container container : getOutputtingContainers()) {
 					double modifier = 1;
