@@ -40,16 +40,6 @@ public class SneakListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onPlayerSneakInteract(PlayerInteractEvent event) {
-		if (event.isCancelled() || !event.getPlayer().isSneaking()) return;
-
-		Block block = event.getClickedBlock();
-		if (block != null) {
-			event.getPlayer().setSneaking(false);
-		}
-	}
-
 	//@EventHandler(priority = EventPriority.NORMAL)
 	// Some experimental shit to toggle sneak on and off
 	public void onPlayerSneak(PlayerToggleSneakEvent event) {
