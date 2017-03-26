@@ -17,7 +17,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 public class OutpostListener implements Listener {
 
 	private static Material OUTPOST_PLACEMENT_MATERIAL = Material.PURPUR_PILLAR;
-	private static int MIN_PLACEMENT_Y = 50;
 	private final UserService userService;
 	private final PlotService plotService;
 	private final WorldModifierService worldModifierService;
@@ -37,8 +36,9 @@ public class OutpostListener implements Listener {
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		Location location = event.getBlock().getLocation();
 
-		if (location.getBlockY() < MIN_PLACEMENT_Y) {
-			chatService.sendFailureMessage(user, String.format("Outpost must be placed at y %s or higher", MIN_PLACEMENT_Y));
+		int seaLevel = location.getWorld().getSeaLevel();
+		if (location.getBlockY() < seaLevel) {
+			chatService.sendFailureMessage(user, String.format("Outpost must be placed at sea level (y=%s) or higher", seaLevel));
 			event.setCancelled(true);
 			return;
 		}

@@ -63,26 +63,39 @@ public class ContainerService {
 	public void startDispensing() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone(ZoneId.of("America/Chicago")));
+
+		// Bases output at 8pm (start of raid time)
 		calendar.set(Calendar.HOUR_OF_DAY, 20);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
-
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				long mapAgeInDays = mapDataManager.getMapAgeInDays();
 				if (mapAgeInDays < 1) return;
 
-				for (Container container : getOutputtingContainers()) {
-					double modifier = 1;
+				getOutputtingContainers().stream()
+						.filter(container -> container.getOutputType() == Container.ContainerOutputType.BASE)
+						.forEach(container -> {
+							double modifier = 1 + (mapAgeInDays * 0.2);
+							container.dispense(modifier);
+						});
+			}
+		}, calendar.getTime());
 
-					// Base loot output increasing daily
-					if (container.getOutputType() == Container.ContainerOutputType.BASE) {
-						modifier += mapAgeInDays * 0.20; // 20% more per day
-					}
+		// Outposts output at 11pm (end of raiding time)
+		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				getOutputtingContainers().stream()
+						.filter(container -> container.getOutputType() == Container.ContainerOutputType.OUTPOST)
+						.forEach(container -> {
+							container.dispense(1.0);
+						});
 
-					container.dispense(modifier);
-				}
 			}
 		}, calendar.getTime());
 	}
