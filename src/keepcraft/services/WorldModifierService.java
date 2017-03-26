@@ -5,9 +5,6 @@ import keepcraft.WorldHelper;
 import keepcraft.data.models.Container;
 import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.WorldPoint;
-import keepcraft.services.ContainerService;
-import keepcraft.services.FactionSpawnService;
-import keepcraft.services.PlotService;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -113,7 +110,7 @@ public class WorldModifierService {
 		});
 	}
 
-	public void prepareSpawnArea(Location spawnLocation, boolean includeSpawnChest) {
+	public void prepareSpawnArea(Location spawnLocation, boolean isBase) {
 		World world = spawnLocation.getWorld();
 		Block center = world.getBlockAt(spawnLocation);
 
@@ -171,7 +168,7 @@ public class WorldModifierService {
 		});
 
 		// Create beacon
-		Block beaconBlock = center.getRelative(BlockFace.DOWN, includeSpawnChest ? 2 : 1);
+		Block beaconBlock = center.getRelative(BlockFace.DOWN, 2);
 		beaconBlock.setType(Material.BEACON);
 		beaconBlock.getRelative(0, -1, 1).setType(Material.IRON_BLOCK);
 		beaconBlock.getRelative(1, -1, 1).setType(Material.IRON_BLOCK);
@@ -182,16 +179,14 @@ public class WorldModifierService {
 		beaconBlock.getRelative(-1, -1, 0).setType(Material.IRON_BLOCK);
 		beaconBlock.getRelative(-1, -1, 1).setType(Material.IRON_BLOCK);
 
-		if (includeSpawnChest) {
-			// Outputting container at center of base
-			Block chestBlock = center.getRelative(BlockFace.DOWN);
-			chestBlock.setType(Material.CHEST);
-			Container baseLootContainer = containerService.createContainer(new WorldPoint(chestBlock.getLocation()));
-			baseLootContainer.setOutputType(Container.ContainerOutputType.BASE);
-			baseLootContainer.setOutputPerHour(7);
-			baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
-			containerService.updateContainer(baseLootContainer);
-		}
+		// Outputting container at center of base
+		Block chestBlock = center.getRelative(BlockFace.DOWN);
+		chestBlock.setType(Material.CHEST);
+		Container baseLootContainer = containerService.createContainer(new WorldPoint(chestBlock.getLocation()));
+		baseLootContainer.setOutputType(isBase ? Container.ContainerOutputType.BASE : Container.ContainerOutputType.OUTPOST);
+		baseLootContainer.setOutputPerHour(7);
+		baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
+		containerService.updateContainer(baseLootContainer);
 
 		// Drop pick axe so players can dig out if necessary
 		world.dropItem(center.getLocation().add(0, 1, 0), new ItemStack(Material.WOOD_PICKAXE, 1));

@@ -11,6 +11,7 @@ import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.RallyService;
 import keepcraft.services.UserService;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import keepcraft.data.models.Plot;
@@ -110,59 +111,56 @@ public class BasicCommandListener extends CommandListener {
 				String message = "Bases and outposts:\n";
 
 				for (Plot plot : allPlots) {
+					Location plotLocation = plot.getLocation();
 					String status;
 					String orderNumber;
+					String locationString = "";
 					if (plot.isBasePlot()) {
 						status = "Base";
 						orderNumber = "B";
-//						if (plot.isImmuneToAttack()) {
-//							status += " (Not capturable, immune to attack outside of siege hours)";
-//						}
 					} else if (plot.getProtection().isCapturable()) {
 						status = plot.getProtection().isCaptureInProgress() ? "Under attack" : "Secured";
 						orderNumber = Integer.toString(plot.getOrderNumber());
+						locationString = String.format("(%s, %s, %s)", plotLocation.getBlockX(), plotLocation.getBlockY(), plotLocation.getBlockZ());
 					} else {
 						continue; // Not part of the map or rallyable
 					}
 
-					message += ChatService.RequestedInfo + "" + orderNumber + ": " + plot.getColoredName() + ChatService.RequestedInfo + " - " + status + "\n";
+					message += String.format("%s%s: %s%s - %s %s\n", ChatService.RequestedInfo, orderNumber, plot.getColoredName(), ChatService.RequestedInfo, status, locationString);
 				}
 
-				String[] messages = message.split("\n");
-				for (String message1 : messages) {
-					chatService.sendInfoMessage(sender, message1);
-				}
-
-				return true;
-			} else if (args.length > 0) {
-
-				// /rally #?
-				int orderNumber = 0;
-				try {
-					orderNumber = Integer.parseInt(args[0]);
-				} catch (Exception e) {
-					// Leave as 0
-				}
-
-				Plot requestedPlot;
-				// Could not parse into a number, we'll just assume it's a request to base because all points except base require numbers
-				if (orderNumber < 1) {
-					Plot base = plotService.getPlots().stream().filter(plot -> plot.isBasePlot() && plot.isTeamProtected(sender.getTeam())).findFirst().orElse(null);
-					if (base == null) {
-						chatService.sendFailureMessage(sender, "Your team does not have a base to rally to");
-						return true;
-					} else {
-						requestedPlot = base;
-					}
-				} else {
-					// /rally # with a good number, try to find the plot with that order number
-					int finalOrderNumber = orderNumber;
-					requestedPlot = plotService.getPlots().stream().filter(plot -> plot.getOrderNumber() == finalOrderNumber).findFirst().orElse(null);
-				}
-
-				rallyService.rallyToPlot(sender, p, requestedPlot);
+				chatService.sendInfoMessage(sender, message);
 				return true;
 			}
+//			else if (args.length > 0) {
+//
+//				// /rally #?
+//				int orderNumber = 0;
+//				try {
+//					orderNumber = Integer.parseInt(args[0]);
+//				} catch (Exception e) {
+//					// Leave as 0
+//				}
+//
+//				Plot requestedPlot;
+//				// Could not parse into a number, we'll just assume it's a request to base because all points except base require numbers
+//				if (orderNumber < 1) {
+//					Plot base = plotService.getPlots().stream().filter(plot -> plot.isBasePlot() && plot.isTeamProtected(sender.getTeam())).findFirst().orElse(null);
+//					if (base == null) {
+//						chatService.sendFailureMessage(sender, "Your team does not have a base to rally to");
+//						return true;
+//					} else {
+//						requestedPlot = base;
+//					}
+//				} else {
+//					// /rally # with a good number, try to find the plot with that order number
+//					int finalOrderNumber = orderNumber;
+//					requestedPlot = plotService.getPlots().stream().filter(plot -> plot.getOrderNumber() == finalOrderNumber).findFirst().orElse(null);
+//				}
+//
+//				rallyService.rallyToPlot(sender, p, requestedPlot);
+//				return true;
+//			}
 		} else if (commandName.equalsIgnoreCase("global") && args.length == 1) {
 			if (args[0].equalsIgnoreCase("on")) {
 				sender.setReceiveGlobalMessages(true);

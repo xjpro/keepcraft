@@ -40,7 +40,8 @@ public class Container {
 	public enum ContainerOutputType {
 		NONE(0),
 		BASE(1),
-		WORLD_ALL(2);
+		WORLD_ALL(2),
+		OUTPOST(3);
 
 		private final int id;
 

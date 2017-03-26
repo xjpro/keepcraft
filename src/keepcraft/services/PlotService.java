@@ -100,10 +100,11 @@ public class PlotService {
 	}
 
 	public Plot createOutpostPlot(WorldPoint worldPoint, User user) {
-		String plotName = String.format("Outpost de %s", user.getName());
+		int unusedOrderNumber = getUnusedOrderNumber();
+		String plotName = String.format("%s Outpost %s", user.getTeam().getName(), unusedOrderNumber);
 		Plot plot = plotDataManager.createPlot(worldPoint, plotName, Plot.DEFAULT_OUTPOST_RADIUS);
 		plot.setCreator(user.getName());
-		plot.setOrderNumber(getUnusedOrderNumber());
+		plot.setOrderNumber(unusedOrderNumber);
 		PlotProtection protection = plot.getProtection();
 		protection.setType(user.getTeam().getId());
 		protection.setCapturable(true);
