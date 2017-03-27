@@ -59,10 +59,14 @@ public class ExplosionListener implements Listener {
 			for (int y = 0; y < plotLocation.getBlockY(); y++) {
 				Block centerBlock = plotLocation.getWorld().getBlockAt(plotLocation.getBlockX(), y, plotLocation.getBlockZ());
 
-				// Remove lootbox record, if any
-				Container container = containerService.getContainer(new WorldPoint(centerBlock.getLocation()));
-				if (container != null) {
-					containerService.removeContainer(container);
+				if (centerBlock.getType() == Material.CHEST) {
+					centerBlock.breakNaturally();
+
+					// Remove lootbox record, if any
+					Container container = containerService.getContainer(new WorldPoint(centerBlock.getLocation()));
+					if (container != null) {
+						containerService.removeContainer(container);
+					}
 				}
 
 				centerBlock.setType(Material.AIR);
