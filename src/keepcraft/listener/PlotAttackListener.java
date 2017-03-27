@@ -1,6 +1,9 @@
 package keepcraft.listener;
 
 import keepcraft.Keepcraft;
+import keepcraft.data.models.Direction;
+import keepcraft.data.models.Plot;
+import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
@@ -14,10 +17,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import keepcraft.data.models.Direction;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.User;
+import org.json.simple.JSONObject;
 
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -94,8 +98,41 @@ public class PlotAttackListener implements Listener {
 						chatService.sendAlertMessage(user, String.format("%s has come under attack", plot.getColoredName()));
 					}
 				}
+//				notifyDiscordOfAttack(plot);
 			}
 			plot.setLastNotification();
+		}
+	}
+
+	private void notifyDiscordOfAttack(Plot plot) {
+		HttpURLConnection connection = null;
+		try {
+
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("content", String.format("@everyone %s has come under attack", plot.getName()));
+			String message = jsonObject.toString();
+
+			//Create connection
+			URL url = new URL("https://discordapp.com/api/webhooks/295974475965530114/sBMNFVSYrDhuITaDEoiNgja2nG3qt9OnmZ5mGUw4x_r1Ryjeh_AIiApXraoK5Zc3m-0G");
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+			connection.setRequestProperty("Content-Length", Integer.toString(message.length()));
+
+//			connection.setUseCaches(false);
+//			connection.setDoOutput(true);
+
+			//Send request
+
+			OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+			wr.write(message);
+			wr.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
 	}
 
