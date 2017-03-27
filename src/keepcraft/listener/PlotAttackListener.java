@@ -50,7 +50,7 @@ public class PlotAttackListener implements Listener {
 				chatService.sendAlertMessage(user, "The roar of an explosion thunders from the " + direction);
 			}
 		});
-
+		notifyTeamMembersOfAttack(event.getLocation());
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -63,6 +63,7 @@ public class PlotAttackListener implements Listener {
 					chatService.sendAlertMessage(user, "The sound of enemy construction sizzles from the " + direction);
 				}
 			});
+			notifyTeamMembersOfAttack(event.getBlock().getLocation());
 		}
 	}
 
@@ -73,14 +74,28 @@ public class PlotAttackListener implements Listener {
 			for (User user : userService.getOnlineUsers()) {
 				if (plot == user.getCurrentPlot() && plot.isTeamProtected(user.getTeam())) {
 
-					Player p = server.getPlayer(user.getName());
-					Location locationTo = Direction.lookAt(p.getLocation(), eventLocation);
+					Player player = server.getPlayer(user.getName());
+					Location locationTo = Direction.lookAt(player.getLocation(), eventLocation);
 					String direction = Direction.getCardinalDirection(locationTo);
 
-					double distance = p.getLocation().distance(eventLocation);
+					double distance = player.getLocation().distance(eventLocation);
 					notifier.notify(user, distance, direction);
 				}
 			}
+		}
+	}
+
+	private void notifyTeamMembersOfAttack(Location location) {
+		Plot plot = plotService.getIntersectedPlot(location);
+		if (plot != null && plot.isTeamProtected()) {
+			if (plot.getSecondsSinceLastNotification() > 5 * 60) {
+				for (User user : userService.getOnlineUsers()) {
+					if (plot.getProtection().getType() == user.getTeam().getId()) {
+						chatService.sendAlertMessage(user, String.format("%s has come under attack", plot.getColoredName()));
+					}
+				}
+			}
+			plot.setLastNotification();
 		}
 	}
 

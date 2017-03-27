@@ -16,7 +16,7 @@ public class AnnouncementService {
 		timer = new Timer();
 	}
 
-	public void queueAnnoucements() {
+	public void queueTimedAnnouncements() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone(ZoneId.of("America/Chicago")));
 		calendar.set(Calendar.HOUR_OF_DAY, 20);

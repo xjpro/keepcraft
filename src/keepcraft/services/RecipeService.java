@@ -19,11 +19,18 @@ public class RecipeService {
 //			}
 //		}
 
+		// Name tag recipe
 		ShapedRecipe nameTag = new ShapedRecipe(new ItemStack(Material.NAME_TAG))
 				.shape("A", "B")
 				.setIngredient('A', Material.STRING)
 				.setIngredient('B', Material.IRON_INGOT);
 		server.addRecipe(nameTag);
+
+		// Saddle recipe
+		ShapedRecipe saddle = new ShapedRecipe(new ItemStack(Material.SADDLE))
+				.shape("AAA", "A A")
+				.setIngredient('A', Material.LEATHER);
+		server.addRecipe(saddle);
 	}
 
 }

@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 /**
  * Persistent data for a plot.
@@ -26,7 +27,9 @@ public class Plot {
 	private int orderNumber = -1;
 	private String creator;
 
+	// Real time happenings
 	private Siege activeSiege = null;
+	private Date lastNotification = new Date();
 
 	public Plot(int id, PlotProtection protection) {
 		this.id = id;
@@ -205,6 +208,14 @@ public class Plot {
 
 	public void setSiege(Siege value) {
 		activeSiege = value;
+	}
+
+	public long getSecondsSinceLastNotification() {
+		return ((new Date()).getTime() - lastNotification.getTime()) / 1000;
+	}
+
+	public void setLastNotification() {
+		lastNotification = new Date();
 	}
 
 	public String getInfo() {

@@ -55,7 +55,7 @@ public class Keepcraft extends JavaPlugin {
 			userService.loadOfflineUser(player.getName(), player.getAddress().getHostString());
 		});
 
-		announcementService.queueAnnoucements();
+		announcementService.queueTimedAnnouncements();
 		recipeService.modifyRecipes(this.getServer());
 
 		PluginManager manager = this.getServer().getPluginManager();
