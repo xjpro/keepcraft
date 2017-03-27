@@ -184,7 +184,7 @@ public class WorldModifierService {
 		chestBlock.setType(Material.CHEST);
 		Container baseLootContainer = containerService.createContainer(new WorldPoint(chestBlock.getLocation()));
 		baseLootContainer.setOutputType(isBase ? Container.ContainerOutputType.BASE : Container.ContainerOutputType.OUTPOST);
-		baseLootContainer.setOutputPerHour(7);
+		baseLootContainer.setOutputPerHour(15);
 		baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
 		containerService.updateContainer(baseLootContainer);
 
