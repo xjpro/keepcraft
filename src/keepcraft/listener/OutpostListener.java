@@ -16,7 +16,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class OutpostListener implements Listener {
 
-	private static Material OUTPOST_PLACEMENT_MATERIAL = Material.PURPUR_PILLAR;
+	public static Material OUTPOST_PLACEMENT_MATERIAL = Material.PURPUR_PILLAR;
 	private final UserService userService;
 	private final PlotService plotService;
 	private final WorldModifierService worldModifierService;

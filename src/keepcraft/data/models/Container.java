@@ -1,6 +1,7 @@
 package keepcraft.data.models;
 
 import keepcraft.Keepcraft;
+import keepcraft.listener.OutpostListener;
 import org.bukkit.Chunk;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -186,7 +187,7 @@ public class Container {
 		}
 
 		if (outputType == ContainerOutputType.BASE) {
-			//inventory.addItem(new ItemStack(OutpostListener.OUTPOST_PLACEMENT_MATERIAL, 1));
+			inventory.addItem(new ItemStack(OutpostListener.OUTPOST_PLACEMENT_MATERIAL, 1));
 		}
 
 		// Make a little smoke effect
