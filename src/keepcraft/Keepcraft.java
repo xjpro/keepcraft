@@ -36,7 +36,7 @@ public class Keepcraft extends JavaPlugin {
 	private final ContainerService containerService = new ContainerService(containerDataManager, mapDataManager);
 	private final ChatService chatService = new ChatService(userService);
 	private final WorldModifierService worldModifierService = new WorldModifierService(plotService, factionSpawnService, containerService);
-	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
+//	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 	private final RallyService rallyService = new RallyService(chatService);
 	private final AnnouncementService announcementService = new AnnouncementService(chatService);
 	private final RecipeService recipeService = new RecipeService();
@@ -67,7 +67,7 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new ChatListener(userService, chatService), this);
 		manager.registerEvents(new CombatListener(userService), this);
 		manager.registerEvents(new WorldEntityListener(), this);
-		manager.registerEvents(new ExplosionListener(plotService, chatService), this);
+		manager.registerEvents(new ExplosionListener(plotService, containerService, chatService), this);
 		manager.registerEvents(new PlotAttackListener(userService, plotService, chatService), this);
 		manager.registerEvents(new PlotProtectionListener(userService, plotService, chatService), this);
 		manager.registerEvents(new OutpostListener(userService, plotService, worldModifierService, chatService), this);

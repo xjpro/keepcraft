@@ -1,9 +1,12 @@
 package keepcraft.listener;
 
 import keepcraft.Keepcraft;
+import keepcraft.data.models.Container;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
+import keepcraft.data.models.WorldPoint;
 import keepcraft.services.ChatService;
+import keepcraft.services.ContainerService;
 import keepcraft.services.PlotService;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,10 +23,12 @@ import java.io.IOException;
 public class ExplosionListener implements Listener {
 
 	private final PlotService plotService;
+	private final ContainerService containerService;
 	private final ChatService chatService;
 
-	public ExplosionListener(PlotService plotService, ChatService chatService) {
+	public ExplosionListener(PlotService plotService, ContainerService containerService, ChatService chatService) {
 		this.plotService = plotService;
+		this.containerService = containerService;
 		this.chatService = chatService;
 	}
 
@@ -50,12 +55,17 @@ public class ExplosionListener implements Listener {
 
 			Location plotLocation = plot.getLocation();
 
-			// Remove diamond blocks
+			// Remove all core blocks
 			for (int y = 0; y < plotLocation.getBlockY(); y++) {
 				Block centerBlock = plotLocation.getWorld().getBlockAt(plotLocation.getBlockX(), y, plotLocation.getBlockZ());
-				if (centerBlock.getType() == Material.DIAMOND_BLOCK) {
-					centerBlock.setType(Material.AIR);
+
+				// Remove lootbox record, if any
+				Container container = containerService.getContainer(new WorldPoint(centerBlock.getLocation()));
+				if (container != null) {
+					containerService.removeContainer(container);
 				}
+
+				centerBlock.setType(Material.AIR);
 			}
 
 			// Blow some shit up
