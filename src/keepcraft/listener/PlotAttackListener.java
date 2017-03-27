@@ -17,9 +17,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.json.simple.JSONObject;
 
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
@@ -105,32 +104,21 @@ public class PlotAttackListener implements Listener {
 	private void notifyDiscordOfAttack(Plot plot) {
 		HttpURLConnection connection = null;
 		try {
-
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("content", String.format("@everyone %s has come under attack", plot.getName()));
-			String message = jsonObject.toString();
-
-			//Create connection
 			URL url = new URL("https://discordapp.com/api/webhooks/295974475965530114/sBMNFVSYrDhuITaDEoiNgja2nG3qt9OnmZ5mGUw4x_r1Ryjeh_AIiApXraoK5Zc3m-0G");
 			connection = (HttpURLConnection) url.openConnection();
+			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-			connection.setRequestProperty("Content-Length", Integer.toString(message.length()));
+			connection.setRequestProperty("Content-Type", "application/json");
 
-//			connection.setUseCaches(false);
-//			connection.setDoOutput(true);
+			String input = String.format("{ \"content\": \"@everyone %s has come under attack\" }", plot.getName());
 
-			//Send request
-
-			OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-			wr.write(message);
-			wr.close();
+			OutputStream os = connection.getOutputStream();
+			os.write(input.getBytes());
+			os.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
+			if (connection != null) connection.disconnect();
 		}
 	}
 
