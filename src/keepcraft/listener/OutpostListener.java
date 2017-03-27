@@ -36,6 +36,7 @@ public class OutpostListener implements Listener {
 
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		Location location = event.getBlock().getLocation();
+		location.add(0, 5, 0); // go up 5 blocks
 
 		if (location.getBlockY() < MIN_PLACEMENT_Y) {
 			chatService.sendFailureMessage(user, String.format("Outpost must be placed at y %s or higher", MIN_PLACEMENT_Y));
@@ -56,5 +57,6 @@ public class OutpostListener implements Listener {
 		Plot outpostPlot = plotService.createOutpostPlot(new WorldPoint(location), user);
 		chatService.sendGlobalAlertMessage(String.format("%s created %s", user.getColoredName(), outpostPlot.getColoredName()));
 		worldModifierService.prepareSpawnArea(location, false);
+		event.getPlayer().teleport(outpostPlot.getLocation()); // Move player to beacon so they don't get squished by the tower
 	}
 }

@@ -34,7 +34,7 @@ public class BasicCommandListener extends CommandListener {
 
 	@Override
 	protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
-		Player p = (Player) commandSender;
+		Player player = (Player) commandSender; // todo not always a player
 		User sender = userService.getOnlineUser(commandSender.getName());
 		UserPrivilege privilege = sender.getPrivilege();
 
@@ -92,7 +92,7 @@ public class BasicCommandListener extends CommandListener {
 			}
 			return true;
 		} else if (commandName.equalsIgnoreCase("die") && args.length == 0) {
-			p.setHealth(0);
+			player.setHealth(0);
 			return true;
 		} else if (commandName.equalsIgnoreCase("map") || commandName.equalsIgnoreCase("rally")) {
 			if (args.length == 0) {

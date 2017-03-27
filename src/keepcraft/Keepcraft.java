@@ -39,6 +39,7 @@ public class Keepcraft extends JavaPlugin {
 	private final SiegeService siegeService = new SiegeService(userService, plotService, chatService);
 	private final RallyService rallyService = new RallyService(chatService);
 	private final AnnouncementService announcementService = new AnnouncementService(chatService);
+	private final RecipeService recipeService = new RecipeService();
 
 	@Override
 	public void onEnable() {
@@ -55,6 +56,7 @@ public class Keepcraft extends JavaPlugin {
 		});
 
 		announcementService.queueAnnoucements();
+		recipeService.modifyRecipes(this.getServer());
 
 		PluginManager manager = this.getServer().getPluginManager();
 
@@ -80,7 +82,7 @@ public class Keepcraft extends JavaPlugin {
 
 		// Basic commands
 		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, chatService);
-		String[] basicCommands = {"die", "who", "map", "rally", "global"};
+		String[] basicCommands = {"die", "who", "map", /*"rally",*/ "global"};
 		for (String basicCommand : basicCommands) {
 			getCommand(basicCommand).setExecutor(basicCommandListener);
 		}
@@ -127,11 +129,11 @@ public class Keepcraft extends JavaPlugin {
 		}
 
 		// Siege commands
-		CommandListener siegeCommandListener = new SiegeCommandListener(userService, siegeService, chatService);
-		String[] siegeCommands = {"cap", "capture"};
-		for (String siegeCommand : siegeCommands) {
-			getCommand(siegeCommand).setExecutor(siegeCommandListener);
-		}
+//		CommandListener siegeCommandListener = new SiegeCommandListener(userService, siegeService, chatService);
+//		String[] siegeCommands = {"cap", "capture"};
+//		for (String siegeCommand : siegeCommands) {
+//			getCommand(siegeCommand).setExecutor(siegeCommandListener);
+//		}
 
 		log(String.format("Keepcraft enabled on '%s'", getWorld().getName()));
 	}
