@@ -5,6 +5,7 @@ import keepcraft.data.models.Armor;
 import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
 import keepcraft.services.UserService;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
@@ -14,7 +15,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Random;
 
 public class CombatListener implements Listener {
 
@@ -23,6 +28,7 @@ public class CombatListener implements Listener {
 	private static float ArrowDamageReduction = 0.15f; // arrow damage reduced by 15%
 	private static int FoodRemovedOnArrowHit = 2; // food removed when hit by an arrow
 	private static float ProtectionDamageReductionPerPoint = 0.0075f; // damage reduction by point of Protection (armor)
+	private static Random random = new Random();
 
 	private final UserService userService;
 
@@ -201,6 +207,15 @@ public class CombatListener implements Listener {
 				}
 
 				e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection);
+			}
+
+			if (random.nextDouble() > 0.90) {
+				// 10% chance to drop their head
+				ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+				SkullMeta meta = (SkullMeta) skull.getItemMeta();
+				meta.setOwner(player.getName());
+				skull.setItemMeta(meta);
+				player.getWorld().dropItemNaturally(player.getLocation(), skull);
 			}
 		}
 		// This was put in to stop farmable monster spawners:
