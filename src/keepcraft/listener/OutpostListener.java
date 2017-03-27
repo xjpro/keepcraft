@@ -35,7 +35,6 @@ public class OutpostListener implements Listener {
 
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		Location location = event.getBlock().getLocation();
-		location.add(0, 5, 0); // go up 5 blocks
 
 		int seaLevel = location.getWorld().getSeaLevel();
 		if (location.getBlockY() < seaLevel) {
@@ -43,6 +42,15 @@ public class OutpostListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
+
+		int maxHeight = 128;
+		if (location.getBlockY() > maxHeight - 10) {
+			chatService.sendFailureMessage(user, String.format("Outpost must be placed 10 blocks lower than height limit (y=%s) or lower", maxHeight));
+			event.setCancelled(true);
+			return;
+		}
+
+		location.add(0, 5, 0); // go up 5 blocks
 
 		// Check for nearby plots
 		for (Plot plot : plotService.getPlots()) {

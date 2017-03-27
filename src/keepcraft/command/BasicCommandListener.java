@@ -95,43 +95,45 @@ public class BasicCommandListener extends CommandListener {
 			player.setHealth(0);
 			return true;
 		} else if (commandName.equalsIgnoreCase("map") || commandName.equalsIgnoreCase("rally")) {
-			if (args.length == 0) {
-				ArrayList<Plot> allPlots = new ArrayList(plotService.getPlots());
-				allPlots.sort((plot1, plot2) -> {
-					if (plot1.getOrderNumber() == plot2.getOrderNumber()) {
-						return 0;
-					} else if (plot1.getOrderNumber() > plot2.getOrderNumber()) {
-						return 1;
-					} else {
-						return -1;
-					}
-				});
-				// Now sorted by order number
+			//if (args.length == 0) {
+			ArrayList<Plot> allPlots = new ArrayList(plotService.getPlots());
+			allPlots.sort((plot1, plot2) -> {
+				if (plot1.getOrderNumber() == plot2.getOrderNumber()) {
+					return 0;
+				} else if (plot1.getOrderNumber() > plot2.getOrderNumber()) {
+					return 1;
+				} else {
+					return -1;
+				}
+			});
+			// Now sorted by order number
 
-				String message = "Bases and outposts:\n";
+			String message = "Bases and outposts:\n";
 
-				for (Plot plot : allPlots) {
-					Location plotLocation = plot.getLocation();
-					String status;
-					String orderNumber;
-					String locationString = "";
-					if (plot.isBasePlot()) {
-						status = "Base";
-						orderNumber = "B";
-					} else if (plot.getProtection().isCapturable()) {
-						status = plot.getProtection().isCaptureInProgress() ? "Under attack" : "Secured";
-						orderNumber = Integer.toString(plot.getOrderNumber());
+			for (Plot plot : allPlots) {
+				Location plotLocation = plot.getLocation();
+				String status;
+				//String orderNumber;
+				String locationString = "";
+				if (plot.isBasePlot()) {
+					status = plot.isAttackInProgress() ? "Under attack" : "Base";
+					//orderNumber = "B";
+				} else if (plot.getProtection().isCapturable()) {
+					status = plot.isAttackInProgress() ? "Under attack" : "Secured";
+					//orderNumber = Integer.toString(plot.getOrderNumber());
+					if (plot.getProtection().getType() == sender.getTeam().getId()) {
 						locationString = String.format("(%s, %s, %s)", plotLocation.getBlockX(), plotLocation.getBlockY(), plotLocation.getBlockZ());
-					} else {
-						continue; // Not part of the map or rallyable
 					}
-
-					message += String.format("%s%s: %s%s - %s %s\n", ChatService.RequestedInfo, orderNumber, plot.getColoredName(), ChatService.RequestedInfo, status, locationString);
+				} else {
+					continue; // Not part of the map or rallyable
 				}
 
-				chatService.sendInfoMessage(sender, message);
-				return true;
+				message += String.format("%s%s%s - %s %s\n", ChatService.RequestedInfo, plot.getColoredName(), ChatService.RequestedInfo, status, locationString);
 			}
+
+			chatService.sendInfoMessage(sender, message);
+			return true;
+			//}
 //			else if (args.length > 0) {
 //
 //				// /rally #?

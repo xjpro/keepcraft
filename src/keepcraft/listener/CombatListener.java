@@ -209,8 +209,8 @@ public class CombatListener implements Listener {
 				e.setDeathMessage(target.getColoredName() + ChatService.Info + " " + causeSection);
 			}
 
-			if (random.nextDouble() > 0.90) {
-				// 10% chance to drop their head
+			if (random.nextDouble() > 0.80) {
+				// 20% chance to drop their head
 				ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
 				SkullMeta meta = (SkullMeta) skull.getItemMeta();
 				meta.setOwner(player.getName());

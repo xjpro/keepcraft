@@ -28,7 +28,7 @@ public class RecipeService {
 
 		// Saddle recipe
 		ShapedRecipe saddle = new ShapedRecipe(new ItemStack(Material.SADDLE))
-				.shape("AAA", "A A")
+				.shape("A A", "AAA")
 				.setIngredient('A', Material.LEATHER);
 		server.addRecipe(saddle);
 	}

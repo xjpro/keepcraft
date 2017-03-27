@@ -108,7 +108,7 @@ public class PlotService {
 		PlotProtection protection = plot.getProtection();
 		protection.setType(user.getTeam().getId());
 		protection.setCapturable(true);
-		protection.setAdminRadius(0);
+		protection.setAdminRadius(3);
 
 		plotDataManager.updatePlot(plot);
 		refreshCache();

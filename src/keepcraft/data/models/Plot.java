@@ -18,6 +18,7 @@ public class Plot {
 	public final static int DEFAULT_OUTPOST_RADIUS = 30;
 	public final static int DEFAULT_RADIUS = 10;
 	public final static int DEFAULT_TRIGGER_RADIUS = 10;
+	private final static int UNDER_ATTACK_TIMEOUT_SECONDS = 10 * 60;
 
 	private final int id;
 	private final PlotProtection protection;
@@ -29,7 +30,7 @@ public class Plot {
 
 	// Real time happenings
 	private Siege activeSiege = null;
-	private Date lastNotification = new Date();
+	private Date lastAttackDate = new Date(0);
 
 	public Plot(int id, PlotProtection protection) {
 		this.id = id;
@@ -38,6 +39,10 @@ public class Plot {
 
 	public boolean isBasePlot() {
 		return isTeamProtected() && !protection.isCapturable();
+	}
+
+	public boolean isAttackInProgress() {
+		return getSecondsSinceLastNotification() <= Plot.UNDER_ATTACK_TIMEOUT_SECONDS;
 	}
 
 	public boolean canBeRalliedTo(User user) {
@@ -210,16 +215,16 @@ public class Plot {
 		activeSiege = value;
 	}
 
-	public long getSecondsSinceLastNotification() {
-		return ((new Date()).getTime() - lastNotification.getTime()) / 1000;
+	private long getSecondsSinceLastNotification() {
+		return ((new Date()).getTime() - lastAttackDate.getTime()) / 1000;
 	}
 
-	public void setLastNotification() {
-		lastNotification = new Date();
+	public void setUnderAttack() {
+		lastAttackDate = new Date();
 	}
 
 	public String getInfo() {
-		String info = name + ChatService.RequestedInfo + " (Protection: " + protection.asString() + ChatService.RequestedInfo + ")\n";
+		String info = getColoredName() + ChatService.RequestedInfo + " (Protection: " + protection.asString() + ChatService.RequestedInfo + ")\n";
 		info += "Radius: " + radius + "\n";
 		if (protection.getKeepRadius() > 0) {
 			info += "Keep protected radius: " + protection.getKeepRadius() + "\n";

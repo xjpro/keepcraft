@@ -54,7 +54,7 @@ public class PlotAttackListener implements Listener {
 				chatService.sendAlertMessage(user, "The roar of an explosion thunders from the " + direction);
 			}
 		});
-		notifyTeamMembersOfAttack(event.getLocation());
+		notifyPlayersOfAttack(event.getLocation());
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -67,7 +67,7 @@ public class PlotAttackListener implements Listener {
 					chatService.sendAlertMessage(user, "The sound of enemy construction sizzles from the " + direction);
 				}
 			});
-			notifyTeamMembersOfAttack(event.getBlock().getLocation());
+			notifyPlayersOfAttack(event.getBlock().getLocation());
 		}
 	}
 
@@ -89,18 +89,16 @@ public class PlotAttackListener implements Listener {
 		}
 	}
 
-	private void notifyTeamMembersOfAttack(Location location) {
+	private void notifyPlayersOfAttack(Location location) {
 		Plot plot = plotService.getIntersectedPlot(location);
 		if (plot != null && plot.isTeamProtected()) {
-			if (plot.getSecondsSinceLastNotification() > 5 * 60) {
+			if (!plot.isAttackInProgress()) {
 				for (User user : userService.getOnlineUsers()) {
-					if (plot.getProtection().getType() == user.getTeam().getId()) {
-						chatService.sendAlertMessage(user, String.format("%s has come under attack", plot.getColoredName()));
-					}
+					chatService.sendAlertMessage(user, String.format("%s has come under attack", plot.getColoredName()));
 				}
-//				notifyDiscordOfAttack(plot);
+				//notifyDiscordOfAttack(plot);
 			}
-			plot.setLastNotification();
+			plot.setUnderAttack();
 		}
 	}
 
