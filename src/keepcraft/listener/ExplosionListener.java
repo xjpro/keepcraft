@@ -67,9 +67,9 @@ public class ExplosionListener implements Listener {
 					if (container != null) {
 						containerService.removeContainer(container);
 					}
+				} else if (centerBlock.getType() != Material.BEDROCK) {
+					centerBlock.setType(Material.STONE);
 				}
-
-				centerBlock.setType(Material.AIR);
 			}
 
 			// Blow some shit up
