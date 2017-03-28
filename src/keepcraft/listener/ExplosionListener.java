@@ -72,16 +72,18 @@ public class ExplosionListener implements Listener {
 				}
 			}
 
-			// Blow some shit up
-			Location explosionLocation = plot.getLocation().clone();
-			explosionLocation.add(0, -16, 0);
-			while (explosionLocation.getBlockY() < plot.getLocation().getBlockY() + 16) {
-				location.getWorld().createExplosion(explosionLocation.add(0, 4, 0), 8f);
-			}
-
 			chatService.sendGlobalAlertMessage(String.format("%s has been destroyed!", plot.getColoredName()));
 
+			Location explosionLocation = plot.getLocation().clone();
+
 			if (plot.isBasePlot()) {
+
+				// Blow some shit up
+				explosionLocation.add(0, -16, 0);
+				while (explosionLocation.getBlockY() < plot.getLocation().getBlockY() + 16) {
+					location.getWorld().createExplosion(explosionLocation.add(0, 4, 0), 8f);
+				}
+
 				Keepcraft.log("Team base core destroyed");
 				chatService.sendGlobalAlertMessage("The map will reset tomorrow at 8pm CST");
 
@@ -99,6 +101,9 @@ public class ExplosionListener implements Listener {
 					e.printStackTrace();
 				}
 			} else {
+				// Smaller explosion for outposts
+				location.getWorld().createExplosion(explosionLocation.add(0, 4, 0), 8f);
+
 				// Remove outpost plot entirely
 				plotService.removePlot(plot);
 			}
