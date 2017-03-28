@@ -84,7 +84,7 @@ public class ExplosionListener implements Listener {
 					location.getWorld().createExplosion(explosionLocation.add(0, 4, 0), 8f);
 				}
 
-				Keepcraft.log("Team base core destroyed");
+				//Keepcraft.log("Team base core destroyed");
 				chatService.sendGlobalAlertMessage("The map will reset tomorrow at 8pm CST");
 
 				// Make plot public
@@ -102,7 +102,7 @@ public class ExplosionListener implements Listener {
 				}
 			} else {
 				// Smaller explosion for outposts
-				location.getWorld().createExplosion(explosionLocation.add(0, 4, 0), 8f);
+				location.getWorld().createExplosion(explosionLocation, 4f);
 
 				// Remove outpost plot entirely
 				plotService.removePlot(plot);
