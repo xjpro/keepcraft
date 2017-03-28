@@ -53,7 +53,10 @@ public class PlotAttackListener implements Listener {
 				chatService.sendAlertMessage(user, "The roar of an explosion thunders from the " + direction);
 			}
 		});
-		notifyPlayersOfAttack(event.getLocation());
+
+		if (event.getEntity() == null || event.getEntity().getType() == EntityType.PRIMED_TNT) {
+			notifyPlayersOfAttack(event.getLocation());
+		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
