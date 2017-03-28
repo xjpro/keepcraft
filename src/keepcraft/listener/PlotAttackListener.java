@@ -96,7 +96,7 @@ public class PlotAttackListener implements Listener {
 		if (plot != null && plot.isTeamProtected()) {
 			if (!plot.isAttackInProgress()) {
 				for (User user : userService.getOnlineUsers()) {
-					chatService.sendAlertMessage(user, String.format("%s has come under attack", plot.getColoredName()));
+					chatService.sendAlertMessage(user, String.format("%s is under attack!", plot.getColoredName()));
 				}
 				//notifyDiscordOfAttack(plot);
 			}
@@ -113,7 +113,7 @@ public class PlotAttackListener implements Listener {
 			connection.setRequestMethod("POST");
 			connection.setRequestProperty("Content-Type", "application/json");
 
-			String input = String.format("{ \"content\": \"@everyone %s has come under attack\" }", plot.getName());
+			String input = String.format("{ \"content\": \"@everyone %s is under attack!\" }", plot.getName());
 
 			OutputStream os = connection.getOutputStream();
 			os.write(input.getBytes());

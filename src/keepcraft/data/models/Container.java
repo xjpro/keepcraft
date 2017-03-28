@@ -11,6 +11,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -187,7 +188,12 @@ public class Container {
 		}
 
 		if (outputType == ContainerOutputType.BASE) {
-			inventory.addItem(new ItemStack(OutpostListener.OUTPOST_PLACEMENT_MATERIAL, 1));
+			ItemStack outpostPlacementItem = new ItemStack(OutpostListener.OUTPOST_PLACEMENT_MATERIAL);
+			ItemMeta itemMeta = outpostPlacementItem.getItemMeta();
+			itemMeta.setDisplayName("Outpost Block");
+			itemMeta.setLore(Arrays.asList("Place above sea level to", "create a new outpost", "for your team"));
+			outpostPlacementItem.setItemMeta(itemMeta);
+			inventory.addItem(outpostPlacementItem);
 		}
 
 		// Make a little smoke effect
