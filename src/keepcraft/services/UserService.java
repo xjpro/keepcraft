@@ -101,7 +101,9 @@ public class UserService {
 		// Teams will be A C E and B D F
 		// Only taking top 2/3rd of active users, rest will be assigned as they log in
 		UserTeam userTeam = UserTeam.getTeam(UserTeam.getRandomTeamId());
-		for (String userName : recentlyPlayedUserNamesByPlayTime.subList(0, (int) (recentlyPlayedUserNamesByPlayTime.size() * 0.6666))) {
+		int numberOfPlayersToAssign = (int) (recentlyPlayedUserNamesByPlayTime.size() * 0.6666);
+		numberOfPlayersToAssign = numberOfPlayersToAssign % 2 == 0 ? numberOfPlayersToAssign : numberOfPlayersToAssign + 1;
+		for (String userName : recentlyPlayedUserNamesByPlayTime.subList(0, numberOfPlayersToAssign)) {
 			// todo temporary hack to ignore admins in stats, will be resolved in a few maps as changes were made to clear admin playtime
 			if (userName.equalsIgnoreCase("SummitMC") || userName.equalsIgnoreCase("Sivias")) continue;
 

@@ -1,5 +1,6 @@
 package keepcraft.command;
 
+import keepcraft.Keepcraft;
 import keepcraft.data.models.*;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
@@ -7,9 +8,6 @@ import keepcraft.services.UserService;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import keepcraft.Keepcraft;
-import keepcraft.Privilege;
-import keepcraft.data.models.UserTeam;
 
 public class PlotCommandListener extends CommandListener {
 
@@ -134,7 +132,7 @@ public class PlotCommandListener extends CommandListener {
 			// Capturable setting
 			else if (args[0].equals("capture") && args.length > 1) {
 				if (args[1].equalsIgnoreCase("type")) {
-					if (Privilege.canModifyPlotData(sender, currentPlot)) {
+					if (sender.isAdmin()) {
 						boolean capturable;
 						try {
 							capturable = Boolean.parseBoolean(args[2]);
@@ -151,7 +149,7 @@ public class PlotCommandListener extends CommandListener {
 						return true;
 					}
 				} else if (args[1].equalsIgnoreCase("time")) {
-					if (Privilege.canModifyPlotData(sender, currentPlot)) {
+					if (sender.isAdmin()) {
 						int captureSeconds;
 						try {
 							captureSeconds = Integer.parseInt(args[2]);
@@ -206,7 +204,7 @@ public class PlotCommandListener extends CommandListener {
 					}
 				} // Set it as protection public
 				else if (args[1].equals("public") && args.length == 2) {
-					if (Privilege.canModifyPlotData(sender, currentPlot)) {
+					if (sender.isAdmin()) {
 						currentPlot.getProtection().setType(PlotProtection.PUBLIC);
 						plotService.updatePlot(currentPlot);
 
@@ -216,7 +214,7 @@ public class PlotCommandListener extends CommandListener {
 				}
 			} // Rename plot
 			else if (args[0].equals("name") && args.length > 1) {
-				if (Privilege.canModifyPlotData(sender, currentPlot)) {
+				if (sender.isAdmin() || sender.getName().equals(currentPlot.getCreatorName())) {
 					String name = "";
 					for (int i = 1; i < args.length; i++) {
 						name += args[i] + " ";
@@ -229,7 +227,7 @@ public class PlotCommandListener extends CommandListener {
 				}
 			} // Set plot's order number
 			else if (args[0].equals("order") && args.length == 2) {
-				if (Privilege.canModifyPlotData(sender, currentPlot)) {
+				if (sender.isAdmin()) {
 					int orderNumber;
 
 					// todo check for existing order #
@@ -247,7 +245,7 @@ public class PlotCommandListener extends CommandListener {
 				}
 			} // Delete to default
 			else if (args[0].equals("delete")) {
-				if (Privilege.canModifyPlotData(sender, currentPlot)) {
+				if (sender.isAdmin()) {
 					plotService.removePlot(currentPlot);
 					commandSender.sendMessage(ChatService.Success + "Plot deleted");
 					return true;

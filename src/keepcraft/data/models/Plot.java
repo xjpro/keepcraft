@@ -26,7 +26,7 @@ public class Plot {
 	private double radius;
 	private String name;
 	private int orderNumber = -1;
-	private String creator;
+	private String creatorName;
 
 	// Real time happenings
 	private Siege activeSiege = null;
@@ -199,12 +199,12 @@ public class Plot {
 		orderNumber = value;
 	}
 
-	public String getCreator() {
-		return creator;
+	public String getCreatorName() {
+		return creatorName;
 	}
 
-	public void setCreator(String value) {
-		creator = value;
+	public void setCreatorName(String value) {
+		creatorName = value;
 	}
 
 	public Siege getSiege() {

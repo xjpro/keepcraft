@@ -21,7 +21,7 @@ public class PlotDataManager {
 
 	private void init() {
 		try {
-			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, DateTimeSet)");
+			PreparedStatement statement = database.createStatement("CREATE TABLE IF NOT EXISTS plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, CreatorName, DateTimeSet)");
 			statement.execute();
 
 			statement = database.createStatement("CREATE TABLE IF NOT EXISTS plotProtections (PlotId, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId)");
@@ -73,7 +73,7 @@ public class PlotDataManager {
 
 		try {
 			PreparedStatement statement = database.createStatement(
-					"SELECT plots.ROWID as PlotROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plots JOIN plotProtections ON PlotROWID = PlotId");
+					"SELECT plots.ROWID as PlotROWID, LocX, LocY, LocZ, Radius, Name, OrderNumber, CreatorName, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId FROM plots JOIN plotProtections ON PlotROWID = PlotId");
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
@@ -91,7 +91,7 @@ public class PlotDataManager {
 				plot.setRadius(result.getFloat("Radius"));
 				plot.setName(result.getString("Name"));
 				plot.setOrderNumber(result.getInt("OrderNumber"));
-				//plot.setSetterId(result.getInt("SetterId"));
+				plot.setCreatorName(result.getString("CreatorName"));
 
 				Keepcraft.log(String.format("Plot %s was found at (%s, %s, %s)", plot.getName(), plot.getWorldPoint().x, plot.getWorldPoint().y, plot.getWorldPoint().z));
 
@@ -109,20 +109,24 @@ public class PlotDataManager {
 	}
 
 	public Plot createPlot(WorldPoint worldPoint, String name, double radius) {
+		return createPlot(worldPoint, name, radius, null);
+	}
+
+	public Plot createPlot(WorldPoint worldPoint, String name, double radius, String creatorName) {
 
 		Plot plot = null;
 
 		Keepcraft.log(String.format("Creating record for plot %s", name));
 		try {
 			PreparedStatement statement
-					= database.createStatement("INSERT INTO plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, SetterId, DateTimeSet) VALUES(?, ?, ?, ?, ?, ?, ?, datetime('now'))");
+					= database.createStatement("INSERT INTO plots (LocX, LocY, LocZ, Radius, Name, OrderNumber, CreatorName, DateTimeSet) VALUES(?, ?, ?, ?, ?, ?, ?, datetime('now'))");
 			statement.setInt(1, worldPoint.x);
 			statement.setInt(2, worldPoint.y);
 			statement.setInt(3, worldPoint.z);
 			statement.setDouble(4, radius);
 			statement.setString(5, name);
 			statement.setInt(6, -1);
-			statement.setInt(7, -1);
+			statement.setString(7, creatorName);
 			statement.execute();
 
 			statement = database.createStatement("SELECT last_insert_rowid() AS ROWID");
@@ -141,6 +145,7 @@ public class PlotDataManager {
 			plot.setWorldPoint(worldPoint);
 			plot.setName(name);
 			plot.setRadius(radius);
+			plot.setCreatorName(creatorName);
 
 			statement = database.createStatement("INSERT INTO plotProtections (PlotId, Type, KeepRadius, AdminRadius, TriggerRadius, Capturable, CaptureTime, CaptureEffect, SpawnId) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setInt(1, id);
