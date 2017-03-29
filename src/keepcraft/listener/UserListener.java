@@ -22,15 +22,15 @@ public class UserListener implements Listener {
 	private final UserService userService;
 	private final PlotService plotService;
 	private final FactionSpawnService factionSpawnService;
-	private final ChatService chatService;
 	private final TeamService teamService;
+	private final ChatService chatService;
 
-	public UserListener(UserService userService, PlotService plotService, FactionSpawnService factionSpawnService, ChatService chatService) {
+	public UserListener(UserService userService, PlotService plotService, FactionSpawnService factionSpawnService, TeamService teamService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
 		this.factionSpawnService = factionSpawnService;
+		this.teamService = teamService;
 		this.chatService = chatService;
-		this.teamService = new TeamService();
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

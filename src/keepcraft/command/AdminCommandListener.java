@@ -22,10 +22,10 @@ public class AdminCommandListener extends CommandListener {
 	private final TeamService teamService;
 	private final ChatService chatService;
 
-	public AdminCommandListener(UserService userService, PlotService plotService, ChatService chatService) {
+	public AdminCommandListener(UserService userService, PlotService plotService, TeamService teamService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
-		this.teamService = new TeamService();
+		this.teamService = teamService;
 		this.chatService = chatService;
 	}
 

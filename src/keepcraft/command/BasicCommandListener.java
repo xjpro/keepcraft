@@ -6,29 +6,25 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import keepcraft.data.models.UserTeam;
-import keepcraft.services.ChatService;
-import keepcraft.services.PlotService;
-import keepcraft.services.RallyService;
-import keepcraft.services.UserService;
+import keepcraft.data.models.*;
+import keepcraft.services.*;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.User;
-import keepcraft.data.models.UserPrivilege;
 
 public class BasicCommandListener extends CommandListener {
 
 	private final UserService userService;
 	private final PlotService plotService;
 	private final RallyService rallyService;
+	private final TeamService teamService;
 	private final ChatService chatService;
 
-	public BasicCommandListener(UserService userService, PlotService plotService, RallyService rallyService, ChatService chatService) {
+	public BasicCommandListener(UserService userService, PlotService plotService, RallyService rallyService, TeamService teamService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
 		this.rallyService = rallyService;
+		this.teamService = teamService;
 		this.chatService = chatService;
 	}
 
@@ -93,6 +89,23 @@ public class BasicCommandListener extends CommandListener {
 			return true;
 		} else if (commandName.equalsIgnoreCase("die") && args.length == 0) {
 			player.setHealth(0);
+			return true;
+		} else if (commandName.equalsIgnoreCase("hide")) {
+			if (Armor.isWearingFullLeatherArmor(player)) {
+				if (sender.isHiding()) {
+					// Unhide
+					teamService.removeStealth(sender, player);
+					sender.setHiding(false);
+					chatService.sendSuccessMessage(sender, "Your name is now visible");
+				} else {
+					// Hide
+					teamService.addStealth(sender, player);
+					sender.setHiding(true);
+					chatService.sendSuccessMessage(sender, "Your name is now hidden");
+				}
+			} else {
+				chatService.sendFailureMessage(sender, "You must be wearing full leather armor to hide");
+			}
 			return true;
 		} else if (commandName.equalsIgnoreCase("map") || commandName.equalsIgnoreCase("rally")) {
 			//if (args.length == 0) {

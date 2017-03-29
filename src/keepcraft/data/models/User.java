@@ -30,7 +30,7 @@ public class User {
 	private String lastPrivateMessageSender = null;
 	private Date lastCombat = null;
 	private Plot rallyingTo = null;
-	private boolean hasStealth = false;
+	private boolean hiding = false;
 	private boolean toggleSneak = false; // todo persist in db
 	private boolean persistentSneak = false;
 	private Location lastFishLocation = null;
@@ -187,12 +187,12 @@ public class User {
 		firstTimeLogin = value;
 	}
 
-	public boolean hasStealth() {
-		return hasStealth;
+	public boolean isHiding() {
+		return hiding;
 	}
 
-	public void setStealth(boolean stealth) {
-		this.hasStealth = stealth;
+	public void setHiding(boolean stealth) {
+		this.hiding = stealth;
 	}
 
 	public boolean getToggleSneak() {

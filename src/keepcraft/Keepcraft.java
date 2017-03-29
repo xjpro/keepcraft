@@ -30,6 +30,7 @@ public class Keepcraft extends JavaPlugin {
 	private final UserConnectionDataManager userConnectionDataManager = new UserConnectionDataManager(statsDatabase);
 
 	// Services
+	private final TeamService teamService = new TeamService();
 	private final UserService userService = new UserService(this, userDataManager, userStatsDataManager, userConnectionDataManager);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
@@ -60,10 +61,10 @@ public class Keepcraft extends JavaPlugin {
 
 		PluginManager manager = this.getServer().getPluginManager();
 
-		manager.registerEvents(new UserListener(userService, plotService, factionSpawnService, chatService), this);
+		manager.registerEvents(new UserListener(userService, plotService, factionSpawnService, teamService, chatService), this);
 		manager.registerEvents(new ActionListener(userService, plotService), this);
 		manager.registerEvents(new MovementListener(userService, plotService, chatService), this);
-		manager.registerEvents(new SneakListener(userService), this);
+		manager.registerEvents(new SneakListener(userService, teamService, chatService), this);
 		manager.registerEvents(new ChatListener(userService, chatService), this);
 		manager.registerEvents(new CombatListener(userService), this);
 		manager.registerEvents(new WorldEntityListener(), this);
@@ -82,8 +83,8 @@ public class Keepcraft extends JavaPlugin {
 		containerService.startDispensing();
 
 		// Basic commands
-		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, chatService);
-		String[] basicCommands = {"die", "who", "map", /*"rally",*/ "global"};
+		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, teamService, chatService);
+		String[] basicCommands = {"hide", "die", "who", "map", /*"rally",*/ "global"};
 		for (String basicCommand : basicCommands) {
 			getCommand(basicCommand).setExecutor(basicCommandListener);
 		}
@@ -103,7 +104,7 @@ public class Keepcraft extends JavaPlugin {
 		}
 
 		// Admin commands
-		AdminCommandListener adminCommandListener = new AdminCommandListener(userService, plotService, chatService);
+		AdminCommandListener adminCommandListener = new AdminCommandListener(userService, plotService, teamService, chatService);
 		String[] adminCommands = {"promote", "demote", "delete", "setteam", "ptp", "dawn", "noon", "dusk"};
 		for (String adminCommand : adminCommands) {
 			getCommand(adminCommand).setExecutor(adminCommandListener);
