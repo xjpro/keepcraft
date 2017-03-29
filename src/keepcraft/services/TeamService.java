@@ -11,12 +11,6 @@ import org.bukkit.scoreboard.Team;
 
 public class TeamService {
 
-	private final Scoreboard scoreboard;
-
-	public TeamService() {
-		scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-	}
-
 	public void addPlayerToTeam(UserTeam userTeam, Player player) {
 		addPlayerToTeam(userTeam, player, false);
 	}
@@ -35,6 +29,7 @@ public class TeamService {
 		// TODO teams might persist through server reboots, meaning it would only be necessary to do this when the user is first created
 
 		// Remove from current teams, if any
+		Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 		for (Team otherTeam : scoreboard.getTeams()) {
 			if (otherTeam.hasPlayer(player)) {
 				otherTeam.removePlayer(player);
@@ -53,6 +48,8 @@ public class TeamService {
 
 	private Team getTeam(UserTeam userTeam, boolean stealth) {
 		String teamName = String.format("%s%s", userTeam.getName(), stealth ? "_stealth" : "");
+
+		Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
 		Team team = scoreboard.getTeam(teamName);
 		if (team == null) {
 			team = scoreboard.registerNewTeam(teamName);
