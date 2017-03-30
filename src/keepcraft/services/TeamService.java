@@ -1,25 +1,55 @@
 package keepcraft.services;
 
+import keepcraft.data.models.Armor;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 public class TeamService {
 
+	private final UserService userService;
+	private int armorCheckTaskId;
+
+	public TeamService(UserService userService) {
+		this.userService = userService;
+	}
+
+	public void startArmorCheck(Plugin plugin) {
+		armorCheckTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				User user = userService.getOnlineUser(player.getName());
+				if (Armor.isWearingFullLeatherArmor(player)) {
+					if (!user.isHiding()) {
+						addStealth(user, player);
+						user.setHiding(true);
+					}
+				} else if (user.isHiding()) {
+					removeStealth(user, player);
+					user.setHiding(false);
+				}
+			}
+		}, 0, 2 * 20);
+	}
+
+	public void stopArmorCheck() {
+		Bukkit.getScheduler().cancelTask(armorCheckTaskId);
+	}
+
 	public void addPlayerToTeam(UserTeam userTeam, Player player) {
 		addPlayerToTeam(userTeam, player, false);
 	}
 
-	public void addStealth(User user, Player player) {
+	private void addStealth(User user, Player player) {
 		addPlayerToTeam(user.getTeam(), player, true);
 	}
 
-	public void removeStealth(User user, Player player) {
+	private void removeStealth(User user, Player player) {
 		addPlayerToTeam(user.getTeam(), player, false);
 	}
 

@@ -23,9 +23,6 @@ commands:
     global:
         description: Toggle global chat
         usage: /global on|off
-    hide:
-        description: Toggle hiding if wearing full leather armor
-        usage: /hide
     die:
         description: Suicide
         usage: /die

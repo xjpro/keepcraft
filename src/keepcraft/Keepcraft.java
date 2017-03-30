@@ -30,8 +30,8 @@ public class Keepcraft extends JavaPlugin {
 	private final UserConnectionDataManager userConnectionDataManager = new UserConnectionDataManager(statsDatabase);
 
 	// Services
-	private final TeamService teamService = new TeamService();
 	private final UserService userService = new UserService(this, userDataManager, userStatsDataManager, userConnectionDataManager);
+	private final TeamService teamService = new TeamService(userService);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
 	private final ContainerService containerService = new ContainerService(containerDataManager, mapDataManager);
@@ -56,7 +56,6 @@ public class Keepcraft extends JavaPlugin {
 			userService.loadOfflineUser(player.getName(), player.getAddress().getHostString());
 		});
 
-		announcementService.queueTimedAnnouncements();
 		recipeService.modifyRecipes(this.getServer());
 
 		PluginManager manager = this.getServer().getPluginManager();
@@ -64,7 +63,6 @@ public class Keepcraft extends JavaPlugin {
 		manager.registerEvents(new UserListener(userService, plotService, factionSpawnService, teamService, chatService), this);
 		manager.registerEvents(new ActionListener(userService, plotService), this);
 		manager.registerEvents(new MovementListener(userService, plotService, chatService), this);
-		manager.registerEvents(new SneakListener(userService, teamService, chatService), this);
 		manager.registerEvents(new ChatListener(userService, chatService), this);
 		manager.registerEvents(new CombatListener(userService), this);
 		manager.registerEvents(new WorldEntityListener(), this);
@@ -81,10 +79,12 @@ public class Keepcraft extends JavaPlugin {
 
 		// Start any tasks
 		containerService.startDispensing();
+		announcementService.queueTimedAnnouncements();
+		teamService.startArmorCheck(this);
 
 		// Basic commands
-		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, teamService, chatService);
-		String[] basicCommands = {"hide", "die", "who", "map", /*"rally",*/ "global"};
+		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, chatService);
+		String[] basicCommands = {"die", "who", "map", /*"rally",*/ "global"};
 		for (String basicCommand : basicCommands) {
 			getCommand(basicCommand).setExecutor(basicCommandListener);
 		}
@@ -145,6 +145,7 @@ public class Keepcraft extends JavaPlugin {
 		// Stop any tasks
 		containerService.stopDispensing();
 		announcementService.cancelQueuedAnnouncements();
+		teamService.stopArmorCheck();
 
 		// Save everybody's user data
 		Bukkit.getServer().getOnlinePlayers().forEach(player -> {
