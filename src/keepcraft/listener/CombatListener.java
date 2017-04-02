@@ -110,16 +110,18 @@ public class CombatListener implements Listener {
 		// Diamond armor (20 points) = 25% less effective than vanilla
 		// Iron armor (15 points) = 18.75% less effective than vanilla
 		// Leather armor (7 points) = 8.75% less effective than vanilla
-		defensePoints *= 1 + (defensePoints / 80);
+		defensePoints *= 1 - (defensePoints / 80);
 
 		// original formula
 		// damage = damage * ( 1 - min( 20, max( defensePoints / 5, defensePoints - damage / ( 2 + toughness / 4 ) ) ) / 25 )
 		// Note we completely ignore the toughness attribute that diamond gets, further reducing its effectiveness
+		//double damageReductionFromArmor = baseDamage * (defensePoints * 0.03);
 		double damageReductionFromArmor = baseDamage - (baseDamage * (1 - Math.min(20, Math.max(defensePoints / 5, defensePoints - baseDamage / 2)) / 25));
 
 		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, -damageReductionFromArmor);
 
 		// Apply damage reduction for wearing enchantments
+		// give SummitMC diamond_boots 1 0 {ench:[{id:1,lvl:4}]}
 		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
 		// Each point of enchantment protection provides 0.75% (vanilla is 4%) damage reduction, maxing out at 15%
 		double magicalArmorReduction = baseDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
