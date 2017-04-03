@@ -23,11 +23,11 @@ import java.util.Random;
 
 public class CombatListener implements Listener {
 
-	private static float PowerDamageBonusPerLevel = 0.05f; // each level of Power (bows) gives 5% damage bonus
-	private static float SharpnessDamageBonusPerLevel = 0.05f; // each level of Sharpness (swords & axes) gives 5% damage bonus
-	private static float ArrowDamageReduction = 0.15f; // arrow damage reduced by 15%
-	private static int FoodRemovedOnArrowHit = 2; // food removed when hit by an arrow
-	private static float ProtectionDamageReductionPerPoint = 0.0075f; // damage reduction by point of Protection (armor)
+	private static final float POWER_DAMAGE_BONUS_PER_LEVEL = 0.05f; // each level of Power (bows) gives 5% damage bonus
+	private static final float SHARPNESS_DAMAGE_BONUS_PER_LEVEL = 0.05f; // each level of Sharpness (swords & axes) gives 5% damage bonus
+	private static final float ARROW_DAMAGE_REDUCTION = 0.15f; // arrow damage reduced by 15%
+	private static final int FOOD_REMOVED_ON_ARROW_HIT = 2; // food removed when hit by an arrow
+	private static final float PROTECTION_DAMAGE_REDUCTION_PER_POINT = 0.0075f; // damage reduction by point of Protection (armor)
 	private static Random random = new Random();
 
 	private final UserService userService;
@@ -49,7 +49,7 @@ public class CombatListener implements Listener {
 		// Determine damager and base damage based on type of attack
 		Player damager;
 		double originalDamage = event.getDamage();
-		double baseDamage;
+		double modifiedBaseDamage;
 		boolean isArrowHit;
 
 		if (event.getCause().equals(DamageCause.ENTITY_ATTACK)) {
@@ -59,10 +59,10 @@ public class CombatListener implements Listener {
 			isArrowHit = false;
 
 			int enchantmentLevel = damager.getEquipment().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-			baseDamage = getUnenchantedDamageByWeapon(originalDamage, enchantmentLevel);
+			modifiedBaseDamage = getUnenchantedDamageByWeapon(originalDamage, enchantmentLevel);
 
 			// Reapply damage enchantments with reduced formula
-			baseDamage *= 1 + (enchantmentLevel * SharpnessDamageBonusPerLevel); // Each level gives +5%
+			modifiedBaseDamage *= 1 + (enchantmentLevel * SHARPNESS_DAMAGE_BONUS_PER_LEVEL); // Each level gives +5%
 
 			// todo sweeping edge attack
 
@@ -74,13 +74,13 @@ public class CombatListener implements Listener {
 			isArrowHit = true;
 
 			int powerEnchantmentLevel = arrow.hasMetadata("power") ? arrow.getMetadata("power").get(0).asInt() : 0;
-			baseDamage = getUnenchantedDamageByBow(originalDamage, powerEnchantmentLevel);
+			modifiedBaseDamage = getUnenchantedDamageByBow(originalDamage, powerEnchantmentLevel);
 
 			// Reduce base damage of archery overall
-			baseDamage *= 1 - ArrowDamageReduction;
+			modifiedBaseDamage *= 1 - ARROW_DAMAGE_REDUCTION;
 
 			// Reapply damage enchantments with reduced formula
-			baseDamage *= 1 + (powerEnchantmentLevel * PowerDamageBonusPerLevel); // Each level gives +5%
+			modifiedBaseDamage *= 1 + (powerEnchantmentLevel * POWER_DAMAGE_BONUS_PER_LEVEL); // Each level gives +5%
 		} else {
 			return; // other damage types
 		}
@@ -89,7 +89,6 @@ public class CombatListener implements Listener {
 		User damagerUser = userService.getOnlineUser(damager.getName());
 		User damagedUser = userService.getOnlineUser(damaged.getName());
 		if (damagerUser.getTeam() == damagedUser.getTeam()) {
-			// todo Since the addition of teams (see: TeamService) this if block should no longer be necessary
 			// Team members cannot damage each other
 			event.setCancelled(true);
 			return;
@@ -100,7 +99,7 @@ public class CombatListener implements Listener {
 		damagedUser.setInCombat();
 
 		// We assume at this point we've arrived at a good damage amount pre armor and magical protection
-		event.setDamage(EntityDamageEvent.DamageModifier.BASE, baseDamage);
+		event.setDamage(EntityDamageEvent.DamageModifier.BASE, modifiedBaseDamage);
 
 		// Note: DamageModifiers other than BASE are mitigation and thus should have negative values
 
@@ -116,7 +115,7 @@ public class CombatListener implements Listener {
 		// damage = damage * ( 1 - min( 20, max( defensePoints / 5, defensePoints - damage / ( 2 + toughness / 4 ) ) ) / 25 )
 		// Note we completely ignore the toughness attribute that diamond gets, further reducing its effectiveness
 		//double damageReductionFromArmor = baseDamage * (defensePoints * 0.03);
-		double damageReductionFromArmor = baseDamage - (baseDamage * (1 - Math.min(20, Math.max(defensePoints / 5, defensePoints - baseDamage / 2)) / 25));
+		double damageReductionFromArmor = modifiedBaseDamage - (modifiedBaseDamage * (1 - Math.min(20, Math.max(defensePoints / 5, defensePoints - modifiedBaseDamage / 2)) / 25));
 
 		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, -damageReductionFromArmor);
 
@@ -124,12 +123,12 @@ public class CombatListener implements Listener {
 		// give SummitMC diamond_boots 1 0 {ench:[{id:1,lvl:4}]}
 		int enchantmentProtectionFactor = Armor.getEnchantmentProtectionFactor(damaged, event.getCause());
 		// Each point of enchantment protection provides 0.75% (vanilla is 4%) damage reduction, maxing out at 15%
-		double magicalArmorReduction = baseDamage * (ProtectionDamageReductionPerPoint * enchantmentProtectionFactor);
+		double magicalArmorReduction = modifiedBaseDamage * (PROTECTION_DAMAGE_REDUCTION_PER_POINT * enchantmentProtectionFactor);
 		event.setDamage(EntityDamageEvent.DamageModifier.MAGIC, -magicalArmorReduction);
 
 		if (isArrowHit && event.getFinalDamage() > 0) {
 			// Remove food when damaged by an arrow
-			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FoodRemovedOnArrowHit));
+			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FOOD_REMOVED_ON_ARROW_HIT));
 		}
 
 		// todo thorns
