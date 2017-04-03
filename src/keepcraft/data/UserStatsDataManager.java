@@ -24,7 +24,8 @@ public class UserStatsDataManager {
 					"(RecordStart, UserName, WorldSeed, WorldGUID, PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
 					"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests, " +
 					"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
-					"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits)");
+					"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, ArrowBlocks, MeleeBlocks, ArrowStrikes, " +
+					"CriticalHits, IronMined, GoldMined, DiamondMined)");
 			statement.execute();
 		} catch (Exception e) {
 			Keepcraft.error("Error initializing table: " + e.getMessage());
@@ -54,7 +55,14 @@ public class UserStatsDataManager {
 					"ArrowHits = ArrowHits + ?, " +
 					"SwordHits = SwordHits + ?, " +
 					"AxeHits = AxeHits + ?, " +
-					"OtherHits = OtherHits + ? " +
+					"OtherHits = OtherHits + ?, " +
+					"ArrowBlocks = ArrowBlocks + ?, " +
+					"MeleeBlocks = MeleeBlocks + ?, " +
+					"ArrowStrikes = ArrowStrikes + ?, " +
+					"CriticalHits = CriticalHits + ?, " +
+					"IronMined = IronMined + ?, " +
+					"GoldMined = GoldMined + ?, " +
+					"DiamondMined = DiamondMined + ? " +
 					"WHERE UserName = ? AND WorldGUID = ?");
 			statement.setInt(1, (int) stats.playSeconds);
 			statement.setInt(2, stats.blocksPlaced);
@@ -74,8 +82,16 @@ public class UserStatsDataManager {
 			statement.setInt(16, stats.swordHits);
 			statement.setInt(17, stats.axeHits);
 			statement.setInt(18, stats.otherHits);
-			statement.setString(19, userName);
-			statement.setString(20, worldGUID.toString());
+			statement.setInt(19, stats.arrowBlocks);
+			statement.setInt(20, stats.meleeBlocks);
+			statement.setInt(21, stats.arrowStrikes);
+			statement.setInt(22, stats.criticalHits);
+			statement.setInt(23, stats.ironMined);
+			statement.setInt(24, stats.goldMined);
+			statement.setInt(25, stats.diamondMined);
+
+			statement.setString(26, userName);
+			statement.setString(27, worldGUID.toString());
 			int rowsAffected = statement.executeUpdate();
 
 			if (rowsAffected == 0) {
@@ -83,7 +99,8 @@ public class UserStatsDataManager {
 						"(PlaySeconds, BlocksPlaced, BlocksRemoved, BlocksAddedToChests, " +
 						"BlocksRemovedFromChests, BlocksAddedToTeamChests, BlocksRemovedFromTeamChests, " +
 						"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
-						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, UserName, WorldGUID, RecordStart) " +
+						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, ArrowBlocks, MeleeBlocks, ArrowStrikes, " +
+						"CriticalHits, IronMined, GoldMined, DiamondMined, UserName, WorldGUID, RecordStart) " +
 						"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))");
 				statement.setInt(1, (int) stats.playSeconds);
 				statement.setInt(2, stats.blocksPlaced);
@@ -103,8 +120,15 @@ public class UserStatsDataManager {
 				statement.setInt(16, stats.swordHits);
 				statement.setInt(17, stats.axeHits);
 				statement.setInt(18, stats.otherHits);
-				statement.setString(19, userName);
-				statement.setString(20, worldGUID.toString());
+				statement.setInt(19, stats.arrowBlocks);
+				statement.setInt(20, stats.meleeBlocks);
+				statement.setInt(21, stats.arrowStrikes);
+				statement.setInt(22, stats.criticalHits);
+				statement.setInt(23, stats.ironMined);
+				statement.setInt(24, stats.goldMined);
+				statement.setInt(25, stats.diamondMined);
+				statement.setString(26, userName);
+				statement.setString(27, worldGUID.toString());
 				statement.execute();
 			}
 		} catch (Exception e) {

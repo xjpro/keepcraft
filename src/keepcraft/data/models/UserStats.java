@@ -19,4 +19,11 @@ public class UserStats {
 	public int swordHits = 0;
 	public int axeHits = 0;
 	public int otherHits = 0;
+	public int arrowBlocks = 0;
+	public int meleeBlocks = 0;
+	public int arrowStrikes = 0;
+	public int criticalHits = 0;
+	public int ironMined = 0;
+	public int goldMined = 0;
+	public int diamondMined = 0;
 }

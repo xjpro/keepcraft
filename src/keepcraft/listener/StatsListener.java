@@ -51,6 +51,18 @@ public class StatsListener implements Listener {
 		if (event.isCancelled()) return;
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		user.getUserStats().blocksRemoved++;
+
+		switch (event.getBlock().getType()) {
+			case IRON_ORE:
+				user.getUserStats().ironMined++;
+				break;
+			case GOLD_ORE:
+				user.getUserStats().goldMined++;
+				break;
+			case DIAMOND_ORE:
+				user.getUserStats().diamondMined++;
+				break;
+		}
 	}
 
 	//@EventHandler(priority = EventPriority.HIGHEST)
@@ -127,34 +139,47 @@ public class StatsListener implements Listener {
 		if (!(event.getEntity() instanceof Player)) return; // Hitting a non-player, don't care
 
 		Material hitWith = null;
-		Player player = null;
+		Player damager = null;
 
 		if (event.getDamager() instanceof Arrow) {
 			// Archery
 			Arrow arrow = (Arrow) event.getDamager();
 			if (!(arrow.getShooter() instanceof Player)) return; // Shot by a non-player, don't care
 
-			player = (Player) arrow.getShooter();
+			damager = (Player) arrow.getShooter();
 			hitWith = Material.ARROW;
 		} else if (event.getDamager() instanceof Player) {
-			player = (Player) event.getDamager();
-			ItemStack weapon = player.getEquipment().getItemInMainHand();
+			damager = (Player) event.getDamager();
+			ItemStack weapon = damager.getEquipment().getItemInMainHand();
 			hitWith = weapon.getType();
 		}
 
-		if (hitWith == null || player == null) return;
+		if (hitWith == null || damager == null) return;
 
-		User damagerUser = userService.getOnlineUser(player.getName());
+		User damagerUser = userService.getOnlineUser(damager.getName());
+		User damagedUser = userService.getOnlineUser(event.getEntity().getName());
 
 		if (hitWith == Material.ARROW) {
 			damagerUser.getUserStats().arrowHits++;
+			if (event.getFinalDamage() == 0) {
+				damagedUser.getUserStats().arrowBlocks++;
+			} else {
+				damagedUser.getUserStats().arrowStrikes++;
+			}
 		} else if (hitWith == Material.WOOD_SWORD || hitWith == Material.STONE_SWORD || hitWith == Material.IRON_SWORD || hitWith == Material.GOLD_SWORD || hitWith == Material.DIAMOND_SWORD) {
 			damagerUser.getUserStats().swordHits++;
+			if (isCritical(damager)) damagerUser.getUserStats().criticalHits++;
+			if (event.getFinalDamage() == 0) damagedUser.getUserStats().meleeBlocks++;
 		} else if (hitWith == Material.WOOD_AXE || hitWith == Material.STONE_AXE || hitWith == Material.IRON_AXE || hitWith == Material.GOLD_AXE || hitWith == Material.DIAMOND_AXE) {
 			damagerUser.getUserStats().axeHits++;
+			if (isCritical(damager)) damagerUser.getUserStats().criticalHits++;
+			if (event.getFinalDamage() == 0) damagedUser.getUserStats().meleeBlocks++;
 		} else {
 			damagerUser.getUserStats().otherHits++;
 		}
 	}
 
+	private boolean isCritical(Player damager) {
+		return !damager.isOnGround() && damager.getVelocity().getY() < 0;
+	}
 }
