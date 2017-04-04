@@ -24,6 +24,16 @@ public class WorldHelper {
 		}
 	}
 
+	public static void onCircle(int centerX, int centerZ, int startY, int endY, int radius, BlockModifier modifier) {
+		for (int degree = 0; degree <= 360; degree++) {
+			double x = centerX + radius * Math.cos(degree * Math.PI / 180);
+			double z = centerZ + radius * Math.sin(degree * Math.PI / 180);
+			for (int y = startY; y <= endY; y++) {
+				modifier.modify((int) x, y, (int) z);
+			}
+		}
+	}
+
 	public static void inSquare(int centerX, int centerZ, int startY, int endY, int radius, BlockModifier modifier) {
 		for (int x = centerX - radius; x <= centerX + radius; x++) {
 			for (int z = centerZ - radius; z <= centerZ + radius; z++) {

@@ -11,7 +11,6 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 
@@ -27,6 +26,7 @@ public class WorldModifierService {
 	public static final int BASE_DISTANCE_FROM_CENTER = 250;
 	public static final int CENTER_SPAWN_CLEARANCE = 4;
 	public static final int WORLD_BORDER = 900;
+	private static final Random random = new Random();
 
 	public WorldModifierService(PlotService plotService, FactionSpawnService factionSpawnService, ContainerService containerService) {
 		this.plotService = plotService;
@@ -75,7 +75,7 @@ public class WorldModifierService {
 		}
 		goodSpawnLocation.add(0, 5, 0); // Get above terrain
 
-		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 15);
+		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 10);
 		prepareSpawnArea(goodSpawnLocation, true);
 		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), userTeam, TEAM_PLOT_RADIUS);
 
@@ -86,26 +86,17 @@ public class WorldModifierService {
 	private void prepareBaseArea(Location center, int radius) {
 		WorldHelper.inCircle(center.getBlockX(), center.getBlockZ(), 1, 135, radius, (x, y, z) -> {
 			Block block = center.getWorld().getBlockAt(x, y, z);
-			Material type = block.getType();
-
-			// Prevent generated sky islands in plot area
-			if (y > 90) {
-				if ((type == Material.DIRT || type == Material.STONE || type == Material.GRASS || type == Material.COAL_ORE)
-						&& !block.getRelative(BlockFace.DOWN).getType().isSolid()) {
-					block.setType(Material.AIR);
-				}
+			// Remove all blocks in upper area
+			if (y > center.getBlockY() - 5) {
+				block.setType(Material.AIR);
+			}
+			// One layer of grass
+			else if (y == center.getBlockY() - 5) {
+				block.setType(Material.GRASS);
 			}
 			// Fill in lower areas with bedrock
-			else if (y < center.getBlockY() - 12) {
+			else if (y < center.getBlockY() - 5) {
 				block.setType(Material.BEDROCK);
-			}
-			// Remove water below 63 in plot area
-			else if (y < 63 && (type == Material.STATIONARY_WATER || type == Material.WATER)) {
-				if (y < 58) {
-					block.setType(Material.STONE);
-				} else {
-					block.setType(Material.GRASS);
-				}
 			}
 		});
 	}
@@ -188,12 +179,22 @@ public class WorldModifierService {
 		baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
 		containerService.updateContainer(baseLootContainer);
 
-		// Drop pick axe so players can dig out if necessary
-		world.dropItem(center.getLocation().add(0, 1, 0), new ItemStack(Material.WOOD_PICKAXE, 1));
+		WorldHelper.onCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - 5, spawnLocation.getBlockY() - 3, 12, (x, y, z) -> {
+//			if (y == spawnLocation.getBlockY() - 3) {
+//				if (random.nextDouble() > 0.8) {
+//					return;
+//				}
+//			}
+
+			if (random.nextDouble() > 0.9) {
+				world.getBlockAt(x, y, z).setType(Material.MOSSY_COBBLESTONE);
+			} else {
+				world.getBlockAt(x, y, z).setType(Material.COBBLESTONE);
+			}
+		});
 	}
 
 	private void prepareCenterTrench(Location center) {
-		Random random = new Random();
 		World world = center.getWorld();
 		for (int z = center.getBlockZ() - (WORLD_BORDER / 2); z <= center.getBlockZ() + (WORLD_BORDER / 2); z++) {
 			for (int x = center.getBlockX() - 5; x <= center.getBlockX() + 5; x++) {

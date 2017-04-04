@@ -65,7 +65,7 @@ public class CraftItemListener implements Listener {
 			case IRON_AXE:
 			case GOLD_AXE:
 			case DIAMOND_AXE:
-				item.addEnchantment(Enchantment.DURABILITY, 1);
+				item.addEnchantment(Enchantment.DURABILITY, 3);
 				item.addEnchantment(Enchantment.DIG_SPEED, 3);
 				break;
 			case WOOD_HOE:
@@ -73,7 +73,7 @@ public class CraftItemListener implements Listener {
 			case IRON_HOE:
 			case GOLD_HOE:
 			case DIAMOND_HOE:
-				item.addEnchantment(Enchantment.DURABILITY, 1);
+				item.addEnchantment(Enchantment.DURABILITY, 3);
 				break;
 		}
 	}
