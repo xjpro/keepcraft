@@ -101,7 +101,7 @@ public class UserStatsDataManager {
 						"PlayerKills, PlayerDeaths, AttackingKills, DefendingKills, AttackingDeaths, DefendingDeaths, " +
 						"ArrowShots, ArrowHits, SwordHits, AxeHits, OtherHits, ArrowBlocks, MeleeBlocks, ArrowStrikes, " +
 						"CriticalHits, IronMined, GoldMined, DiamondMined, UserName, WorldGUID, RecordStart) " +
-						"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))");
+						"VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))");
 				statement.setInt(1, (int) stats.playSeconds);
 				statement.setInt(2, stats.blocksPlaced);
 				statement.setInt(3, stats.blocksRemoved);
