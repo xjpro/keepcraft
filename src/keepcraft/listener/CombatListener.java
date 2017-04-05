@@ -129,10 +129,10 @@ public class CombatListener implements Listener {
 			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FOOD_REMOVED_ON_ARROW_HIT));
 		}
 
-		if (Armor.isWearingFullDiamondArmor(damaged)) {
-			// No knockback
-			damaged.setVelocity(new Vector(0, 0, 0));
-		}
+//		if (Armor.isWearingFullDiamondArmor(damaged)) {
+//			// No knockback
+//			damaged.setVelocity(new Vector(0, 0, 0));
+//		}
 
 		// todo thorns
 //		System.out.println("----end----");
@@ -170,14 +170,14 @@ public class CombatListener implements Listener {
 		}
 	}
 
-	@EventHandler
-	public void onEntityFallDamage(EntityDamageEvent event) {
-		if (!event.isCancelled() && (event.getEntity() instanceof LivingEntity) && event.getCause() == DamageCause.FALL) {
-			if (Armor.isWearingFullDiamondArmor((LivingEntity) event.getEntity())) {
-				event.setCancelled(true);
-			}
-		}
-	}
+//	@EventHandler
+//	public void onEntityFallDamage(EntityDamageEvent event) {
+//		if (!event.isCancelled() && (event.getEntity() instanceof LivingEntity) && event.getCause() == DamageCause.FALL) {
+//			if (Armor.isWearingFullDiamondArmor((LivingEntity) event.getEntity())) {
+//				event.setCancelled(true);
+//			}
+//		}
+//	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event) {

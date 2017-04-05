@@ -37,16 +37,16 @@ public class TeamService {
 					user.setHiding(false);
 				}
 
-				if (Armor.isWearingFullDiamondArmor(player)) {
-					if (!user.isGlowing()) {
-						player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
-						user.setGlowing(true);
-					}
-					return;
-				} else if (user.isGlowing()) {
-					player.removePotionEffect(PotionEffectType.GLOWING);
-					user.setGlowing(false);
-				}
+//				if (Armor.isWearingFullDiamondArmor(player)) {
+//					if (!user.isGlowing()) {
+//						player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
+//						user.setGlowing(true);
+//					}
+//					return;
+//				} else if (user.isGlowing()) {
+//					player.removePotionEffect(PotionEffectType.GLOWING);
+//					user.setGlowing(false);
+//				}
 			}
 		}, 0, 2 * 20);
 	}
