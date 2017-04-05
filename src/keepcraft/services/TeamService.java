@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -29,9 +31,21 @@ public class TeamService {
 						addStealth(user, player);
 						user.setHiding(true);
 					}
+					return;
 				} else if (user.isHiding()) {
 					removeStealth(user, player);
 					user.setHiding(false);
+				}
+
+				if (Armor.isWearingFullDiamondArmor(player)) {
+					if (!user.isGlowing()) {
+						player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1));
+						user.setGlowing(true);
+					}
+					return;
+				} else if (user.isGlowing()) {
+					player.removePotionEffect(PotionEffectType.GLOWING);
+					user.setGlowing(false);
 				}
 			}
 		}, 0, 2 * 20);

@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.util.Vector;
 
 import java.util.Random;
 
@@ -104,18 +106,14 @@ public class CombatListener implements Listener {
 		// Note: DamageModifiers other than BASE are mitigation and thus should have negative values
 
 		// Apply damage reduction for wearing armor
-		double defensePoints = Armor.getDefensePoints(damaged);
-		// Reduce armor on a sliding scale where more reduction is applied when more armor is present
-		// Diamond armor (20 points) = 25% less effective than vanilla
-		// Iron armor (15 points) = 18.75% less effective than vanilla
-		// Leather armor (7 points) = 8.75% less effective than vanilla
-		defensePoints *= 1 - (defensePoints / 80);
+		double originalDefensePoints = Armor.getDefensePoints(damaged);
+		// Defense points modified with diminishing returns formula
+		double modifiedDefensePoints = -0.017 * Math.pow(originalDefensePoints, 2) + 1.083 * originalDefensePoints;
 
 		// original formula
 		// damage = damage * ( 1 - min( 20, max( defensePoints / 5, defensePoints - damage / ( 2 + toughness / 4 ) ) ) / 25 )
 		// Note we completely ignore the toughness attribute that diamond gets, further reducing its effectiveness
-		//double damageReductionFromArmor = baseDamage * (defensePoints * 0.03);
-		double damageReductionFromArmor = modifiedBaseDamage - (modifiedBaseDamage * (1 - Math.min(20, Math.max(defensePoints / 5, defensePoints - modifiedBaseDamage / 2)) / 25));
+		double damageReductionFromArmor = modifiedBaseDamage - (modifiedBaseDamage * (1 - Math.min(20, Math.max(modifiedDefensePoints / 5, modifiedDefensePoints - modifiedBaseDamage / 2)) / 25));
 
 		event.setDamage(EntityDamageEvent.DamageModifier.ARMOR, -damageReductionFromArmor);
 
@@ -129,6 +127,11 @@ public class CombatListener implements Listener {
 		if (isArrowHit && event.getFinalDamage() > 0) {
 			// Remove food when damaged by an arrow
 			damaged.setFoodLevel(Math.max(0, damaged.getFoodLevel() - FOOD_REMOVED_ON_ARROW_HIT));
+		}
+
+		if (Armor.isWearingFullDiamondArmor(damaged)) {
+			// No knockback
+			damaged.setVelocity(new Vector(0, 0, 0));
 		}
 
 		// todo thorns
@@ -164,6 +167,15 @@ public class CombatListener implements Listener {
 
 			// Reduce duration to 2 seconds per level
 			event.getCombuster().setFireTicks(enchantmentLevel * 40);
+		}
+	}
+
+	@EventHandler
+	public void onEntityFallDamage(EntityDamageEvent event) {
+		if (!event.isCancelled() && (event.getEntity() instanceof LivingEntity) && event.getCause() == DamageCause.FALL) {
+			if (Armor.isWearingFullDiamondArmor((LivingEntity) event.getEntity())) {
+				event.setCancelled(true);
+			}
 		}
 	}
 

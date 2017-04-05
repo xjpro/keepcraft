@@ -31,6 +31,7 @@ public class User {
 	private Date lastCombat = null;
 	private Plot rallyingTo = null;
 	private boolean hiding = false;
+	private boolean glowing = false;
 	private boolean toggleSneak = false; // todo persist in db
 	private boolean persistentSneak = false;
 	private Location lastFishLocation = null;
@@ -193,6 +194,14 @@ public class User {
 
 	public void setHiding(boolean stealth) {
 		this.hiding = stealth;
+	}
+
+	public boolean isGlowing() {
+		return glowing;
+	}
+
+	public void setGlowing(boolean value) {
+		this.glowing = value;
 	}
 
 	public boolean getToggleSneak() {

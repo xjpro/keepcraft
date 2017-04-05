@@ -50,6 +50,19 @@ public class Armor {
 		return true;
 	}
 
+	public static boolean isWearingFullDiamondArmor(LivingEntity entity) {
+		EntityEquipment equipment = entity.getEquipment();
+		if (equipment.getHelmet() == null || equipment.getHelmet().getType() != Material.DIAMOND_HELMET)
+			return false;
+		if (equipment.getChestplate() == null || equipment.getChestplate().getType() != Material.DIAMOND_CHESTPLATE)
+			return false;
+		if (equipment.getLeggings() == null || equipment.getLeggings().getType() != Material.DIAMOND_LEGGINGS)
+			return false;
+		if (equipment.getBoots() == null || equipment.getBoots().getType() != Material.DIAMOND_BOOTS)
+			return false;
+		return true;
+	}
+
 	public static int getDefensePoints(LivingEntity entity) {
 		EntityEquipment equipment = entity.getEquipment();
 		int totalArmor = 0;
