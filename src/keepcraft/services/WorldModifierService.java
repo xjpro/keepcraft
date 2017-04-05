@@ -11,6 +11,9 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 
@@ -24,8 +27,8 @@ public class WorldModifierService {
 	private final ContainerService containerService;
 	public static final int TEAM_PLOT_RADIUS = 65;
 	public static final int BASE_DISTANCE_FROM_CENTER = 250;
-	public static final int CENTER_SPAWN_CLEARANCE = 4;
-	public static final int WORLD_BORDER = 900;
+	private static final int CENTER_SPAWN_CLEARANCE = 4;
+	private static final int WORLD_BORDER = 900;
 	private static final Random random = new Random();
 
 	public WorldModifierService(PlotService plotService, FactionSpawnService factionSpawnService, ContainerService containerService) {
@@ -170,26 +173,56 @@ public class WorldModifierService {
 		beaconBlock.getRelative(-1, -1, 0).setType(Material.IRON_BLOCK);
 		beaconBlock.getRelative(-1, -1, 1).setType(Material.IRON_BLOCK);
 
-		// Outputting container at center of base
-		Block chestBlock = center.getRelative(BlockFace.DOWN);
+		prepareSpawnChest(center.getRelative(BlockFace.DOWN), isBase);
+		prepareSpawnWall(spawnLocation);
+	}
+
+	private void prepareSpawnChest(Block chestBlock, boolean isBase) {
 		chestBlock.setType(Material.CHEST);
+
+		// Add some initial material
+		if (isBase) {
+			Chest chest = (Chest) chestBlock.getState();
+			Inventory inventory = chest.getBlockInventory();
+
+			int startingStoneStacks = 8;
+			for (int i = 0; i < startingStoneStacks; i++) {
+				inventory.addItem(new ItemStack(Material.STONE, 64));
+			}
+
+			int startingCobbleStacks = 4;
+			for (int i = 0; i < startingCobbleStacks; i++) {
+				inventory.addItem(new ItemStack(Material.COBBLESTONE, 64));
+			}
+
+			int startingWoodStacks = 2;
+			for (int i = 0; i < startingWoodStacks; i++) {
+				inventory.addItem(new ItemStack(Material.WOOD, 64));
+			}
+		}
+
+		// Init outputting container
 		Container baseLootContainer = containerService.createContainer(new WorldPoint(chestBlock.getLocation()));
 		baseLootContainer.setOutputType(isBase ? Container.ContainerOutputType.BASE : Container.ContainerOutputType.OUTPOST);
 		baseLootContainer.setOutputPerHour(15);
 		baseLootContainer.setPermission(Container.ContainerPermission.TEAM_VETERAN);
 		containerService.updateContainer(baseLootContainer);
+	}
 
-		WorldHelper.onCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - 5, spawnLocation.getBlockY() - 3, 12, (x, y, z) -> {
-//			if (y == spawnLocation.getBlockY() - 3) {
-//				if (random.nextDouble() > 0.8) {
-//					return;
-//				}
-//			}
-
-			if (random.nextDouble() > 0.9) {
-				world.getBlockAt(x, y, z).setType(Material.MOSSY_COBBLESTONE);
+	private void prepareSpawnWall(Location spawnLocation) {
+		World world = spawnLocation.getWorld();
+		// Build ugly stone wall around spawn tower
+		WorldHelper.onCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - 5, spawnLocation.getBlockY() - 2, 12, (x, y, z) -> {
+			if (y == spawnLocation.getBlockY() - 2) {
+				if (random.nextDouble() > 0.8) {
+					world.getBlockAt(x, y, z).setType(Material.COBBLESTONE);
+				}
 			} else {
-				world.getBlockAt(x, y, z).setType(Material.COBBLESTONE);
+				if (random.nextDouble() > 0.9) {
+					world.getBlockAt(x, y, z).setType(Material.MOSSY_COBBLESTONE);
+				} else {
+					world.getBlockAt(x, y, z).setType(Material.COBBLESTONE);
+				}
 			}
 		});
 	}
@@ -197,7 +230,7 @@ public class WorldModifierService {
 	private void prepareCenterTrench(Location center) {
 		World world = center.getWorld();
 		for (int z = center.getBlockZ() - (WORLD_BORDER / 2); z <= center.getBlockZ() + (WORLD_BORDER / 2); z++) {
-			for (int x = center.getBlockX() - 5; x <= center.getBlockX() + 5; x++) {
+			for (int x = center.getBlockX() - 7; x <= center.getBlockX() + 7; x++) {
 				if (x == 0 || x % 5 != 0 || random.nextDouble() > 0.15) {
 					for (int y = 10; y < 150; y++) {
 						world.getBlockAt(x, y, z).setType(Material.AIR);

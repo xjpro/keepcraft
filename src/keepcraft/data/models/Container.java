@@ -140,10 +140,8 @@ public class Container {
 			double value = Random.nextDouble();
 
 			// Items to facilitate sieging
-			if (value <= 0.20) { // 20%
-				item = new ItemStack(Material.GOLD_NUGGET, 1); // gold nuggets, to make magma blocks
-			} else if (value <= 0.50) { // 30%
-				item = new ItemStack(Material.SULPHUR, 1); // sulfur, for tnt
+			if (value <= 0.50) { // 50%
+				item = new ItemStack(Material.SULPHUR, 1); // sulfur, for tnt and siege blocks
 			} else if (value <= 0.70) { // 20%
 				item = new ItemStack(Material.ARROW, 1); // arrow
 			}
@@ -178,10 +176,12 @@ public class Container {
 			// Items that allow building with nether materials
 			else if (value <= 0.97) { // 2%
 				item = new ItemStack(Material.QUARTZ, 1);
+			} else if (value <= 0.99) { // 2%
+				item = new ItemStack(Material.GLOWSTONE, 1);
 			}
-			// Remainder 4% (pork)
+			// Remainder (pork)
 			else {
-				item = new ItemStack(Material.PORK, 1);
+				item = new ItemStack(Material.COOKIE, 1);
 			}
 
 			inventory.addItem(item);
