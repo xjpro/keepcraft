@@ -1,5 +1,7 @@
 package keepcraft.services;
 
+import org.bukkit.Bukkit;
+
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -26,6 +28,7 @@ public class AnnouncementService {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
+				Bukkit.getServer().setWhitelist(false); // Whitelist off at 8
 				chatService.sendGlobalAlertMessage("Raiding hours are now open");
 			}
 		}, calendar.getTime());

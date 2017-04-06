@@ -177,7 +177,7 @@ public class WorldModifierService {
 
 
 		// Create beacon
-		Block beaconBlock = center.getRelative(BlockFace.DOWN, 2);
+		Block beaconBlock = center.getRelative(BlockFace.DOWN, 1);
 		beaconBlock.setType(Material.BEACON);
 		beaconBlock.getRelative(0, -1, 1).setType(Material.IRON_BLOCK);
 		beaconBlock.getRelative(1, -1, 1).setType(Material.IRON_BLOCK);
@@ -188,7 +188,12 @@ public class WorldModifierService {
 		beaconBlock.getRelative(-1, -1, 0).setType(Material.IRON_BLOCK);
 		beaconBlock.getRelative(-1, -1, 1).setType(Material.IRON_BLOCK);
 
-		prepareSpawnChest(center.getRelative(BlockFace.DOWN), isBase);
+		// Create chest
+		Location chestLocation = spawnLocation.clone();
+		chestLocation.setY(platformTopY);
+		prepareSpawnChest(world.getBlockAt(chestLocation), isBase);
+
+		// Create wall
 		prepareSpawnWall(spawnLocation);
 	}
 
