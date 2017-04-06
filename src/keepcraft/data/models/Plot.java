@@ -239,7 +239,10 @@ public class Plot {
 			info += "Capturable: " + protection.getCapturable() + "\n";
 			info += "Capture time: " + protection.getCaptureTime() + "s\n";
 		}
-		info += "Rally number: " + orderNumber + "\n";
+		//info += "Rally number: " + orderNumber + "\n";
+		if (getCreatorName() != null) {
+			info += String.format("Created by: %s", getCreatorName());
+		}
 		return info;
 	}
 
