@@ -51,7 +51,7 @@ public class ExplosionListener implements Listener {
 		Location location = event.getBlock().getLocation();
 		Plot plot = plotService.getIntersectedPlot(location);
 
-		if (plot != null && plot.isUnderCenter(location) && plot.isTeamProtected()) {
+		if (plot != null && plot.isTeamProtected() && plot.isUnderCenter(location) && event.getBlock().getType() == Material.BEACON) {
 
 			Location plotLocation = plot.getLocation();
 
@@ -67,9 +67,10 @@ public class ExplosionListener implements Listener {
 					if (container != null) {
 						containerService.removeContainer(container);
 					}
-				} else if (centerBlock.getType() != Material.BEDROCK) {
-					centerBlock.setType(Material.STONE);
 				}
+//				else if (centerBlock.getType() != Material.BEDROCK) {
+//					centerBlock.setType(Material.STONE);
+//				}
 			}
 
 			chatService.sendGlobalAlertMessage(String.format("%s has been destroyed!", plot.getColoredName()));

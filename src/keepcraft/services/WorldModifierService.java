@@ -28,6 +28,7 @@ public class WorldModifierService {
 	public static final int TEAM_PLOT_RADIUS = 65;
 	public static final int BASE_DISTANCE_FROM_CENTER = 250;
 	private static final int CENTER_SPAWN_CLEARANCE = 4;
+	private static final int CENTER_SPAWN_HEIGHT = 15;
 	private static final int WORLD_BORDER = 900;
 	private static final Random random = new Random();
 
@@ -47,11 +48,12 @@ public class WorldModifierService {
 			blueBase = center.clone().add(BASE_DISTANCE_FROM_CENTER, 0, 0);
 			int lowestYInRedCircle = WorldHelper.getLowestYInCircle(world, redBase.getBlockX(), redBase.getBlockZ(), TEAM_PLOT_RADIUS + 10);
 			int lowestYInBlueCircle = WorldHelper.getLowestYInCircle(world, blueBase.getBlockX(), blueBase.getBlockZ(), TEAM_PLOT_RADIUS + 10);
+			redBase.setY(lowestYInRedCircle + CENTER_SPAWN_HEIGHT);
+			blueBase.setY(lowestYInBlueCircle + CENTER_SPAWN_HEIGHT);
 
-			// todo use these values later
-
-			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) && lowestYInRedCircle > 50 &&
-					isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ())) && lowestYInBlueCircle > 50) {
+			int minimumY = world.getSeaLevel() - 10;
+			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) && lowestYInRedCircle > minimumY &&
+					isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ())) && lowestYInBlueCircle > minimumY) {
 				found = true;
 			} else {
 				Keepcraft.log(String.format("Unacceptable base biomes, going up +%s z units", BASE_DISTANCE_FROM_CENTER));
@@ -72,34 +74,27 @@ public class WorldModifierService {
 	private void setBase(UserTeam userTeam, Location location) {
 		Keepcraft.log(String.format("Setting up %s team...", userTeam.getName()));
 
-		World world = location.getWorld();
-
-		// Find good spawn location
-		Location goodSpawnLocation = world.getHighestBlockAt(location.getBlockX(), location.getBlockZ()).getLocation();
-		int lowestYInCircle = WorldHelper.getLowestYInCircle(world, location.getBlockX(), location.getBlockZ(), TEAM_PLOT_RADIUS + 10);
-		goodSpawnLocation.setY(lowestYInCircle + 5); // Get above terrain
-
-		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 10);
-		prepareSpawnArea(goodSpawnLocation, true);
-		plotService.createTeamPlot(new WorldPoint(goodSpawnLocation), userTeam, TEAM_PLOT_RADIUS);
+		prepareBaseArea(location, TEAM_PLOT_RADIUS + 10);
+		prepareSpawnArea(location, true);
+		plotService.createTeamPlot(new WorldPoint(location), userTeam, TEAM_PLOT_RADIUS);
 
 		// Go in air one block and center on block so spawn is not buried
-		factionSpawnService.createFactionSpawn(userTeam, new WorldPoint(goodSpawnLocation.clone().add(0, 1, 0)));
+		factionSpawnService.createFactionSpawn(userTeam, new WorldPoint(location.clone().add(0, 1, 0)));
 	}
 
 	private void prepareBaseArea(Location center, int radius) {
 		WorldHelper.inCircle(center.getBlockX(), center.getBlockZ(), 1, 135, radius, (x, y, z) -> {
 			Block block = center.getWorld().getBlockAt(x, y, z);
 			// Remove all blocks in upper area
-			if (y > center.getBlockY() - 5) {
+			if (y > center.getBlockY() - CENTER_SPAWN_HEIGHT) {
 				block.setType(Material.AIR);
 			}
 			// One layer of grass
-			else if (y == center.getBlockY() - 5) {
+			else if (y == center.getBlockY() - CENTER_SPAWN_HEIGHT) {
 				block.setType(Material.GRASS);
 			}
 			// Fill in lower areas with bedrock
-			else if (y < center.getBlockY() - 5) {
+			else if (y < center.getBlockY() - CENTER_SPAWN_HEIGHT) {
 				block.setType(Material.BEDROCK);
 			}
 		});
@@ -112,7 +107,7 @@ public class WorldModifierService {
 		int platformBottomY = spawnLocation.getBlockY();
 		int platformTopY = platformBottomY + CENTER_SPAWN_CLEARANCE;
 
-		WorldHelper.inSquare(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), 1, 150, 2, (x, y, z) -> {
+		WorldHelper.inSquare(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, 128, 2, (x, y, z) -> {
 			if (y < platformBottomY || y == platformTopY) {
 				// Make huge cylinder from END_BRICKS to spawn location
 				if (x == center.getX() && z == center.getZ()) {
@@ -121,7 +116,7 @@ public class WorldModifierService {
 						world.getBlockAt(x, y, z).setType(Material.AIR);
 					} else {
 						// Thread of blocks for the win condition
-						world.getBlockAt(x, y, z).setType(Material.DIAMOND_BLOCK);
+						world.getBlockAt(x, y, z).setType(Material.END_BRICKS);
 					}
 				} else {
 					// Not in center, make ender stone
@@ -161,6 +156,25 @@ public class WorldModifierService {
 //				}
 			}
 		});
+
+		// Water drops
+		// North
+		world.getBlockAt(spawnLocation.getBlockX() - 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.STATIONARY_WATER);
+		world.getBlockAt(spawnLocation.getBlockX(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.STATIONARY_WATER);
+		world.getBlockAt(spawnLocation.getBlockX() + 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.STATIONARY_WATER);
+		// East
+		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 1).setType(Material.STATIONARY_WATER);
+		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ()).setType(Material.STATIONARY_WATER);
+		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 1).setType(Material.STATIONARY_WATER);
+		// South
+		world.getBlockAt(spawnLocation.getBlockX() - 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.STATIONARY_WATER);
+		world.getBlockAt(spawnLocation.getBlockX(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.STATIONARY_WATER);
+		world.getBlockAt(spawnLocation.getBlockX() + 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.STATIONARY_WATER);
+		// West
+		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 1).setType(Material.STATIONARY_WATER);
+		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ()).setType(Material.STATIONARY_WATER);
+		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 1).setType(Material.STATIONARY_WATER);
+
 
 		// Create beacon
 		Block beaconBlock = center.getRelative(BlockFace.DOWN, 2);
@@ -213,8 +227,8 @@ public class WorldModifierService {
 	private void prepareSpawnWall(Location spawnLocation) {
 		World world = spawnLocation.getWorld();
 		// Build ugly stone wall around spawn tower
-		WorldHelper.onCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - 5, spawnLocation.getBlockY() - 2, 11, (x, y, z) -> {
-			if (y == spawnLocation.getBlockY() - 2) {
+		WorldHelper.onCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT + 3, 11, (x, y, z) -> {
+			if (y == spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT + 3) {
 				if (random.nextDouble() > 0.8) {
 					world.getBlockAt(x, y, z).setType(Material.COBBLESTONE);
 				}
