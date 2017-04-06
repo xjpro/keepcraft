@@ -71,12 +71,9 @@ public class WorldModifierService {
 		World world = location.getWorld();
 
 		// Find good spawn location
-		Location goodSpawnLocation = location.clone();
-		goodSpawnLocation.setY(76);
-		while (!world.getBlockAt(goodSpawnLocation.getBlockX(), goodSpawnLocation.getBlockY(), goodSpawnLocation.getBlockZ()).getType().isSolid()) {
-			goodSpawnLocation.add(0, -1, 0);
-		}
-		goodSpawnLocation.add(0, 5, 0); // Get above terrain
+		Location goodSpawnLocation = world.getHighestBlockAt(location.getBlockX(), location.getBlockZ()).getLocation();
+		int lowestYInCircle = WorldHelper.getLowestYInCircle(world, location.getBlockX(), location.getBlockZ(), TEAM_PLOT_RADIUS + 10);
+		goodSpawnLocation.setY(lowestYInCircle + 5); // Get above terrain
 
 		prepareBaseArea(goodSpawnLocation, TEAM_PLOT_RADIUS + 10);
 		prepareSpawnArea(goodSpawnLocation, true);
@@ -190,14 +187,14 @@ public class WorldModifierService {
 				inventory.addItem(new ItemStack(Material.STONE, 64));
 			}
 
-			int startingCobbleStacks = 4;
+			int startingCobbleStacks = 2;
 			for (int i = 0; i < startingCobbleStacks; i++) {
 				inventory.addItem(new ItemStack(Material.COBBLESTONE, 64));
 			}
 
-			int startingWoodStacks = 2;
+			int startingWoodStacks = 1;
 			for (int i = 0; i < startingWoodStacks; i++) {
-				inventory.addItem(new ItemStack(Material.WOOD, 64));
+				inventory.addItem(new ItemStack(Material.LOG, 64));
 			}
 		}
 
@@ -212,7 +209,7 @@ public class WorldModifierService {
 	private void prepareSpawnWall(Location spawnLocation) {
 		World world = spawnLocation.getWorld();
 		// Build ugly stone wall around spawn tower
-		WorldHelper.onCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - 5, spawnLocation.getBlockY() - 2, 12, (x, y, z) -> {
+		WorldHelper.onCircle(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - 5, spawnLocation.getBlockY() - 2, 11, (x, y, z) -> {
 			if (y == spawnLocation.getBlockY() - 2) {
 				if (random.nextDouble() > 0.8) {
 					world.getBlockAt(x, y, z).setType(Material.COBBLESTONE);

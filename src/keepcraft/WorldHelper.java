@@ -1,5 +1,10 @@
 package keepcraft;
 
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+
 public class WorldHelper {
 
 	public interface BlockModifier {
@@ -42,5 +47,17 @@ public class WorldHelper {
 				}
 			}
 		}
+	}
+
+	public static int getLowestYInCircle(World world, int centerX, int centerZ, int radius) {
+		final int[] currentY = {128};
+		inCircle(centerX, centerZ, 0, 0, radius, (x, y, z) -> {
+			Block highestBlockAt = world.getHighestBlockAt(x, z);
+			if (highestBlockAt.getRelative(BlockFace.UP).getType() != Material.WATER &&
+					highestBlockAt.getLocation().getBlockY() < currentY[0]) {
+				currentY[0] = highestBlockAt.getLocation().getBlockY();
+			}
+		});
+		return currentY[0];
 	}
 }
