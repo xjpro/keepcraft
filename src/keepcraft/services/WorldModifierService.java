@@ -232,7 +232,7 @@ public class WorldModifierService {
 		World world = center.getWorld();
 		for (int z = center.getBlockZ() - (WORLD_BORDER / 2); z <= center.getBlockZ() + (WORLD_BORDER / 2); z++) {
 			for (int x = center.getBlockX() - 7; x <= center.getBlockX() + 7; x++) {
-				if (x == 0 || x % 5 != 0 || random.nextDouble() > 0.15) {
+				if (x == 0 || x % 7 != 0 || random.nextDouble() > 0.15) {
 					for (int y = 10; y < 150; y++) {
 						world.getBlockAt(x, y, z).setType(Material.AIR);
 					}
