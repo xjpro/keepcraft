@@ -1,9 +1,9 @@
 package keepcraft.listener;
 
-import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.PlotProtection;
 import keepcraft.data.models.User;
+import keepcraft.data.models.UserPrivilege;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
@@ -80,11 +80,11 @@ public class ActionListener implements Listener {
 			case REDSTONE_TORCH_OFF:
 			case PAINTING:
 			case SIGN:
-				if (!Privilege.canInteract(user, clicked.getLocation(), plot)) {
+				if (!plot.canInteract(user, clicked)) {
 					event.setCancelled(true);
 
-					// However, if it's a switch near a door, destroy it so TNT can be placed
-					if (nearDoor(clicked) && !blockType.equals(Material.STONE_PLATE)) {
+					// However, if it's a switch near a door, destroy it so TNT can be placed, plates excepted from this
+					if (user.getPrivilege() != UserPrivilege.MEMBER_START && nearDoor(clicked) && !isPlate(blockType)) {
 						// Get rid of it, it's blocking TNT placement near a door
 						clicked.setType(Material.AIR);
 					}
@@ -110,7 +110,7 @@ public class ActionListener implements Listener {
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		Plot plot = plotService.getIntersectedPlot(event.getBlockClicked().getLocation());
 
-		if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
+		if (!plot.canModify(user, event.getBlockClicked().getLocation())) {
 			event.setCancelled(true);
 		}
 	}
@@ -125,7 +125,7 @@ public class ActionListener implements Listener {
 		Player p = event.getPlayer();
 		User user = userService.getOnlineUser(p.getName());
 		Plot plot = plotService.getIntersectedPlot(event.getBlockClicked().getLocation());
-		if (!Privilege.canInteract(user, event.getBlockClicked().getLocation(), plot)) {
+		if (!plot.canModify(user, event.getBlockClicked().getLocation())) {
 			event.setCancelled(true);
 		}
 	}
@@ -147,6 +147,18 @@ public class ActionListener implements Listener {
 			case BOAT_DARK_OAK:
 			case BOAT_JUNGLE:
 			case BOAT_SPRUCE:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	private boolean isPlate(Material material) {
+		switch (material) {
+			case WOOD_PLATE:
+			case STONE_PLATE:
+			case IRON_PLATE:
+			case GOLD_PLATE:
 				return true;
 			default:
 				return false;

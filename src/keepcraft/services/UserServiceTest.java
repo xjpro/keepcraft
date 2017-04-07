@@ -1,9 +1,6 @@
 package keepcraft.services;
 
-import keepcraft.data.Database;
-import keepcraft.data.UserConnectionDataManager;
-import keepcraft.data.UserDataManager;
-import keepcraft.data.UserStatsDataManager;
+import keepcraft.data.*;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.UserStats;
@@ -27,6 +24,7 @@ class UserServiceTest {
 		userDataManager = new UserDataManager(database);
 		UserStatsDataManager userStatsDataManager = new UserStatsDataManager(database);
 		UserConnectionDataManager userConnectionDataManager = new UserConnectionDataManager(database);
+		ApprovalDataManager approvalDataManager = new ApprovalDataManager(database);
 
 		// World 1
 		UUID uuid = UUID.randomUUID();
@@ -106,7 +104,7 @@ class UserServiceTest {
 
 		// PlayedAlot: 500, Doji: 150, SummitMC: 90, Sivias: 80 | jjnguy: 60, AbeFrohman: 30, NeverPlays: 15
 
-		userService = new UserService(null, userDataManager, userStatsDataManager, userConnectionDataManager);
+		userService = new UserService(null, userDataManager, userStatsDataManager, userConnectionDataManager, approvalDataManager);
 	}
 
 	@Test

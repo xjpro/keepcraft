@@ -1,6 +1,5 @@
 package keepcraft.listener;
 
-import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.services.ChatService;
@@ -72,7 +71,7 @@ public class PlotProtectionListener implements Listener {
 			return;
 		}
 		// Finally, handle all other block types by checking if user can modify this area
-		if (!Privilege.canInteract(user, block.getLocation(), plot)) {
+		if (!plot.canModify(user, block.getLocation())) {
 			event.setCancelled(true);
 			event.setBuild(false);
 		}
@@ -87,7 +86,7 @@ public class PlotProtectionListener implements Listener {
 
 		Block block = event.getBlock();
 		Material blockType = block.getType();
-		if ((blockType == Material.ENDER_STONE  || blockType == Material.END_BRICKS) && !userService.getOnlineUser(player.getName()).isAdmin()) {
+		if ((blockType == Material.ENDER_STONE || blockType == Material.END_BRICKS) && !userService.getOnlineUser(player.getName()).isAdmin()) {
 			// Only admin may remove ender blocks
 			event.setCancelled(true);
 			return;
@@ -112,7 +111,7 @@ public class PlotProtectionListener implements Listener {
 		if (plot == null || plot.getProtection() == null) {
 			return;
 		}
-		if (!Privilege.canInteract(userService.getOnlineUser(player.getName()), block.getLocation(), plot)) {
+		if (!plot.canModify(userService.getOnlineUser(player.getName()), block.getLocation())) {
 			event.setCancelled(true);
 		}
 	}
@@ -158,7 +157,7 @@ public class PlotProtectionListener implements Listener {
 			// Not in a plot or plot is not a friendly plot
 			chatService.sendFailureMessage(user, "Pistons can only be placed in your team protected area");
 			cancelPlacement = true;
-		} else if (!Privilege.canInteract(user, event.getBlock().getLocation(), plot)) {
+		} else if (!plot.canModify(user, event.getBlock().getLocation())) {
 			// In friendly plot but cannot interact due to typical rules (admin radius probably)
 			cancelPlacement = true;
 		}

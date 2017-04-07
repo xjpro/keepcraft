@@ -1,7 +1,6 @@
 package keepcraft.command;
 
 import keepcraft.Keepcraft;
-import keepcraft.Privilege;
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserTeam;
@@ -37,7 +36,7 @@ public class AdminCommandListener extends CommandListener {
 			userSender = userService.getOnlineUser(commandSender.getName());
 		}
 
-		if (!commandSender.isOp() && !Privilege.isAdmin(userSender)) {
+		if (!commandSender.isOp() && (userSender != null && !userSender.isAdmin())) {
 			return false;
 		}
 

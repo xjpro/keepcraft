@@ -77,4 +77,7 @@ commands:
     capture:
         description: Begin capturing a plot
         usage: /capture
+    approve:
+        description: Approve a graylisted user on your team
+        usage: /approve <name>
         

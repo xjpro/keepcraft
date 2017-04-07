@@ -235,4 +235,9 @@ public class User {
 	public void setLastFishLocation(Location location) {
 		lastFishLocation = location;
 	}
+
+	public boolean canApprove(User target) {
+		return target.getPrivilege() == UserPrivilege.MEMBER_START &&
+				(privilege.equals(UserPrivilege.ADMIN) || (privilege.equals(UserPrivilege.MEMBER_VETERAN) && getTeam() == target.getTeam()));
+	}
 }

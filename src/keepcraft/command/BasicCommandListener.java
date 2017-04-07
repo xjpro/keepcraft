@@ -167,6 +167,24 @@ public class BasicCommandListener extends CommandListener {
 				chatService.sendSuccessMessage(sender, "Global chat disabled");
 				return true;
 			}
+		} else if ((commandName.equalsIgnoreCase("approve")) && args.length == 1) {
+			String targetName = args[0];
+			User target = userService.getUser(targetName);
+
+			if (target == null) {
+				chatService.sendFailureMessage(sender, String.format("'%s' is not a known user", targetName));
+				return true;
+			}
+
+			if (sender.canApprove(target)) {
+				userService.approveUser(target, sender);
+				chatService.sendSuccessMessage(sender, String.format("You have approved '%s'", target.getName()));
+				chatService.sendChangeMessage(target, String.format("You have been approved for full team access by '%s'", sender.getName()));
+			} else {
+				chatService.sendFailureMessage(sender, String.format("You cannot approve '%s'", target.getName()));
+			}
+
+			return true;
 		}
 
 		return false;

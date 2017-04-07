@@ -1,6 +1,7 @@
 package keepcraft.services;
 
 import keepcraft.Keepcraft;
+import keepcraft.data.ApprovalDataManager;
 import keepcraft.data.UserConnectionDataManager;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.UserStatsDataManager;
@@ -20,13 +21,16 @@ public class UserService {
 	private final UserDataManager userDataManager;
 	private final UserStatsDataManager userStatsDataManager;
 	private final UserConnectionDataManager userConnectionDataManager;
+	private final ApprovalDataManager approvalDataManager;
 	private HashMap<String, User> onlineUsers = new HashMap<>();
 
-	public UserService(Plugin plugin, UserDataManager userDataManager, UserStatsDataManager userStatsDataManager, UserConnectionDataManager userConnectionDataManager) {
+	public UserService(Plugin plugin, UserDataManager userDataManager, UserStatsDataManager userStatsDataManager,
+					   UserConnectionDataManager userConnectionDataManager, ApprovalDataManager approvalDataManager) {
 		this.plugin = plugin;
 		this.userDataManager = userDataManager;
 		this.userStatsDataManager = userStatsDataManager;
 		this.userConnectionDataManager = userConnectionDataManager;
+		this.approvalDataManager = approvalDataManager;
 	}
 
 	public void refreshCache() {
@@ -80,6 +84,12 @@ public class UserService {
 		userDataManager.updateData(user);
 	}
 
+	public void approveUser(User user, User approver) {
+		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
+		approvalDataManager.saveApproval(user.getName(), approver.getName());
+		updateUser(user);
+	}
+
 	public void setFirstLogin(User user) {
 		userDataManager.updateFirstLogin(user);
 	}
@@ -121,10 +131,10 @@ public class UserService {
 
 	// Create a user not distributed at start of map
 	private User createUser(String userName) {
-		boolean hasHistoricalRecord = true;//userStatsDataManager.hasHistoricalRecord(userName);
+		boolean previouslyApproved = approvalDataManager.isApproved(userName);
 
 		User user = new User(userName);
-		user.setPrivilege(hasHistoricalRecord ? UserPrivilege.MEMBER_VETERAN : UserPrivilege.MEMBER_START);
+		user.setPrivilege(previouslyApproved ? UserPrivilege.MEMBER_VETERAN : UserPrivilege.MEMBER_START);
 		user.setTeam(UserTeam.getTeam(selectTeamUsingCurrentUserCount()));
 		user.setMoney(0);
 		user.setLoggedOffFriendlyPlotId(-1);

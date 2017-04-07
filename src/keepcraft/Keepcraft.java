@@ -28,9 +28,10 @@ public class Keepcraft extends JavaPlugin {
 	private final Database statsDatabase = new Database("keepcraft_stats.db");
 	private final UserStatsDataManager userStatsDataManager = new UserStatsDataManager(statsDatabase);
 	private final UserConnectionDataManager userConnectionDataManager = new UserConnectionDataManager(statsDatabase);
+	private final ApprovalDataManager approvalDataManager = new ApprovalDataManager(statsDatabase);
 
 	// Services
-	private final UserService userService = new UserService(this, userDataManager, userStatsDataManager, userConnectionDataManager);
+	private final UserService userService = new UserService(this, userDataManager, userStatsDataManager, userConnectionDataManager, approvalDataManager);
 	private final TeamService teamService = new TeamService(userService);
 	private final PlotService plotService = new PlotService(plotDataManager);
 	private final FactionSpawnService factionSpawnService = new FactionSpawnService(factionSpawnManager);
@@ -84,7 +85,7 @@ public class Keepcraft extends JavaPlugin {
 
 		// Basic commands
 		CommandListener basicCommandListener = new BasicCommandListener(userService, plotService, rallyService, chatService);
-		String[] basicCommands = {"die", "who", "map", /*"rally",*/ "global"};
+		String[] basicCommands = {"die", "who", "map", /*"rally",*/ "global", "approve"};
 		for (String basicCommand : basicCommands) {
 			getCommand(basicCommand).setExecutor(basicCommandListener);
 		}
