@@ -10,10 +10,7 @@ import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.UserPrivilege;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class UserService {
 
@@ -107,16 +104,20 @@ public class UserService {
 		List<String> recentlyPlayedUserNamesByPlayTime = userStatsDataManager.getRecentlyPlayedUserNamesByPlayTime(worldGUID);
 		// We now have a list a users sorted by their play time A B C D E F
 
+		// Remove known admins todo make this dynamic
+		recentlyPlayedUserNamesByPlayTime.removeAll(Arrays.asList("SummitMC", "Sivias", "DojiSuave"));
+
+		// Removed non-approved people
+		recentlyPlayedUserNamesByPlayTime.removeIf(userName -> !approvalDataManager.isApproved(userName));
+
 		// Alternate through the list, placing users in each team
 		// Teams will be A C E and B D F
 		// Only taking top 2/3rd of active users, rest will be assigned as they log in
 		UserTeam userTeam = UserTeam.getTeam(UserTeam.getRandomTeamId());
 		int numberOfPlayersToAssign = (int) (recentlyPlayedUserNamesByPlayTime.size() * 0.6666);
 		numberOfPlayersToAssign = numberOfPlayersToAssign % 2 == 0 ? numberOfPlayersToAssign : numberOfPlayersToAssign + 1;
-		for (String userName : recentlyPlayedUserNamesByPlayTime.subList(0, numberOfPlayersToAssign)) {
-			// todo temporary hack to ignore admins in stats, will be resolved in a few maps as changes were made to clear admin playtime
-			if (userName.equalsIgnoreCase("SummitMC") || userName.equalsIgnoreCase("Sivias")) continue;
 
+		for (String userName : recentlyPlayedUserNamesByPlayTime.subList(0, numberOfPlayersToAssign)) {
 			User user = new User(userName);
 			user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 			user.setTeam(userTeam);

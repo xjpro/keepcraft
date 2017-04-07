@@ -2,6 +2,7 @@ package keepcraft.listener;
 
 import keepcraft.data.models.Container;
 import keepcraft.data.models.User;
+import keepcraft.data.models.UserPrivilege;
 import keepcraft.data.models.WorldPoint;
 import keepcraft.services.ChatService;
 import keepcraft.services.ContainerService;
@@ -40,12 +41,10 @@ public class ContainerListener implements Listener {
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
-			if (player.isOp() || user.isAdmin()) {
-				// flag container
-				Container container = containerService.createContainer(new WorldPoint(placed.getLocation()));
-				user.setTargetContainer(container);
-				//chatService.sendSuccessMessage(user, "Container placed & targeted");
-			}
+			// flag container
+			Container container = containerService.createContainer(new WorldPoint(placed.getLocation()));
+			container.setPermission(user.getPrivilege() == UserPrivilege.MEMBER_VETERAN ? Container.ContainerPermission.TEAM_VETERAN : Container.ContainerPermission.PUBLIC);
+			user.setTargetContainer(container);
 		}
 	}
 
@@ -62,10 +61,9 @@ public class ContainerListener implements Listener {
 			User user = userService.getOnlineUser(player.getName());
 
 			if (container.canAccess(user)) {
-				chatService.sendFailureMessage(user, "You do not have permission to destroy this");
 				containerService.removeContainer(container);
 			} else {
-				// Don't allow regular users to break loot blocks
+				chatService.sendFailureMessage(user, "You do not have permission to destroy this");
 				event.setCancelled(true);
 			}
 		}
