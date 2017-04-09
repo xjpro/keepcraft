@@ -35,8 +35,13 @@ public class ContainerCommandListener extends CommandListener {
 		}
 
 		if (commandName.equalsIgnoreCase("chest")) {
-
-			if (args.length == 1) {
+			if (args.length == 0) {
+				String containerString = "Container:" +
+						String.format("\nOutput type: %s", container.getOutputType()) +
+						String.format("\nOutput per hour: %s", container.getOutputPerHour());
+				chatService.sendInfoMessage(user, containerString);
+				return true;
+			} else if (args.length == 1) {
 				// Set permissions level
 
 				// Check that container is not in enemy plot
@@ -93,8 +98,7 @@ public class ContainerCommandListener extends CommandListener {
 					containerService.updateContainer(container);
 					chatService.sendSuccessMessage(user, String.format("Container output type to %s", outputType));
 					return true;
-				}
-				else if (args[0].equalsIgnoreCase("output")) {
+				} else if (args[0].equalsIgnoreCase("output")) {
 					int output;
 					try {
 						output = Integer.parseInt(args[1]);

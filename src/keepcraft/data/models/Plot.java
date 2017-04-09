@@ -4,7 +4,9 @@ import keepcraft.services.ChatService;
 import keepcraft.tasks.Siege;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -258,45 +260,64 @@ public class Plot {
 				return true;
 			default:
 				// Team protection
-				if (isInTeamProtectedRadius(interactedWith.getLocation()) && user.getTeam().getId() == plotProtectionId) {
-					if (userPrivilege == UserPrivilege.NONMEMBER) {
-						return false; // Exception: non-members cannot interact with anything
-					}
-
-					if (userPrivilege == UserPrivilege.MEMBER_START) {
-						// Special rules for starting members: can interact with basic doors, switches, vehicles
+				if (isInTeamProtectedRadius(interactedWith.getLocation())) {
+					if (user.getTeam().getId() == plotProtectionId) {
+						if (userPrivilege == UserPrivilege.NONMEMBER) {
+							return false; // Exception: non-members cannot interact with anything
+						} else if (userPrivilege == UserPrivilege.MEMBER_START) {
+							// Special rules for starting members: can interact with basic doors, switches, vehicles
+							switch (interactedWith.getType()) {
+								case DARK_OAK_DOOR:
+								case ACACIA_DOOR:
+								case BIRCH_DOOR:
+								case JUNGLE_DOOR:
+								case SPRUCE_DOOR:
+								case WOOD_DOOR:
+								case TRAP_DOOR:
+								case WOOD_PLATE:
+								case STONE_PLATE:
+								case LEVER:
+								case WOOD_BUTTON:
+								case STONE_BUTTON:
+								case BOAT:
+								case BOAT_ACACIA:
+								case BOAT_BIRCH:
+								case BOAT_DARK_OAK:
+								case BOAT_JUNGLE:
+								case BOAT_SPRUCE:
+								case MINECART:
+								case ENDER_CHEST:
+									return true;
+								case CHEST:
+									// Opens chest on wood
+									return interactedWith.getRelative(BlockFace.DOWN).getType() == Material.WOOD;
+								default:
+									return false;
+							}
+						} else if (userPrivilege == UserPrivilege.MEMBER_NORMAL || userPrivilege == UserPrivilege.MEMBER_VETERAN) {
+							// Normal and veteran members can access anything in team protected area
+							return true;
+						}
+					} else {
+						// Enemy in a plot
 						switch (interactedWith.getType()) {
-							case DARK_OAK_DOOR:
-							case ACACIA_DOOR:
-							case BIRCH_DOOR:
-							case JUNGLE_DOOR:
-							case SPRUCE_DOOR:
-							case WOOD_DOOR:
-							case TRAP_DOOR:
-							case WOOD_PLATE:
-							case STONE_PLATE:
-							case LEVER:
-							case WOOD_BUTTON:
+							// Do not allow enemy team to access buttons, switches, levers, etc.
+							// Exception: if the switch is near a door and not a stone plate, destroy it so it can't be used to block TNT placement
 							case STONE_BUTTON:
-							case BOAT:
-							case BOAT_ACACIA:
-							case BOAT_BIRCH:
-							case BOAT_DARK_OAK:
-							case BOAT_JUNGLE:
-							case BOAT_SPRUCE:
-							case MINECART:
-								return true;
-							default:
+							case STONE_PLATE:
+							case IRON_PLATE:
+							case GOLD_PLATE:
+							case LEVER:
+							case TORCH:
+							case REDSTONE_TORCH_ON:
+							case REDSTONE_TORCH_OFF:
+							case PAINTING:
+							case SIGN:
 								return false;
 						}
 					}
-
-					if (userPrivilege == UserPrivilege.MEMBER_NORMAL || userPrivilege == UserPrivilege.MEMBER_VETERAN) {
-						// Normal and veteran members can access anything in team protected area
-						return true;
-					}
 				}
-				return false; // No known cases matched
+				return true;
 		}
 	}
 
@@ -312,7 +333,9 @@ public class Plot {
 				return true;
 			default:
 				// Team protection
-				if (isInTeamProtectedRadius(location) && user.getTeam().getId() == plotProtectionId) {
+				if (isInAdminProtectedRadius(location)) {
+					return user.isAdmin();
+				} else if (isInTeamProtectedRadius(location) && user.getTeam().getId() == plotProtectionId) {
 					if (userPrivilege == UserPrivilege.NONMEMBER || userPrivilege == UserPrivilege.MEMBER_START) {
 						return false; // Exception: non-members and starting members cannot interact with anything
 					}

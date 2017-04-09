@@ -66,36 +66,14 @@ public class ActionListener implements Listener {
 			return; // Air
 		}
 
-		Material blockType = clicked.getType();
-		switch (blockType) {
-			// Do not allow enemy team to access buttons, switches, levers, etc.
-			// Exception: if the switch is near a door and not a stone plate, destroy it so it can't be used to block TNT placement
-			case STONE_BUTTON:
-			case STONE_PLATE:
-			case IRON_PLATE:
-			case GOLD_PLATE:
-			case LEVER:
-			case TORCH:
-			case REDSTONE_TORCH_ON:
-			case REDSTONE_TORCH_OFF:
-			case PAINTING:
-			case SIGN:
-				if (!plot.canInteract(user, clicked)) {
-					event.setCancelled(true);
+		if (!plot.canInteract(user, clicked)) {
+			event.setCancelled(true);
 
-					// However, if it's a switch near a door, destroy it so TNT can be placed, plates excepted from this
-					if (user.getPrivilege() != UserPrivilege.MEMBER_START && nearDoor(clicked) && !isPlate(blockType)) {
-						// Get rid of it, it's blocking TNT placement near a door
-						clicked.setType(Material.AIR);
-					}
-				}
-				break;
-			case DISPENSER:
-				// Protect dispenser in event plots
-				if (plot.getProtection().getType() == PlotProtection.EVENT) {
-					event.setCancelled(true);
-				}
-				break;
+			// However, if it's a switch near a door, destroy it so TNT can be placed, plates excepted from this
+			if (user.getPrivilege() != UserPrivilege.MEMBER_START && nearDoor(clicked) && !isPlate(clicked.getType())) {
+				// Get rid of it, it's blocking TNT placement near a door
+				clicked.setType(Material.AIR);
+			}
 		}
 	}
 

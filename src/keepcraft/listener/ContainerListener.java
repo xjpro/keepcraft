@@ -2,12 +2,11 @@ package keepcraft.listener;
 
 import keepcraft.data.models.Container;
 import keepcraft.data.models.User;
-import keepcraft.data.models.UserPrivilege;
 import keepcraft.data.models.WorldPoint;
-import keepcraft.services.ChatService;
 import keepcraft.services.ContainerService;
 import keepcraft.services.UserService;
 import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,53 +17,42 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.InventoryHolder;
 
 public class ContainerListener implements Listener {
 
 	private final UserService userService;
 	private final ContainerService containerService;
-	private final ChatService chatService;
 
-	public ContainerListener(UserService userService, ContainerService containerService, ChatService chatService) {
+	public ContainerListener(UserService userService, ContainerService containerService) {
 		this.userService = userService;
 		this.containerService = containerService;
-		this.chatService = chatService;
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (event.isCancelled()) return;
 
 		Block placed = event.getBlock();
-		if (placed.getState() instanceof InventoryHolder) {
+		if (placed.getType() == Material.CHEST) {
 			Player player = event.getPlayer();
 			User user = userService.getOnlineUser(player.getName());
 
-			// flag container
-			Container container = containerService.createContainer(new WorldPoint(placed.getLocation()));
-			container.setPermission(user.getPrivilege() == UserPrivilege.MEMBER_VETERAN ? Container.ContainerPermission.TEAM_VETERAN : Container.ContainerPermission.PUBLIC);
-			user.setTargetContainer(container);
+			if (player.isOp() || user.isAdmin()) {
+				Container container = containerService.createContainer(new WorldPoint(placed.getLocation()));
+				user.setTargetContainer(container);
+			}
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled()) return;
 
 		Block broken = event.getBlock();
-		if (broken.getState() instanceof InventoryHolder) {
+		if (broken.getType() == Material.CHEST) {
 			Container container = containerService.getContainer(new WorldPoint(broken.getLocation()));
-			if (container == null) return;
-
-			Player player = event.getPlayer();
-			User user = userService.getOnlineUser(player.getName());
-
-			if (container.canAccess(user)) {
+			if (container != null) {
 				containerService.removeContainer(container);
-			} else {
-				chatService.sendFailureMessage(user, "You do not have permission to destroy this");
-				event.setCancelled(true);
 			}
 		}
 	}
@@ -74,22 +62,15 @@ public class ContainerListener implements Listener {
 		if (!event.hasBlock() || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
 		Block clickedBlock = event.getClickedBlock();
-		if (clickedBlock.getState() instanceof InventoryHolder) {
+		if (clickedBlock.getType() == Material.CHEST) {
 			Container container = containerService.getContainer(new WorldPoint(clickedBlock.getLocation()));
-			if (container == null) return;
+			if (container != null) {
+				Player player = event.getPlayer();
+				User user = userService.getOnlineUser(player.getName());
 
-			Player player = event.getPlayer();
-			User user = userService.getOnlineUser(player.getName());
-
-			if (container.canAccess(user)) {
-				if (container != user.getTargetContainer()) {
+				if (player.isOp() || user.isAdmin()) {
 					user.setTargetContainer(container);
-					// todo can't target chests in enemy territory
-					//chatService.sendSuccessMessage(user, "Container targeted");
 				}
-			} else {
-				chatService.sendFailureMessage(user, "You do not have permission to open this");
-				event.setCancelled(true);
 			}
 		}
 	}
