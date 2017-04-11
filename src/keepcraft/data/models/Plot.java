@@ -267,6 +267,8 @@ public class Plot {
 						} else if (userPrivilege == UserPrivilege.MEMBER_START) {
 							// Special rules for starting members: can interact with basic doors, switches, vehicles
 							switch (interactedWith.getType()) {
+								case ENCHANTMENT_TABLE:
+								case WORKBENCH:
 								case WOODEN_DOOR:
 								case DARK_OAK_DOOR:
 								case ACACIA_DOOR:
@@ -287,6 +289,12 @@ public class Plot {
 								case BOAT_SPRUCE:
 								case MINECART:
 								case ENDER_CHEST:
+								case FENCE_GATE:
+								case ACACIA_FENCE_GATE:
+								case BIRCH_FENCE_GATE:
+								case DARK_OAK_FENCE_GATE:
+								case JUNGLE_FENCE_GATE:
+								case SPRUCE_FENCE_GATE:
 									return true;
 								case CHEST:
 									// Opens chest on wood

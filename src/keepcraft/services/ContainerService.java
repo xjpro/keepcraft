@@ -60,6 +60,19 @@ public class ContainerService {
 		containers.remove(container);
 	}
 
+	public void dispenseAllContainers() {
+		long mapAgeInDays = mapDataManager.getMapAgeInDays();
+		getOutputtingContainers().stream()
+				.filter(container -> container.getOutputType() == Container.ContainerOutputType.BASE || container.getOutputType() == Container.ContainerOutputType.OUTPOST)
+				.forEach(container -> {
+					double modifier = 1.0;
+					if (container.getOutputType() == Container.ContainerOutputType.BASE) {
+						modifier = 1.0 + (mapAgeInDays * 0.2);
+					}
+					container.dispense(modifier);
+				});
+	}
+
 	public void startDispensing() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone(ZoneId.of("America/Chicago")));
@@ -71,17 +84,7 @@ public class ContainerService {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				long mapAgeInDays = mapDataManager.getMapAgeInDays();
-				getOutputtingContainers().stream()
-						.filter(container -> container.getOutputType() == Container.ContainerOutputType.BASE || container.getOutputType() == Container.ContainerOutputType.OUTPOST)
-						.forEach(container -> {
-							double modifier = 1.0;
-							if (container.getOutputType() == Container.ContainerOutputType.BASE) {
-								modifier = 1.0 + (mapAgeInDays * 0.2);
-							}
-							container.dispense(modifier);
-						});
-
+				dispenseAllContainers();
 			}
 		}, calendar.getTime());
 	}
