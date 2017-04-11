@@ -52,8 +52,8 @@ public class WorldModifierService {
 			blueBase.setY(lowestYInBlueCircle + CENTER_SPAWN_HEIGHT);
 
 			int minimumY = world.getSeaLevel() - 10;
-			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) && lowestYInRedCircle > minimumY &&
-					isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ())) && lowestYInBlueCircle > minimumY) {
+			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) && isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ()))
+					&& lowestYInRedCircle > minimumY && lowestYInBlueCircle > minimumY) {
 				found = true;
 			} else {
 				Keepcraft.log(String.format("Unacceptable base biomes, going up +%s z units", BASE_DISTANCE_FROM_CENTER));
