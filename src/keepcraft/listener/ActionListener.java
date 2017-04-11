@@ -88,7 +88,7 @@ public class ActionListener implements Listener {
 		User user = userService.getOnlineUser(event.getPlayer().getName());
 		Plot plot = plotService.getIntersectedPlot(event.getBlockClicked().getLocation());
 
-		if (!plot.canModify(user, event.getBlockClicked().getLocation())) {
+		if (plot != null && !plot.canModify(user, event.getBlockClicked().getLocation())) {
 			event.setCancelled(true);
 		}
 	}
@@ -100,10 +100,11 @@ public class ActionListener implements Listener {
 			return;
 		}
 
-		Player p = event.getPlayer();
-		User user = userService.getOnlineUser(p.getName());
+		Player player = event.getPlayer();
+		User user = userService.getOnlineUser(player.getName());
 		Plot plot = plotService.getIntersectedPlot(event.getBlockClicked().getLocation());
-		if (!plot.canModify(user, event.getBlockClicked().getLocation())) {
+
+		if (plot != null && !plot.canModify(user, event.getBlockClicked().getLocation())) {
 			event.setCancelled(true);
 		}
 	}
