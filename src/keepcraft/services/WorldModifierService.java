@@ -57,7 +57,9 @@ public class WorldModifierService {
 				if (lowestYInRedCircle > minimumY && lowestYInBlueCircle > minimumY) {
 					found = true;
 				}
-			} else {
+			}
+
+			if (!found) {
 				Keepcraft.log(String.format("Unacceptable base biomes, going up +%s z units", BASE_DISTANCE_FROM_CENTER));
 				center.add(0, 0, BASE_DISTANCE_FROM_CENTER);
 			}
@@ -181,6 +183,7 @@ public class WorldModifierService {
 		// Create beacon
 		Block beaconBlock = center.getRelative(BlockFace.DOWN, 1);
 		beaconBlock.setType(Material.BEACON);
+		beaconBlock.getRelative(0, -1, 0).setType(Material.IRON_BLOCK);
 		beaconBlock.getRelative(0, -1, 1).setType(Material.IRON_BLOCK);
 		beaconBlock.getRelative(1, -1, 1).setType(Material.IRON_BLOCK);
 		beaconBlock.getRelative(1, -1, 0).setType(Material.IRON_BLOCK);
