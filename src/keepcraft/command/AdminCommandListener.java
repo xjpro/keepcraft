@@ -61,7 +61,7 @@ public class AdminCommandListener extends CommandListener {
 			target.setPrivilege(target.getPrivilege().getNext());
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Promoted " + target.getName() + " to " + userSender.getPrivilege());
+			commandSender.sendMessage(ChatService.Success + "Promoted " + target.getName() + " to " + target.getPrivilege());
 			if (target != userSender) {
 				commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were promoted to "
 						+ userSender.getPrivilege() + " status");
@@ -87,7 +87,7 @@ public class AdminCommandListener extends CommandListener {
 			target.setPrivilege(target.getPrivilege().getPrevious());
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Demoted " + target.getName() + " to " + userSender.getPrivilege());
+			commandSender.sendMessage(ChatService.Success + "Demoted " + target.getName() + " to " + target.getPrivilege());
 			if (target != userSender) {
 				commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were demoted to "
 						+ userSender.getPrivilege() + " status");

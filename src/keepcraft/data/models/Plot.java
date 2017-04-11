@@ -267,12 +267,12 @@ public class Plot {
 						} else if (userPrivilege == UserPrivilege.MEMBER_START) {
 							// Special rules for starting members: can interact with basic doors, switches, vehicles
 							switch (interactedWith.getType()) {
+								case WOODEN_DOOR:
 								case DARK_OAK_DOOR:
 								case ACACIA_DOOR:
 								case BIRCH_DOOR:
 								case JUNGLE_DOOR:
 								case SPRUCE_DOOR:
-								case WOOD_DOOR:
 								case TRAP_DOOR:
 								case WOOD_PLATE:
 								case STONE_PLATE:
