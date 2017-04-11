@@ -64,7 +64,7 @@ public class AdminCommandListener extends CommandListener {
 			commandSender.sendMessage(ChatService.Success + "Promoted " + target.getName() + " to " + target.getPrivilege());
 			if (target != userSender) {
 				commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were promoted to "
-						+ userSender.getPrivilege() + " status");
+						+ target.getPrivilege() + " status");
 			}
 			return true;
 		} // Demote
@@ -90,7 +90,7 @@ public class AdminCommandListener extends CommandListener {
 			commandSender.sendMessage(ChatService.Success + "Demoted " + target.getName() + " to " + target.getPrivilege());
 			if (target != userSender) {
 				commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were demoted to "
-						+ userSender.getPrivilege() + " status");
+						+ target.getPrivilege() + " status");
 			}
 			return true;
 		}

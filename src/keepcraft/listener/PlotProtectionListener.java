@@ -2,11 +2,13 @@ package keepcraft.listener;
 
 import keepcraft.data.models.Plot;
 import keepcraft.data.models.User;
+import keepcraft.data.models.UserPrivilege;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.UserService;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +17,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 public class PlotProtectionListener implements Listener {
 
@@ -142,6 +146,32 @@ public class PlotProtectionListener implements Listener {
 				event.setCancelled(true);
 			}
 		} else if (material == Material.LAVA_BUCKET) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void onGraylistEntityDamage(EntityDamageByEntityEvent event) {
+		if (event.isCancelled() || event.getEntity() instanceof Player)
+			return; // cancelled or entity being hit is a player
+
+		Player damager = null;
+		if (event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) && event.getDamager() instanceof Player) {
+			damager = (Player) event.getDamager();
+		} else if (event.getCause().equals(EntityDamageEvent.DamageCause.PROJECTILE) && event.getDamager() instanceof Arrow) {
+			Arrow arrow = (Arrow) event.getDamager();
+			if (arrow.getShooter() instanceof Player) {
+				damager = (Player) arrow.getShooter();
+			}
+		}
+
+		if (damager == null) return;
+
+		Plot plot = plotService.getIntersectedPlot(event.getEntity().getLocation());
+		if (plot == null) return;
+		User user = userService.getOnlineUser(damager.getName());
+		if (user.getPrivilege() == UserPrivilege.MEMBER_START && plot.isTeamProtected(user.getTeam())) {
+			// New members can't damage entities in friendly territory
 			event.setCancelled(true);
 		}
 	}
