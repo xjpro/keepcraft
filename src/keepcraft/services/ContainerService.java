@@ -27,7 +27,7 @@ public class ContainerService {
 		containers = containerDataManager.getAllData();
 	}
 
-	public Collection<Container> getContainers() {
+	Collection<Container> getContainers() {
 		return containers;
 	}
 
@@ -64,36 +64,22 @@ public class ContainerService {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone(ZoneId.of("America/Chicago")));
 
-		// Bases output at 8pm (start of raid time)
-		calendar.set(Calendar.HOUR_OF_DAY, 20);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				long mapAgeInDays = mapDataManager.getMapAgeInDays();
-				if (mapAgeInDays < 1) return;
-
-				getOutputtingContainers().stream()
-						.filter(container -> container.getOutputType() == Container.ContainerOutputType.BASE)
-						.forEach(container -> {
-							double modifier = 1 + (mapAgeInDays * 0.2);
-							container.dispense(modifier);
-						});
-			}
-		}, calendar.getTime());
-
-		// Outposts output at 11pm (end of raiding time)
+		// Containers output at 11pm (end of raiding time)
 		calendar.set(Calendar.HOUR_OF_DAY, 23);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
+				long mapAgeInDays = mapDataManager.getMapAgeInDays();
 				getOutputtingContainers().stream()
-						.filter(container -> container.getOutputType() == Container.ContainerOutputType.OUTPOST)
+						.filter(container -> container.getOutputType() == Container.ContainerOutputType.BASE || container.getOutputType() == Container.ContainerOutputType.OUTPOST)
 						.forEach(container -> {
-							container.dispense(1.0);
+							double modifier = 1.0;
+							if (container.getOutputType() == Container.ContainerOutputType.BASE) {
+								modifier = 1.0 + (mapAgeInDays * 0.2);
+							}
+							container.dispense(modifier);
 						});
 
 			}

@@ -195,8 +195,10 @@ public class WorldModifierService {
 		chestLocation.setY(platformTopY);
 		prepareSpawnChest(world.getBlockAt(chestLocation), isBase);
 
-		// Create wall
-		prepareSpawnWall(spawnLocation);
+		if (isBase) {
+			// Create wall
+			prepareSpawnWall(spawnLocation);
+		}
 	}
 
 	private void prepareSpawnChest(Block chestBlock, boolean isBase) {
