@@ -93,18 +93,6 @@ public class Container {
 		permission = value;
 	}
 
-	public boolean canAccess(User user) {
-		if (permission.equals(ContainerPermission.TEAM_VETERAN)) {
-			return user.getPrivilege().getId() > UserPrivilege.MEMBER_NORMAL.getId();
-		}
-		if (permission.equals(ContainerPermission.TEAM_NORMAL)) {
-			return user.getPrivilege().getId() > UserPrivilege.MEMBER_START.getId();
-		}
-
-		// Otherwise, public, anyone can modify
-		return true;
-	}
-
 	public ContainerOutputType getOutputType() {
 		return outputType;
 	}

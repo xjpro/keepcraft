@@ -42,47 +42,8 @@ public class ContainerCommandListener extends CommandListener {
 				chatService.sendInfoMessage(user, containerString);
 				return true;
 			} else if (args.length == 1) {
-				// Set permissions level
-
-				// Check that container is not in enemy plot
-				if (user.getPrivilege() != UserPrivilege.ADMIN) {
-					Plot plot = plotService.getIntersectedPlot(container.getBlock().getLocation());
-					if (plot != null && !plot.isTeamProtected(user.getTeam())) {
-						chatService.sendFailureMessage(user, "You do not have permission to modify this");
-						return true;
-					}
-				}
-
-				// Check that user has high enough privilege to modify
-				if (!container.canAccess(user)) {
-					chatService.sendFailureMessage(user, "You do not have permission to modify this");
-					return true;
-				}
-
-				int typeId = -1;
-				try {
-					typeId = Integer.parseInt(args[0]);
-				} catch (Exception ignored) {
-				}
-
-				if (typeId < 0 || typeId > 2) {
-					chatService.sendFailureMessage(user, "Enter a valid permission level: 0 (public), 1 (all team members), or 2 (veteran team members)");
-					return true;
-				}
-				if (typeId == 2 && user.getPrivilege().getId() < UserPrivilege.MEMBER_VETERAN.getId()) {
-					chatService.sendFailureMessage(user, String.format("You must be %s rank to set that permission level", UserPrivilege.MEMBER_VETERAN.getName()));
-					return true;
-				}
-				if (typeId == 1 && user.getPrivilege().getId() < UserPrivilege.MEMBER_NORMAL.getId()) {
-					chatService.sendFailureMessage(user, String.format("You must be %s rank to set that permission level", UserPrivilege.MEMBER_NORMAL.getName()));
-					return true;
-				}
-
-				container.setPermission(Container.ContainerPermission.getContainerPermission(typeId));
-				containerService.updateContainer(container);
-				chatService.sendSuccessMessage(user, String.format("Permissions updated to %s", container.getPermission()));
-				return true;
-
+				// Nothing in this arg level
+				return false;
 			} else if (args.length == 2) {
 				if (user.getPrivilege() != UserPrivilege.ADMIN) return false; // only ops
 

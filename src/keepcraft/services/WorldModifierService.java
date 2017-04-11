@@ -46,15 +46,17 @@ public class WorldModifierService {
 		do {
 			redBase = center.clone().add(-BASE_DISTANCE_FROM_CENTER, 0, 0);
 			blueBase = center.clone().add(BASE_DISTANCE_FROM_CENTER, 0, 0);
-			int lowestYInRedCircle = WorldHelper.getLowestYInCircle(world, redBase.getBlockX(), redBase.getBlockZ(), TEAM_PLOT_RADIUS + 10);
-			int lowestYInBlueCircle = WorldHelper.getLowestYInCircle(world, blueBase.getBlockX(), blueBase.getBlockZ(), TEAM_PLOT_RADIUS + 10);
-			redBase.setY(lowestYInRedCircle + CENTER_SPAWN_HEIGHT);
-			blueBase.setY(lowestYInBlueCircle + CENTER_SPAWN_HEIGHT);
 
-			int minimumY = world.getSeaLevel() - 10;
-			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) && isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ()))
-					&& lowestYInRedCircle > minimumY && lowestYInBlueCircle > minimumY) {
-				found = true;
+			if (isAcceptableBiome(world.getBiome(redBase.getBlockX(), redBase.getBlockZ())) && isAcceptableBiome(world.getBiome(blueBase.getBlockX(), blueBase.getBlockZ()))) {
+				int lowestYInRedCircle = WorldHelper.getLowestYInCircle(world, redBase.getBlockX(), redBase.getBlockZ(), TEAM_PLOT_RADIUS + 10);
+				int lowestYInBlueCircle = WorldHelper.getLowestYInCircle(world, blueBase.getBlockX(), blueBase.getBlockZ(), TEAM_PLOT_RADIUS + 10);
+				redBase.setY(lowestYInRedCircle + CENTER_SPAWN_HEIGHT);
+				blueBase.setY(lowestYInBlueCircle + CENTER_SPAWN_HEIGHT);
+
+				int minimumY = world.getSeaLevel() - 10;
+				if (lowestYInRedCircle > minimumY && lowestYInBlueCircle > minimumY) {
+					found = true;
+				}
 			} else {
 				Keepcraft.log(String.format("Unacceptable base biomes, going up +%s z units", BASE_DISTANCE_FROM_CENTER));
 				center.add(0, 0, BASE_DISTANCE_FROM_CENTER);
