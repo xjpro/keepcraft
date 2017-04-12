@@ -8,6 +8,7 @@ import keepcraft.data.models.WorldPoint;
 import keepcraft.services.ChatService;
 import keepcraft.services.ContainerService;
 import keepcraft.services.PlotService;
+import keepcraft.services.WorldModifierService;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -56,21 +57,14 @@ public class ExplosionListener implements Listener {
 			Location plotLocation = plot.getLocation();
 
 			// Remove all core blocks
-			for (int y = 0; y < plotLocation.getBlockY(); y++) {
+			for (int y = plotLocation.getBlockY(); y <= plotLocation.getBlockY() + WorldModifierService.CENTER_SPAWN_CLEARANCE; y++) {
 				Block centerBlock = plotLocation.getWorld().getBlockAt(plotLocation.getBlockX(), y, plotLocation.getBlockZ());
 
-				if (centerBlock.getType() == Material.CHEST) {
+				Container container = containerService.getContainer(new WorldPoint(centerBlock.getLocation()));
+				if (container != null) {
+					containerService.removeContainer(container);
 					centerBlock.breakNaturally();
-
-					// Remove lootbox record, if any
-					Container container = containerService.getContainer(new WorldPoint(centerBlock.getLocation()));
-					if (container != null) {
-						containerService.removeContainer(container);
-					}
 				}
-//				else if (centerBlock.getType() != Material.BEDROCK) {
-//					centerBlock.setType(Material.STONE);
-//				}
 			}
 
 			chatService.sendGlobalAlertMessage(String.format("%s has been destroyed!", plot.getColoredName()));

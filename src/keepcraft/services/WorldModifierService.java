@@ -27,7 +27,7 @@ public class WorldModifierService {
 	private final ContainerService containerService;
 	public static final int TEAM_PLOT_RADIUS = 65;
 	public static final int BASE_DISTANCE_FROM_CENTER = 250;
-	private static final int CENTER_SPAWN_CLEARANCE = 4;
+	public static final int CENTER_SPAWN_CLEARANCE = 4;
 	private static final int CENTER_SPAWN_HEIGHT = 15;
 	private static final int WORLD_BORDER = 900;
 	private static final Random random = new Random();
