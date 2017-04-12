@@ -311,6 +311,35 @@ public class Plot {
 						switch (interactedWith.getType()) {
 							// Do not allow enemy team to access buttons, switches, levers, etc.
 							// Exception: if the switch is near a door and not a stone plate, destroy it so it can't be used to block TNT placement
+//							case ENCHANTMENT_TABLE:
+//							case WORKBENCH:
+//							case WOODEN_DOOR:
+//							case DARK_OAK_DOOR:
+//							case ACACIA_DOOR:
+//							case BIRCH_DOOR:
+//							case JUNGLE_DOOR:
+//							case SPRUCE_DOOR:
+//							case TRAP_DOOR:
+//							case WOOD_PLATE:
+//							case WOOD_BUTTON:
+//							case BOAT:
+//							case BOAT_ACACIA:
+//							case BOAT_BIRCH:
+//							case BOAT_DARK_OAK:
+//							case BOAT_JUNGLE:
+//							case BOAT_SPRUCE:
+//							case MINECART:
+//							case ENDER_CHEST:
+//							case CHEST:
+//							case FENCE_GATE:
+//							case ACACIA_FENCE_GATE:
+//							case BIRCH_FENCE_GATE:
+//							case DARK_OAK_FENCE_GATE:
+//							case JUNGLE_FENCE_GATE:
+//							case SPRUCE_FENCE_GATE:
+							// todo better way to do this me thinks
+//								return true;
+
 							case STONE_BUTTON:
 							case STONE_PLATE:
 							case IRON_PLATE:
