@@ -95,23 +95,23 @@ public class ChatService {
 	}
 
 	public void sendAlertMessage(ChatParticipant target, String text) {
-		sendBasicColoredMessage(target.getName(), ChatService.Info, text);
+		sendBasicColoredMessage(target, ChatService.Info, text);
 	}
 
 	public void sendInfoMessage(ChatParticipant target, String text) {
-		sendBasicColoredMessage(target.getName(), ChatService.RequestedInfo, text);
+		sendBasicColoredMessage(target, ChatService.RequestedInfo, text);
 	}
 
 	public void sendChangeMessage(ChatParticipant target, String text) {
-		sendBasicColoredMessage(target.getName(), ChatService.Change, text);
+		sendBasicColoredMessage(target, ChatService.Change, text);
 	}
 
 	public void sendSuccessMessage(ChatParticipant target, String text) {
-		sendBasicColoredMessage(target.getName(), ChatService.Success, text);
+		sendBasicColoredMessage(target, ChatService.Success, text);
 	}
 
 	public void sendFailureMessage(ChatParticipant target, String text) {
-		sendBasicColoredMessage(target.getName(), ChatService.Failure, text);
+		sendBasicColoredMessage(target, ChatService.Failure, text);
 	}
 
 	public void sendGlobalAlertMessage(String text) {
@@ -139,12 +139,12 @@ public class ChatService {
 		logger.info(message);
 	}
 
-	private void sendBasicColoredMessage(String playerName, ChatColor color, String text) {
+	private void sendBasicColoredMessage(ChatParticipant target, ChatColor color, String text) {
 		String message = String.format(ChatService.AlertFormat, color, text);
-		if (playerName.equals("CONSOLE")) {
+		if (target instanceof ConsoleUser) {
 			logger.info(message);
 		} else {
-			Player player = Bukkit.getPlayer(playerName);
+			Player player = Bukkit.getPlayer(target.getName());
 			if (player != null) {
 				player.sendMessage(message);
 			}

@@ -8,5 +8,6 @@ public interface ChatParticipant {
 	String getChatTag(UserTeam team);
 	boolean getReceiveGlobalMessages();
 	void setReceiveGlobalMessages(boolean value);
+	boolean isAdmin();
 	boolean canApprove(User target);
 }

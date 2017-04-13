@@ -30,18 +30,10 @@ public class BasicCommandListener extends CommandListener {
 	protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
 
 		ChatParticipant sender;
-		User userSender;
-		UserPrivilege privilege;
-
 		if (commandSender instanceof Player) {
-			userSender = userService.getOnlineUser(commandSender.getName());
-			sender = userSender;
-			privilege = userSender.getPrivilege();
+			sender = userService.getOnlineUser(commandSender.getName());
 		} else {
-			// Console
-			userSender = null;
 			sender = new ConsoleUser();
-			privilege = UserPrivilege.ADMIN;
 		}
 
 		// Char info
@@ -54,7 +46,7 @@ public class BasicCommandListener extends CommandListener {
 				return true;
 			}
 
-			if (privilege == UserPrivilege.ADMIN) {
+			if (sender.isAdmin()) {
 				String[] messages = target.getPrivateInfo().split("\n");
 				for (String message : messages) {
 					chatService.sendInfoMessage(sender, message); // all info
@@ -98,7 +90,7 @@ public class BasicCommandListener extends CommandListener {
 			}
 			return true;
 		} else if (commandName.equalsIgnoreCase("die") && args.length == 0) {
-			if (userSender != null) {
+			if (commandSender instanceof Player) {
 				((Player) commandSender).setHealth(0);
 			}
 			return true;
@@ -129,7 +121,7 @@ public class BasicCommandListener extends CommandListener {
 				} else if (plot.getProtection().isCapturable()) {
 					status = plot.isAttackInProgress() ? "Under attack" : "Secured";
 					//orderNumber = Integer.toString(plot.getOrderNumber());
-					if (userSender == null || plot.getProtection().getType() == userSender.getTeam().getId()) {
+					if (sender.isAdmin() || (sender instanceof User && plot.getProtection().getType() == ((User) sender).getTeam().getId())) {
 						locationString = String.format("(%s, %s, %s)", plotLocation.getBlockX(), plotLocation.getBlockY(), plotLocation.getBlockZ());
 					}
 				} else {

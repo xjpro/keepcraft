@@ -78,6 +78,7 @@ public class User implements ChatParticipant {
 		return privilege;
 	}
 
+	@Override
 	public boolean isAdmin() {
 		return privilege == UserPrivilege.ADMIN;
 	}

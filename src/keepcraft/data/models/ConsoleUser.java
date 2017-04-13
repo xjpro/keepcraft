@@ -1,5 +1,8 @@
 package keepcraft.data.models;
 
+import keepcraft.services.ChatService;
+import org.bukkit.ChatColor;
+
 public class ConsoleUser implements ChatParticipant {
 	@Override
 	public String getName() {
@@ -8,17 +11,18 @@ public class ConsoleUser implements ChatParticipant {
 
 	@Override
 	public String getColoredName() {
-		return "CONSOLE";
+		return ChatService.NameAdmin + getName() + ChatColor.RESET;
 	}
 
 	@Override
 	public String getChatTag() {
-		return "CONSOLE";
+		return ChatService.NameAdmin + "<" + getName() + ">" + ChatColor.RESET;
 	}
 
 	@Override
-	public String getChatTag(UserTeam team) {
-		return "CONSOLE";
+	public String getChatTag(UserTeam userTeam) {
+		ChatColor chatColor = userTeam.getChatColor();
+		return chatColor + "<" + ChatService.NameAdmin + getName() + chatColor + ">" + ChatColor.RESET;
 	}
 
 	@Override
@@ -28,6 +32,11 @@ public class ConsoleUser implements ChatParticipant {
 
 	@Override
 	public void setReceiveGlobalMessages(boolean value) {
+	}
+
+	@Override
+	public boolean isAdmin() {
+		return true;
 	}
 
 	@Override
