@@ -50,18 +50,18 @@ public class User implements ChatParticipant {
 	@Override
 	public String getColoredName() {
 		if (privilege == UserPrivilege.ADMIN) {
-			return ChatService.NameAdmin + name + ChatColor.RESET;
+			return ChatService.NameAdmin + getName() + ChatColor.RESET;
 		} else {
-			return team.getChatColor() + name + ChatColor.RESET;
+			return team.getChatColor() + getName() + ChatColor.RESET;
 		}
 	}
 
 	@Override
 	public String getChatTag() {
 		if (privilege == UserPrivilege.ADMIN) {
-			return ChatService.NameAdmin + "<" + name + ">" + ChatColor.RESET;
+			return ChatService.NameAdmin + "<" + getName() + ">" + ChatColor.RESET;
 		} else {
-			return team.getChatColor() + "<" + name + ">" + ChatColor.RESET;
+			return team.getChatColor() + "<" + getName() + ">" + ChatColor.RESET;
 		}
 	}
 
@@ -69,7 +69,7 @@ public class User implements ChatParticipant {
 	public String getChatTag(UserTeam userTeam) {
 		if (privilege == UserPrivilege.ADMIN) {
 			ChatColor chatColor = userTeam.getChatColor();
-			return chatColor + "<" + ChatService.NameAdmin + name + chatColor + ">" + ChatColor.RESET;
+			return chatColor + "<" + ChatService.NameAdmin + getName() + chatColor + ">" + ChatColor.RESET;
 		}
 		return getChatTag();
 	}

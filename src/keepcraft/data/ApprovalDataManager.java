@@ -27,6 +27,8 @@ public class ApprovalDataManager {
 	}
 
 	public void saveApproval(String userName, String approvedUserName) {
+		if (isApproved(userName)) return; // Already approved
+
 		Keepcraft.log("Saving approval for " + userName);
 		try {
 			PreparedStatement statement = database.createStatement("INSERT INTO userApprovals " +
