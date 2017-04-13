@@ -1,9 +1,6 @@
 package keepcraft.services;
 
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.User;
-import keepcraft.data.models.UserPrivilege;
-import keepcraft.data.models.UserTeam;
+import keepcraft.data.models.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -29,7 +26,6 @@ public class ChatService {
 	public final static ChatColor Info = ChatColor.DARK_GRAY;
 	public final static ChatColor Change = ChatColor.DARK_PURPLE;
 
-	private final static ChatColor PrivateMessage = ChatColor.LIGHT_PURPLE;
 	private final static ChatColor GlobalMessage = ChatColor.GRAY;
 	private final static ChatColor FactionMessage = ChatColor.GREEN;
 	private final static ChatColor AdminMessage = ChatColor.YELLOW;
@@ -44,7 +40,7 @@ public class ChatService {
 		this.userService = userService;
 	}
 
-	public void sendGlobalMessage(User sender, String text) {
+	public void sendGlobalMessage(ChatParticipant sender, String text) {
 		if (text == null || text.length() == 0) {
 			return;
 		}
@@ -66,7 +62,7 @@ public class ChatService {
 		logger.info(message);
 	}
 
-	public void sendFactionMessage(User sender, Collection<User> connectedUsers, UserTeam userTeam, String text) {
+	public void sendFactionMessage(ChatParticipant sender, Collection<User> connectedUsers, UserTeam userTeam, String text) {
 		if (text == null || text.length() == 0) {
 			return;
 		}
@@ -82,7 +78,7 @@ public class ChatService {
 		logger.info(message);
 	}
 
-	public void sendAdminMessage(User sender, Collection<User> connectedUsers, String text) {
+	public void sendAdminMessage(ChatParticipant sender, Collection<User> connectedUsers, String text) {
 		if (text == null || text.length() == 0) {
 			return;
 		}
@@ -98,23 +94,23 @@ public class ChatService {
 		logger.info(message);
 	}
 
-	public void sendAlertMessage(User target, String text) {
+	public void sendAlertMessage(ChatParticipant target, String text) {
 		sendBasicColoredMessage(target.getName(), ChatService.Info, text);
 	}
 
-	public void sendInfoMessage(User target, String text) {
+	public void sendInfoMessage(ChatParticipant target, String text) {
 		sendBasicColoredMessage(target.getName(), ChatService.RequestedInfo, text);
 	}
 
-	public void sendChangeMessage(User target, String text) {
+	public void sendChangeMessage(ChatParticipant target, String text) {
 		sendBasicColoredMessage(target.getName(), ChatService.Change, text);
 	}
 
-	public void sendSuccessMessage(User target, String text) {
+	public void sendSuccessMessage(ChatParticipant target, String text) {
 		sendBasicColoredMessage(target.getName(), ChatService.Success, text);
 	}
 
-	public void sendFailureMessage(User target, String text) {
+	public void sendFailureMessage(ChatParticipant target, String text) {
 		sendBasicColoredMessage(target.getName(), ChatService.Failure, text);
 	}
 
@@ -127,7 +123,7 @@ public class ChatService {
 		logger.info(message);
 	}
 
-	public void sendPlotCaptureMessage(User capturer, String text, Plot target, String time) {
+	public void sendPlotCaptureMessage(ChatParticipant capturer, String text, Plot target, String time) {
 		String message = String.format(ChatService.PlotCaptureFormat, capturer.getColoredName(), ChatService.Info + text, target.getColoredName(), ChatService.Info + time);
 		for (Player receiver : Bukkit.getOnlinePlayers()) {
 			receiver.sendMessage(message);
@@ -135,31 +131,12 @@ public class ChatService {
 		logger.info(message);
 	}
 
-	public void sendPlotDefendMessage(User defender, String text, Plot target) {
+	public void sendPlotDefendMessage(ChatParticipant defender, String text, Plot target) {
 		String message = String.format(ChatService.PlotDefendFormat, defender.getColoredName(), ChatService.Info + text, target.getColoredName());
 		for (Player receiver : Bukkit.getOnlinePlayers()) {
 			receiver.sendMessage(message);
 		}
 		logger.info(message);
-	}
-
-	public void sendPrivateMessage(User sender, User target, String text) {
-		if (text == null || text.length() == 0) {
-			return;
-		}
-
-		String feedback = String.format(ChatService.ChatFormat, ChatService.PrivateMessage + "<to " + target.getName() + ">", ChatService.PrivateMessage, "Private", text);
-		String message = String.format(ChatService.ChatFormat, sender.getChatTag(), ChatService.PrivateMessage, "Private", text);
-
-		Player sentBy = Bukkit.getPlayer(sender.getName());
-		Player sentTo = Bukkit.getPlayer(target.getName());
-
-		sentBy.sendMessage(feedback);
-		sentTo.sendMessage(message);
-
-		target.setLastPrivateMessageSender(sender.getName());
-
-		logger.info(sentBy.getName() + " " + feedback);
 	}
 
 	private void sendBasicColoredMessage(String playerName, ChatColor color, String text) {

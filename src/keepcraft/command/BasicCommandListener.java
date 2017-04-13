@@ -28,9 +28,21 @@ public class BasicCommandListener extends CommandListener {
 
 	@Override
 	protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
-		Player player = (Player) commandSender; // todo not always a player
-		User sender = userService.getOnlineUser(commandSender.getName());
-		UserPrivilege privilege = sender.getPrivilege();
+
+		ChatParticipant sender;
+		User userSender;
+		UserPrivilege privilege;
+
+		if (commandSender instanceof Player) {
+			userSender = userService.getOnlineUser(commandSender.getName());
+			sender = userSender;
+			privilege = userSender.getPrivilege();
+		} else {
+			// Console
+			userSender = null;
+			sender = new ConsoleUser();
+			privilege = UserPrivilege.ADMIN;
+		}
 
 		// Char info
 		if ((commandName.equalsIgnoreCase("who")) && args.length == 1) {
@@ -86,7 +98,9 @@ public class BasicCommandListener extends CommandListener {
 			}
 			return true;
 		} else if (commandName.equalsIgnoreCase("die") && args.length == 0) {
-			player.setHealth(0);
+			if (userSender != null) {
+				((Player) commandSender).setHealth(0);
+			}
 			return true;
 		} else if (commandName.equalsIgnoreCase("map") || commandName.equalsIgnoreCase("rally")) {
 			//if (args.length == 0) {
@@ -115,7 +129,7 @@ public class BasicCommandListener extends CommandListener {
 				} else if (plot.getProtection().isCapturable()) {
 					status = plot.isAttackInProgress() ? "Under attack" : "Secured";
 					//orderNumber = Integer.toString(plot.getOrderNumber());
-					if (plot.getProtection().getType() == sender.getTeam().getId()) {
+					if (userSender == null || plot.getProtection().getType() == userSender.getTeam().getId()) {
 						locationString = String.format("(%s, %s, %s)", plotLocation.getBlockX(), plotLocation.getBlockY(), plotLocation.getBlockZ());
 					}
 				} else {
@@ -178,10 +192,10 @@ public class BasicCommandListener extends CommandListener {
 
 			if (sender.canApprove(target)) {
 				userService.approveUser(target, sender);
-				chatService.sendSuccessMessage(sender, String.format("You have approved '%s'", target.getName()));
-				chatService.sendChangeMessage(target, String.format("You have been approved for full team access by '%s'", sender.getName()));
+				chatService.sendSuccessMessage(sender, String.format("You have approved %s", target.getColoredName()));
+				chatService.sendChangeMessage(target, String.format("You have been approved for full team access by %s", sender.getColoredName()));
 			} else {
-				chatService.sendFailureMessage(sender, String.format("You cannot approve '%s'", target.getName()));
+				chatService.sendFailureMessage(sender, String.format("You cannot approve %s", target.getColoredName()));
 			}
 
 			return true;

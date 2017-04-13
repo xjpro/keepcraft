@@ -5,6 +5,7 @@ import keepcraft.data.ApprovalDataManager;
 import keepcraft.data.UserConnectionDataManager;
 import keepcraft.data.UserDataManager;
 import keepcraft.data.UserStatsDataManager;
+import keepcraft.data.models.ChatParticipant;
 import keepcraft.data.models.User;
 import keepcraft.data.models.UserTeam;
 import keepcraft.data.models.UserPrivilege;
@@ -81,7 +82,7 @@ public class UserService {
 		userDataManager.updateData(user);
 	}
 
-	public void approveUser(User user, User approver) {
+	public void approveUser(User user, ChatParticipant approver) {
 		user.setPrivilege(UserPrivilege.MEMBER_VETERAN);
 		approvalDataManager.saveApproval(user.getName(), approver.getName());
 		updateUser(user);

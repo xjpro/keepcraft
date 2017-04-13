@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Data for a player.
  */
-public class User {
+public class User implements ChatParticipant {
 
 	public static int InCombatTimeoutSeconds = 15;
 
@@ -27,7 +27,6 @@ public class User {
 	private Plot currentPlot = null;
 	private Container targetContainer = null;
 	private boolean receiveGlobalMessages = true;
-	private String lastPrivateMessageSender = null;
 	private Date lastCombat = null;
 	private Plot rallyingTo = null;
 	private boolean hiding = false;
@@ -43,10 +42,12 @@ public class User {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getColoredName() {
 		if (privilege == UserPrivilege.ADMIN) {
 			return ChatService.NameAdmin + name + ChatColor.RESET;
@@ -55,6 +56,7 @@ public class User {
 		}
 	}
 
+	@Override
 	public String getChatTag() {
 		if (privilege == UserPrivilege.ADMIN) {
 			return ChatService.NameAdmin + "<" + name + ">" + ChatColor.RESET;
@@ -63,6 +65,7 @@ public class User {
 		}
 	}
 
+	@Override
 	public String getChatTag(UserTeam userTeam) {
 		if (privilege == UserPrivilege.ADMIN) {
 			ChatColor chatColor = userTeam.getChatColor();
@@ -152,20 +155,14 @@ public class User {
 		rallyingTo = value;
 	}
 
+	@Override
 	public boolean getReceiveGlobalMessages() {
 		return receiveGlobalMessages;
 	}
 
+	@Override
 	public void setReceiveGlobalMessages(boolean value) {
 		receiveGlobalMessages = value;
-	}
-
-	public String getLastPrivateMessageSender() {
-		return lastPrivateMessageSender;
-	}
-
-	public void setLastPrivateMessageSender(String value) {
-		lastPrivateMessageSender = value;
 	}
 
 	public long getPlayedSeconds() {
@@ -236,6 +233,7 @@ public class User {
 		lastFishLocation = location;
 	}
 
+	@Override
 	public boolean canApprove(User target) {
 		return target.getPrivilege() == UserPrivilege.MEMBER_START &&
 				(privilege.equals(UserPrivilege.ADMIN) || (privilege.equals(UserPrivilege.MEMBER_VETERAN) && getTeam() == target.getTeam()));

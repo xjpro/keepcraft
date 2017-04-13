@@ -2,12 +2,6 @@ name: Keepcraft
 main: keepcraft.Keepcraft
 version: 2
 commands:
-    t:
-        description: Send private message to user
-        usage: /t <username> <message>
-    r:
-        description: Reply to the last message received
-        usage: /r <message>
     g:
         description: Send global message to server
         usage: /g <message>

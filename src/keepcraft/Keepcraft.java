@@ -92,7 +92,7 @@ public class Keepcraft extends JavaPlugin {
 
 		// ChatService commands
 		CommandListener chatCommandListener = new ChatCommandListener(userService, chatService);
-		String[] chatCommands = {"t", "r", "g"};
+		String[] chatCommands = {"g"};
 		for (String chatCommand : chatCommands) {
 			getCommand(chatCommand).setExecutor(chatCommandListener);
 		}
