@@ -1,9 +1,7 @@
 package keepcraft.command;
 
 import keepcraft.Keepcraft;
-import keepcraft.data.models.Plot;
-import keepcraft.data.models.User;
-import keepcraft.data.models.UserTeam;
+import keepcraft.data.models.*;
 import keepcraft.services.ChatService;
 import keepcraft.services.PlotService;
 import keepcraft.services.TeamService;
@@ -11,8 +9,6 @@ import keepcraft.services.UserService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.Objects;
 
 public class AdminCommandListener extends CommandListener {
 
@@ -31,14 +27,14 @@ public class AdminCommandListener extends CommandListener {
 	@Override
 	protected boolean handle(String commandName, CommandSender commandSender, String[] args) {
 
-		User userSender = null;
-		if (!Objects.equals(commandSender.getName(), "CONSOLE")) {
-			userSender = userService.getOnlineUser(commandSender.getName());
+		ChatParticipant sender;
+		if (commandSender instanceof Player) {
+			sender = userService.getOnlineUser(commandSender.getName());
+		} else {
+			sender = new ConsoleUser();
 		}
 
-		if (!commandSender.isOp() && (userSender != null && !userSender.isAdmin())) {
-			return false;
-		}
+		if (!commandSender.isOp() && !sender.isAdmin()) return false;
 
 		// Promote
 		if (commandName.equals("promote")) {
@@ -48,23 +44,22 @@ public class AdminCommandListener extends CommandListener {
 				String targetName = args[0];
 				target = userService.getOnlineUser(targetName);
 				if (target == null) {
-					commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
+					chatService.sendFailureMessage(sender, "Requested user '" + targetName + "' does not exist");
 					return true;
 				}
-			} else if (userSender != null) {
-				target = userSender;
+			} else if (commandSender instanceof Player) {
+				target = (User) sender;
 			} else {
-				commandSender.sendMessage(ChatService.Failure + "Cannot promote console");
+				chatService.sendFailureMessage(sender, "Cannot promote console");
 				return true;
 			}
 
 			target.setPrivilege(target.getPrivilege().getNext());
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Promoted " + target.getName() + " to " + target.getPrivilege());
-			if (target != userSender) {
-				commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were promoted to "
-						+ target.getPrivilege() + " status");
+			chatService.sendSuccessMessage(sender, "Promoted " + target.getName() + " to " + target.getPrivilege());
+			if (target != sender) {
+				chatService.sendChangeMessage(target, "You were promoted to " + target.getPrivilege() + " status");
 			}
 			return true;
 		} // Demote
@@ -74,23 +69,22 @@ public class AdminCommandListener extends CommandListener {
 				String targetName = args[0];
 				target = userService.getOnlineUser(targetName);
 				if (target == null) {
-					commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist");
+					chatService.sendFailureMessage(sender, "Requested user '" + targetName + "' does not exist");
 					return true;
 				}
-			} else if (userSender != null) {
-				target = userSender;
+			} else if (commandSender instanceof Player) {
+				target = (User) sender;
 			} else {
-				commandSender.sendMessage(ChatService.Failure + "Cannot demote console");
+				chatService.sendFailureMessage(sender, "Cannot demote console");
 				return true;
 			}
 
 			target.setPrivilege(target.getPrivilege().getPrevious());
 			userService.updateUser(target);
 
-			commandSender.sendMessage(ChatService.Success + "Demoted " + target.getName() + " to " + target.getPrivilege());
-			if (target != userSender) {
-				commandSender.getServer().getPlayer(target.getName()).sendMessage(ChatService.Change + "You were demoted to "
-						+ target.getPrivilege() + " status");
+			chatService.sendSuccessMessage(sender, "Demoted " + target.getName() + " to " + target.getPrivilege());
+			if (target != sender) {
+				chatService.sendChangeMessage(target, "You were demoted to " + target.getPrivilege() + " status");
 			}
 			return true;
 		}
@@ -100,27 +94,30 @@ public class AdminCommandListener extends CommandListener {
 			User target = userService.getUser(targetName);
 
 			if (target == null) {
-				chatService.sendFailureMessage(userSender, String.format("'%s' is not a known user", targetName));
+				chatService.sendFailureMessage(sender, String.format("'%s' is not a known user", targetName));
 				return true;
 			}
 
-			int teamId;
+			UserTeam userTeam = null;
 			try {
-				teamId = Integer.parseInt(args[1]);
+				userTeam = UserTeam.getTeam(Integer.parseInt(args[1]));
 			} catch (NumberFormatException e) {
 				// invalid input
-				chatService.sendFailureMessage(userSender, "Options for teams are 100 (Red) or 200 (Blue)");
-				return false;
 			}
 
-			target.setTeam(UserTeam.getTeam(teamId));
+			if (userTeam == null) {
+				chatService.sendFailureMessage(sender, "Options for teams are 100 (Red) or 200 (Blue)");
+				return true;
+			}
+
+			target.setTeam(userTeam);
 			userService.updateUser(target);
-			chatService.sendSuccessMessage(userSender, String.format("Set '%s' to team %s", target.getName(), target.getTeam().getChatColoredNamed()));
+			chatService.sendSuccessMessage(sender, String.format("Set '%s' to team %s", target.getName(), target.getTeam().getChatColoredNamed()));
 
 			Player player = Bukkit.getPlayer(targetName);
 			if (player != null) {
-				teamService.addPlayerToTeam(UserTeam.getTeam(teamId), player);
-				chatService.sendChangeMessage(target, String.format("Your faction was changed to %s", target.getTeam().getChatColoredNamed()));
+				teamService.addPlayerToTeam(userTeam, player);
+				chatService.sendChangeMessage(target, String.format("Your team was changed to %s", target.getTeam().getChatColoredNamed()));
 			}
 
 			return true;
@@ -132,9 +129,9 @@ public class AdminCommandListener extends CommandListener {
 			boolean success = userService.removeUser(deleted);
 
 			if (success) {
-				commandSender.sendMessage(ChatService.Success + "Deleted " + targetName);
+				chatService.sendSuccessMessage(sender, "Deleted " + targetName);
 			} else {
-				commandSender.sendMessage(ChatService.Failure + "Requested user '" + targetName + "' does not exist (case matters)");
+				chatService.sendFailureMessage(sender, "Requested user '" + targetName + "' does not exist (case matters)");
 			}
 
 			return true;
@@ -159,9 +156,9 @@ public class AdminCommandListener extends CommandListener {
 			}
 
 			if (plot == null) {
-				commandSender.sendMessage(ChatService.Failure + "Plot not found");
+				chatService.sendFailureMessage(sender, "Plot not found");
 			} else {
-				if (userSender != null) {
+				if (commandSender instanceof Player) {
 					((Player) commandSender).teleport(plot.getLocation());
 				}
 			}
