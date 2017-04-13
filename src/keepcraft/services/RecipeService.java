@@ -31,6 +31,18 @@ public class RecipeService {
 				.shape("A A", "AAA")
 				.setIngredient('A', Material.LEATHER);
 		server.addRecipe(saddle);
+
+		// Flint recipe
+		ShapedRecipe flint = new ShapedRecipe(new ItemStack(Material.FLINT))
+				.shape("A")
+				.setIngredient('A', Material.GRAVEL);
+		server.addRecipe(flint);
+
+		// Clay block recipe
+		ShapedRecipe clayBlock = new ShapedRecipe(new ItemStack(Material.CLAY))
+				.shape("AA", "AA")
+				.setIngredient('A', Material.DIRT);
+		server.addRecipe(clayBlock);
 	}
 
 }
