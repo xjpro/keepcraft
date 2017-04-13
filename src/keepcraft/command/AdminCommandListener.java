@@ -112,7 +112,7 @@ public class AdminCommandListener extends CommandListener {
 
 			target.setTeam(userTeam);
 			userService.updateUser(target);
-			chatService.sendSuccessMessage(sender, String.format("Set '%s' to team %s", target.getName(), target.getTeam().getChatColoredNamed()));
+			chatService.sendSuccessMessage(sender, String.format("Set %s to team %s", target.getName(), target.getTeam().getChatColoredNamed()));
 
 			Player player = Bukkit.getPlayer(targetName);
 			if (player != null) {
