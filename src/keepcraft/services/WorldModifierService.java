@@ -284,6 +284,7 @@ public class WorldModifierService {
 			case TAIGA_COLD:
 			case TAIGA_HILLS:
 			case MESA:
+			case JUNGLE:
 				return true;
 		}
 		return false;

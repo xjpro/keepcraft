@@ -138,19 +138,18 @@ public class UserStatsDataManager {
 		}
 	}
 
-	public List<String> getRecentlyPlayedUserNamesByPlayTime(UUID currentWorldGUID) {
+	public List<String> getRecentlyPlayedUserNamesByPlayTime() {
 
 		List<String> previouslyPlayedUserNames = new ArrayList<>();
 
 		// Gather all users from the past map
 		try {
 			PreparedStatement statement = database.createStatement("SELECT WorldGUID FROM userStats " +
-					"WHERE WorldGUID IS NOT NULL AND WorldGUID != ? AND ((julianday(datetime('now')) - julianday(RecordStart)) < ?) " +
+					"WHERE WorldGUID IS NOT NULL AND ((julianday(datetime('now')) - julianday(RecordStart)) < ?) " +
 					"GROUP BY WorldGUID " +
 					"ORDER BY RecordStart DESC");
 			// Fake UUID if one not provided, used for testing
-			statement.setString(1, currentWorldGUID != null ? currentWorldGUID.toString() : "2b79c281-7287-4627-96fc-788a03901345");
-			statement.setFloat(2, 5.0f);
+			statement.setFloat(1, 5.0f);
 			ResultSet result = statement.executeQuery();
 
 			ArrayList<String> recentWorldGUIDs = new ArrayList<>();

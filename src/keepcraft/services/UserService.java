@@ -101,8 +101,7 @@ public class UserService {
 	}
 
 	public void distributeKnownUsers() {
-		UUID worldGUID = plugin != null ? plugin.getServer().getWorld("world").getUID() : null;
-		List<String> recentlyPlayedUserNamesByPlayTime = userStatsDataManager.getRecentlyPlayedUserNamesByPlayTime(worldGUID);
+		List<String> recentlyPlayedUserNamesByPlayTime = userStatsDataManager.getRecentlyPlayedUserNamesByPlayTime();
 		// We now have a list a users sorted by their play time A B C D E F
 
 		// Remove known admins todo make this dynamic
