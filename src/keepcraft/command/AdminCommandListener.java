@@ -2,10 +2,7 @@ package keepcraft.command;
 
 import keepcraft.Keepcraft;
 import keepcraft.data.models.*;
-import keepcraft.services.ChatService;
-import keepcraft.services.PlotService;
-import keepcraft.services.TeamService;
-import keepcraft.services.UserService;
+import keepcraft.services.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,12 +12,14 @@ public class AdminCommandListener extends CommandListener {
 	private final UserService userService;
 	private final PlotService plotService;
 	private final TeamService teamService;
+	private final ContainerService containerService;
 	private final ChatService chatService;
 
-	public AdminCommandListener(UserService userService, PlotService plotService, TeamService teamService, ChatService chatService) {
+	public AdminCommandListener(UserService userService, PlotService plotService, TeamService teamService, ContainerService containerService, ChatService chatService) {
 		this.userService = userService;
 		this.plotService = plotService;
 		this.teamService = teamService;
+		this.containerService = containerService;
 		this.chatService = chatService;
 	}
 
@@ -163,7 +162,12 @@ public class AdminCommandListener extends CommandListener {
 				}
 			}
 			return true;
-		} // Make it dawn
+		} else if (commandName.equals("dispense")) {
+			containerService.dispenseAllContainers();
+			chatService.sendSuccessMessage(sender, "All applicable container loot generated");
+			return true;
+		}
+		// Make it dawn
 		else if (commandName.equals("dawn") && args.length == 0) {
 			Keepcraft.getWorld().setTime(0);
 			return true;

@@ -31,7 +31,7 @@ public class MapDataManager {
 		}
 	}
 
-	public long getMapAgeInSeconds() {
+	private long getMapAgeInSeconds() {
 		long ageInSeconds = 0;
 		try {
 			PreparedStatement statement = database.createStatement("SELECT StartDateTime FROM map LIMIT 1");

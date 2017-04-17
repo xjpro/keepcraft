@@ -41,6 +41,9 @@ commands:
     chest:
         description: Edit a chest
         usage: /chest
+    dispense:
+        description: Dispense all chests
+        usage: /dispense
     dawn:
         description: Let there be light!
         usage: /dawn

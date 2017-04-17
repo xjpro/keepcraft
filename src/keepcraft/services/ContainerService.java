@@ -14,12 +14,11 @@ public class ContainerService {
 	private final ContainerDataManager containerDataManager;
 	private final MapDataManager mapDataManager;
 	private Collection<Container> containers;
-	private final Timer timer;
+	private Timer timer;
 
 	public ContainerService(ContainerDataManager containerDataManager, MapDataManager mapDataManager) {
 		this.containerDataManager = containerDataManager;
 		this.mapDataManager = mapDataManager;
-		this.timer = new Timer();
 		refreshCache();
 	}
 
@@ -67,7 +66,7 @@ public class ContainerService {
 				.forEach(container -> {
 					double modifier = 1.0;
 					if (container.getOutputType() == Container.ContainerOutputType.BASE) {
-						modifier = 1.0 + (mapAgeInDays * 0.2);
+						modifier += mapAgeInDays * 0.20;
 					}
 					container.dispense(modifier);
 				});
@@ -81,6 +80,8 @@ public class ContainerService {
 		calendar.set(Calendar.HOUR_OF_DAY, 23);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
+
+		timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
@@ -90,6 +91,8 @@ public class ContainerService {
 	}
 
 	public void stopDispensing() {
-		timer.cancel();
+		if (timer != null) {
+			timer.cancel();
+		}
 	}
 }
