@@ -174,8 +174,8 @@ public class Plot {
 		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Chicago"));
 		int hour = now.getHour();
 
-		// Immune if before 8pm (hour values 19 and below) or after 11 (hour values 23 and above)
-		return hour < 20 || hour > 22;
+		// Immune if before 8pm (hour values 19 and below) or after 11 (hour values 22 and above)
+		return hour < 20 || hour > 21;
 		// Immune if before 8pm (hour values 19 and below), resets to 0 at midnight so we don't have to check upper bound
 		//return hour < 20;
 		// Example of use:
