@@ -76,8 +76,8 @@ public class ContainerService {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone(ZoneId.of("America/Chicago")));
 
-		// Containers output at 11pm (end of raiding time)
-		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		// Containers output at end of raiding time
+		calendar.set(Calendar.HOUR_OF_DAY, 22);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 
