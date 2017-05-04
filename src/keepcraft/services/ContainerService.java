@@ -66,7 +66,7 @@ public class ContainerService {
 				.forEach(container -> {
 					double modifier = 1.0;
 					if (container.getOutputType() == Container.ContainerOutputType.BASE) {
-						modifier += mapAgeInDays * 0.20;
+						//modifier += mapAgeInDays * 0.20;
 					}
 					container.dispense(modifier);
 				});
