@@ -16,14 +16,14 @@ public class CraftItemListener implements Listener {
 		BrewerInventory contents = event.getContents();
 		switch (contents.getIngredient().getType()) {
 
-			case NETHER_STALK: // makes the base "awkward" potion
-			case SULPHUR: // allows throwing variants
-			case DRAGONS_BREATH: // allows lingering variants
+			case LEGACY_NETHER_STALK: // makes the base "awkward" potion
+			case LEGACY_SULPHUR: // allows throwing variants
+			case LEGACY_DRAGONS_BREATH: // allows lingering variants
 
 			case GHAST_TEAR: // regen
 			case SPIDER_EYE: // poison
 			case GOLDEN_CARROT: // night vision
-			case RAW_FISH: // water breathing
+			case LEGACY_RAW_FISH: // water breathing
 			case MAGMA_CREAM: // fire resistance
 				break;
 
@@ -50,28 +50,28 @@ public class CraftItemListener implements Listener {
 
 		ItemStack item = event.getCurrentItem();
 		switch (item.getType()) {
-			case WOOD_SPADE:
-			case STONE_SPADE:
-			case IRON_SPADE:
-			case GOLD_SPADE:
-			case DIAMOND_SPADE:
-			case WOOD_PICKAXE:
+			case LEGACY_WOOD_SPADE:
+			case LEGACY_STONE_SPADE:
+			case LEGACY_IRON_SPADE:
+			case LEGACY_GOLD_SPADE:
+			case LEGACY_DIAMOND_SPADE:
+			case LEGACY_WOOD_PICKAXE:
 			case STONE_PICKAXE:
 			case IRON_PICKAXE:
-			case GOLD_PICKAXE:
+			case LEGACY_GOLD_PICKAXE:
 			case DIAMOND_PICKAXE:
-			case WOOD_AXE:
+			case LEGACY_WOOD_AXE:
 			case STONE_AXE:
 			case IRON_AXE:
-			case GOLD_AXE:
+			case LEGACY_GOLD_AXE:
 			case DIAMOND_AXE:
 				item.addEnchantment(Enchantment.DURABILITY, 3);
 				item.addEnchantment(Enchantment.DIG_SPEED, 3);
 				break;
-			case WOOD_HOE:
+			case LEGACY_WOOD_HOE:
 			case STONE_HOE:
 			case IRON_HOE:
-			case GOLD_HOE:
+			case LEGACY_GOLD_HOE:
 			case DIAMOND_HOE:
 				item.addEnchantment(Enchantment.DURABILITY, 3);
 				break;

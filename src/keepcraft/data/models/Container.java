@@ -129,14 +129,14 @@ public class Container {
 
 			// Items to facilitate sieging
 			if (value <= 0.50) { // 50%
-				item = new ItemStack(Material.SULPHUR, 1); // sulfur, for tnt and siege blocks
+				item = new ItemStack(Material.LEGACY_SULPHUR, 1); // sulfur, for tnt and siege blocks
 			} else if (value <= 0.70) { // 20%
 				item = new ItemStack(Material.ARROW, 1); // arrow
 			}
 			// Items to facilitate brewing
 			else if (value <= 0.80) { // 10%
 				// Needed for all potions (makes the base potions)
-				item = new ItemStack(Material.NETHER_STALK, 1); // nether stalk
+				item = new ItemStack(Material.LEGACY_NETHER_STALK, 1); // nether stalk
 			} else if (value <= 0.83) { // 3%
 				// Need to make brewing stand and as fuel
 				item = new ItemStack(Material.BLAZE_ROD, 1); // blaze rod
@@ -151,7 +151,7 @@ public class Container {
 				item = new ItemStack(Material.BROWN_MUSHROOM, 1); // used for creating fermented spider eyes
 			} else if (value <= 0.92) { // 1%
 				// Makes lingering potions
-				item = new ItemStack(Material.DRAGONS_BREATH, 1);
+				item = new ItemStack(Material.LEGACY_DRAGONS_BREATH, 1);
 			}
 			// Items that come in grinders
 			else if (value <= 0.93) { // 1%

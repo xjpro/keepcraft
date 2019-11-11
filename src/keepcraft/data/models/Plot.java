@@ -267,29 +267,29 @@ public class Plot {
 						} else if (userPrivilege == UserPrivilege.MEMBER_START) {
 							// Special rules for starting members: can interact with basic doors, switches, vehicles
 							switch (interactedWith.getType()) {
-								case ENCHANTMENT_TABLE:
-								case WORKBENCH:
-								case WOODEN_DOOR:
+								case LEGACY_ENCHANTMENT_TABLE:
+								case LEGACY_WORKBENCH:
+								case LEGACY_WOODEN_DOOR:
 								case DARK_OAK_DOOR:
 								case ACACIA_DOOR:
 								case BIRCH_DOOR:
 								case JUNGLE_DOOR:
 								case SPRUCE_DOOR:
-								case TRAP_DOOR:
-								case WOOD_PLATE:
-								case STONE_PLATE:
+								case LEGACY_TRAP_DOOR:
+								case LEGACY_WOOD_PLATE:
+								case LEGACY_STONE_PLATE:
 								case LEVER:
-								case WOOD_BUTTON:
+								case LEGACY_WOOD_BUTTON:
 								case STONE_BUTTON:
-								case BOAT:
-								case BOAT_ACACIA:
-								case BOAT_BIRCH:
-								case BOAT_DARK_OAK:
-								case BOAT_JUNGLE:
-								case BOAT_SPRUCE:
+								case LEGACY_BOAT:
+								case LEGACY_BOAT_ACACIA:
+								case LEGACY_BOAT_BIRCH:
+								case LEGACY_BOAT_DARK_OAK:
+								case LEGACY_BOAT_JUNGLE:
+								case LEGACY_BOAT_SPRUCE:
 								case MINECART:
 								case ENDER_CHEST:
-								case FENCE_GATE:
+								case LEGACY_FENCE_GATE:
 								case ACACIA_FENCE_GATE:
 								case BIRCH_FENCE_GATE:
 								case DARK_OAK_FENCE_GATE:
@@ -298,7 +298,7 @@ public class Plot {
 									return true;
 								case CHEST:
 									// Opens chest on wood
-									return interactedWith.getRelative(BlockFace.DOWN).getType() == Material.WOOD;
+									return interactedWith.getRelative(BlockFace.DOWN).getType() == Material.LEGACY_WOOD;
 								default:
 									return false;
 							}
@@ -341,15 +341,15 @@ public class Plot {
 //								return true;
 
 							case STONE_BUTTON:
-							case STONE_PLATE:
-							case IRON_PLATE:
-							case GOLD_PLATE:
+							case LEGACY_STONE_PLATE:
+							case LEGACY_IRON_PLATE:
+							case LEGACY_GOLD_PLATE:
 							case LEVER:
 							case TORCH:
-							case REDSTONE_TORCH_ON:
-							case REDSTONE_TORCH_OFF:
+							case LEGACY_REDSTONE_TORCH_ON:
+							case LEGACY_REDSTONE_TORCH_OFF:
 							case PAINTING:
-							case SIGN:
+							case LEGACY_SIGN:
 								return false;
 						}
 					}

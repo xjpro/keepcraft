@@ -39,7 +39,7 @@ public class MiningListener {
 				drop = new ItemStack(Material.EMERALD);
 				break;
 			case LAPIS_ORE:
-				drop = new ItemStack(Material.INK_SACK, 1, (byte) 4); // todo is this right?
+				drop = new ItemStack(Material.LEGACY_INK_SACK, 1, (byte) 4); // todo is this right?
 				break;
 			case GOLD_ORE:
 				drop = new ItemStack(Material.GOLD_ORE);
@@ -53,7 +53,7 @@ public class MiningListener {
 			case COAL_ORE:
 				drop = new ItemStack(Material.COAL);
 				break;
-			case QUARTZ_ORE:
+			case LEGACY_QUARTZ_ORE:
 				drop = new ItemStack(Material.QUARTZ);
 				break;
 		}

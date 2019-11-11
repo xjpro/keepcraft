@@ -81,7 +81,7 @@ public class ContainerListener implements Listener {
 		for (Container outputtingContainer : containerService.getOutputtingContainers()) {
 			if (chunk.equals(outputtingContainer.getChunk())) {
 				// Leave this chunk in the game world so the loot chest it contains continues to receive loot
-				event.setCancelled(true);
+//				event.setCancelled(true); // todo doesn't work anymore
 			}
 		}
 	}

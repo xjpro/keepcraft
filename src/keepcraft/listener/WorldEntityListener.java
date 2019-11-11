@@ -28,9 +28,9 @@ public class WorldEntityListener implements Listener {
 			switch (blockType) {
 				// Just stop creatures from activating stone switches
 				case STONE_BUTTON:
-				case STONE_PLATE:
-				case IRON_PLATE:
-				case GOLD_PLATE:
+				case LEGACY_STONE_PLATE:
+				case LEGACY_IRON_PLATE:
+				case LEGACY_GOLD_PLATE:
 				case LEVER:
 					event.setCancelled(true);
 					break;

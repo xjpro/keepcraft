@@ -166,11 +166,11 @@ public class StatsListener implements Listener {
 			} else {
 				damagedUser.getUserStats().arrowStrikes++;
 			}
-		} else if (hitWith == Material.WOOD_SWORD || hitWith == Material.STONE_SWORD || hitWith == Material.IRON_SWORD || hitWith == Material.GOLD_SWORD || hitWith == Material.DIAMOND_SWORD) {
+		} else if (hitWith == Material.LEGACY_WOOD_SWORD || hitWith == Material.STONE_SWORD || hitWith == Material.IRON_SWORD || hitWith == Material.LEGACY_GOLD_SWORD || hitWith == Material.DIAMOND_SWORD) {
 			damagerUser.getUserStats().swordHits++;
 			if (isCritical(damager)) damagerUser.getUserStats().criticalHits++;
 			if (event.getFinalDamage() == 0) damagedUser.getUserStats().meleeBlocks++;
-		} else if (hitWith == Material.WOOD_AXE || hitWith == Material.STONE_AXE || hitWith == Material.IRON_AXE || hitWith == Material.GOLD_AXE || hitWith == Material.DIAMOND_AXE) {
+		} else if (hitWith == Material.LEGACY_WOOD_AXE || hitWith == Material.STONE_AXE || hitWith == Material.IRON_AXE || hitWith == Material.LEGACY_GOLD_AXE || hitWith == Material.DIAMOND_AXE) {
 			damagerUser.getUserStats().axeHits++;
 			if (isCritical(damager)) damagerUser.getUserStats().criticalHits++;
 			if (event.getFinalDamage() == 0) damagedUser.getUserStats().meleeBlocks++;

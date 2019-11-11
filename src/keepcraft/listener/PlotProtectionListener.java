@@ -46,7 +46,7 @@ public class PlotProtectionListener implements Listener {
 		Block block = event.getBlock();
 
 		// Blocks not allowed except by admin placement
-		if (block.getType() == Material.ENCHANTMENT_TABLE) {
+		if (block.getType() == Material.LEGACY_ENCHANTMENT_TABLE) {
 			handleDisallowedBlockPlacement(event);
 			return;
 		}
@@ -54,7 +54,7 @@ public class PlotProtectionListener implements Listener {
 		Plot plot = plotService.getIntersectedPlot(block.getLocation());
 
 		// Allow pistons only in friendly territory
-		if (block.getType() == Material.PISTON_BASE || block.getType() == Material.PISTON_STICKY_BASE) {
+		if (block.getType() == Material.LEGACY_PISTON_BASE || block.getType() == Material.LEGACY_PISTON_STICKY_BASE) {
 			handlePistonPlacement(event, plot, user);
 			return;
 		}
@@ -70,7 +70,7 @@ public class PlotProtectionListener implements Listener {
 			return;
 		}
 		// Allow TNT & Magma (attack blocks) under certain conditions
-		if (blockType == Material.TNT || blockType == Material.MAGMA) {
+		if (blockType == Material.TNT || blockType == Material.LEGACY_MAGMA) {
 			handleAttackBlockPlacement(event, plot, user);
 			return;
 		}
@@ -90,7 +90,7 @@ public class PlotProtectionListener implements Listener {
 
 		Block block = event.getBlock();
 		Material blockType = block.getType();
-		if ((blockType == Material.ENDER_STONE || blockType == Material.END_BRICKS) && !userService.getOnlineUser(player.getName()).isAdmin()) {
+		if ((blockType == Material.LEGACY_ENDER_STONE || blockType == Material.LEGACY_END_BRICKS) && !userService.getOnlineUser(player.getName()).isAdmin()) {
 			// Only admin may remove ender blocks
 			event.setCancelled(true);
 			return;
@@ -98,10 +98,10 @@ public class PlotProtectionListener implements Listener {
 
 		switch (blockType) {
 			// Put materials here that can be broken no matter what
-			case CROPS:
-			case MELON_BLOCK:
+			case LEGACY_CROPS:
+			case LEGACY_MELON_BLOCK:
 			case PUMPKIN:
-			case SUGAR_CANE_BLOCK:
+			case LEGACY_SUGAR_CANE_BLOCK:
 			case TNT:
 			case MELON_STEM:
 			case RED_MUSHROOM:

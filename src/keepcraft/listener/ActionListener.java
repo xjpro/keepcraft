@@ -79,7 +79,7 @@ public class ActionListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
-		if (event.getBlockClicked().getType() == Material.STATIONARY_LAVA) {
+		if (event.getBlockClicked().getType() == Material.LEGACY_STATIONARY_LAVA) {
 			// Don't allow people to scoop lava
 			event.setCancelled(true);
 			return;
@@ -111,7 +111,7 @@ public class ActionListener implements Listener {
 
 	private boolean nearDoor(Block target) {
 		for (BlockFace face : BlockFace.values()) {
-			if (target.getRelative(face).getType().equals(Material.IRON_DOOR_BLOCK)) {
+			if (target.getRelative(face).getType().equals(Material.LEGACY_IRON_DOOR_BLOCK)) {
 				return true;
 			}
 		}
@@ -120,12 +120,12 @@ public class ActionListener implements Listener {
 
 	private boolean isBoat(Material material) {
 		switch (material) {
-			case BOAT:
-			case BOAT_ACACIA:
-			case BOAT_BIRCH:
-			case BOAT_DARK_OAK:
-			case BOAT_JUNGLE:
-			case BOAT_SPRUCE:
+			case LEGACY_BOAT:
+			case LEGACY_BOAT_ACACIA:
+			case LEGACY_BOAT_BIRCH:
+			case LEGACY_BOAT_DARK_OAK:
+			case LEGACY_BOAT_JUNGLE:
+			case LEGACY_BOAT_SPRUCE:
 				return true;
 			default:
 				return false;
@@ -134,10 +134,10 @@ public class ActionListener implements Listener {
 
 	private boolean isPlate(Material material) {
 		switch (material) {
-			case WOOD_PLATE:
-			case STONE_PLATE:
-			case IRON_PLATE:
-			case GOLD_PLATE:
+			case LEGACY_WOOD_PLATE:
+			case LEGACY_STONE_PLATE:
+			case LEGACY_IRON_PLATE:
+			case LEGACY_GOLD_PLATE:
 				return true;
 			default:
 				return false;
