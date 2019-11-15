@@ -35,7 +35,7 @@ public class ActionListener implements Listener {
 
 		// Disable ender pearls
 		if (event.getMaterial().equals(Material.ENDER_PEARL)) {
-			player.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled, pending balance changes");
+			player.sendMessage(ChatService.Failure + "Ender pearl teleporting disabled");
 			event.setCancelled(true);
 		}
 		// Prevent enemy players from creating boats in protected plots
