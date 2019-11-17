@@ -224,7 +224,7 @@ public class CombatListener implements Listener {
 
 			if (random.nextDouble() > 0.80) {
 				// 20% chance to drop their head
-				ItemStack skull = new ItemStack(Material.LEGACY_SKULL_ITEM, 1, (byte) 3);
+				ItemStack skull = new ItemStack(Material.SKELETON_SKULL, 1, (byte) 3);
 				SkullMeta meta = (SkullMeta) skull.getItemMeta();
 				meta.setOwner(player.getName());
 				skull.setItemMeta(meta);

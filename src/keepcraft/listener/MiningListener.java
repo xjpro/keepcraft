@@ -38,9 +38,9 @@ public class MiningListener {
 			case EMERALD_ORE:
 				drop = new ItemStack(Material.EMERALD);
 				break;
-			case LAPIS_ORE:
-				drop = new ItemStack(Material.LEGACY_INK_SACK, 1, (byte) 4); // todo is this right?
-				break;
+//			case LAPIS_ORE:
+//				drop = new ItemStack(Material.LEGACY_INK_SACK, 1, (byte) 4); // todo is this right?
+//				break;
 			case GOLD_ORE:
 				drop = new ItemStack(Material.GOLD_ORE);
 				break;
@@ -53,9 +53,9 @@ public class MiningListener {
 			case COAL_ORE:
 				drop = new ItemStack(Material.COAL);
 				break;
-			case LEGACY_QUARTZ_ORE:
-				drop = new ItemStack(Material.QUARTZ);
-				break;
+//			case LEGACY_QUARTZ_ORE:
+//				drop = new ItemStack(Material.QUARTZ);
+//				break;
 		}
 
 		// If there's no drop the block type doesn't generate bonus drops

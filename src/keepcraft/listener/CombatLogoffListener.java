@@ -36,7 +36,7 @@ public class CombatLogoffListener implements Listener {
 
 		if (!user.isInCombat()) {
 			Block skullBlock = player.getWorld().getBlockAt(player.getLocation());
-			skullBlock.setType(Material.LEGACY_SKULL);
+			skullBlock.setType(Material.SKELETON_SKULL);
 //			skullBlock.setData((byte) 0x1); // todo doesn't work anymore
 			BlockState state = skullBlock.getState();
 
@@ -50,7 +50,7 @@ public class CombatLogoffListener implements Listener {
 			skullBlock.setMetadata("user_logoff", new FixedMetadataValue(Keepcraft.getPlugin(), player.getName()));
 
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Keepcraft.getPlugin(), () -> {
-				if (skullBlock.getType() == Material.LEGACY_SKULL) {
+				if (skullBlock.getType() == Material.SKELETON_SKULL) {
 					skullBlock.setType(Material.AIR);
 					skullBlock.removeMetadata("user_logoff", Keepcraft.getPlugin());
 				}
@@ -60,7 +60,7 @@ public class CombatLogoffListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onBreakPlayerHead(BlockBreakEvent event) {
-		if (event.getBlock().getType() == Material.LEGACY_SKULL && event.getBlock().hasMetadata("user_logoff")) {
+		if (event.getBlock().getType() == Material.SKELETON_SKULL && event.getBlock().hasMetadata("user_logoff")) {
 			event.setCancelled(true);
 			event.getBlock().setType(Material.AIR);
 

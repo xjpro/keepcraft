@@ -79,7 +79,7 @@ public class Armor {
 				case IRON_HELMET:
 					totalArmor += ArmorValue.IronHelm;
 					break;
-				case LEGACY_GOLD_HELMET:
+				case GOLDEN_HELMET:
 					totalArmor += ArmorValue.GoldHelm;
 					break;
 				case DIAMOND_HELMET:
@@ -100,7 +100,7 @@ public class Armor {
 				case IRON_CHESTPLATE:
 					totalArmor += ArmorValue.IronChest;
 					break;
-				case LEGACY_GOLD_CHESTPLATE:
+				case GOLDEN_CHESTPLATE:
 					totalArmor += ArmorValue.GoldChest;
 					break;
 				case DIAMOND_CHESTPLATE:
@@ -121,7 +121,7 @@ public class Armor {
 				case IRON_LEGGINGS:
 					totalArmor += ArmorValue.IronLegs;
 					break;
-				case LEGACY_GOLD_LEGGINGS:
+				case GOLDEN_LEGGINGS:
 					totalArmor += ArmorValue.GoldLegs;
 					break;
 				case DIAMOND_LEGGINGS:
@@ -142,7 +142,7 @@ public class Armor {
 				case IRON_BOOTS:
 					totalArmor += ArmorValue.IronBoots;
 					break;
-				case LEGACY_GOLD_BOOTS:
+				case GOLDEN_BOOTS:
 					totalArmor += ArmorValue.GoldBoots;
 					break;
 				case DIAMOND_BOOTS:

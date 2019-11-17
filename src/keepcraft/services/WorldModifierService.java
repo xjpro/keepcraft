@@ -111,73 +111,73 @@ public class WorldModifierService {
 		int platformBottomY = spawnLocation.getBlockY();
 		int platformTopY = platformBottomY + CENTER_SPAWN_CLEARANCE;
 
-		WorldHelper.inSquare(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, 128, 2, (x, y, z) -> {
-			if (y < platformBottomY || y == platformTopY) {
-				// Make huge cylinder from LEGACY_END_BRICKS to spawn location
-				if (x == center.getX() && z == center.getZ()) {
-					if (y == platformTopY) {
-						// Hole above
-						world.getBlockAt(x, y, z).setType(Material.AIR);
-					} else {
-						// Thread of blocks for the win condition
-						world.getBlockAt(x, y, z).setType(Material.LEGACY_END_BRICKS);
-					}
-				} else {
-					// Not in center, make ender stone
-					world.getBlockAt(x, y, z).setType(Material.LEGACY_END_BRICKS);
-				}
-			} else if (y > platformTopY) {
-				world.getBlockAt(x, y, z).setType(Material.AIR);
-			} else {
-				world.getBlockAt(x, y, z).setType(Material.AIR); // set things to air by default
-				// Build hollow area
-				// North wall
-				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
-				// East wall
-				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 1).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 1).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
-				// South wall
-				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
-				// West wall
-				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 1).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 1).setType(Material.LEGACY_END_BRICKS);
-				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
-
-//				if(y == platformBottomY) {
-//					world.getBlockAt(spawnLocation.getBlockX(), y, spawnLocation.getBlockZ() + 2).setType(Material.WOODEN_DOOR);
-//					world.getBlockAt(spawnLocation.getBlockX(), y, spawnLocation.getBlockZ() - 2).setType(Material.WOODEN_DOOR);
-//					world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ()).setType(Material.WOODEN_DOOR);
-//					world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ()).setType(Material.WOODEN_DOOR);
+//		WorldHelper.inSquare(spawnLocation.getBlockX(), spawnLocation.getBlockZ(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, 128, 2, (x, y, z) -> {
+//			if (y < platformBottomY || y == platformTopY) {
+//				// Make huge cylinder from LEGACY_END_BRICKS to spawn location
+//				if (x == center.getX() && z == center.getZ()) {
+//					if (y == platformTopY) {
+//						// Hole above
+//						world.getBlockAt(x, y, z).setType(Material.AIR);
+//					} else {
+//						// Thread of blocks for the win condition
+//						world.getBlockAt(x, y, z).setType(Material.LEGACY_END_BRICKS);
+//					}
+//				} else {
+//					// Not in center, make ender stone
+//					world.getBlockAt(x, y, z).setType(Material.LEGACY_END_BRICKS);
 //				}
-			}
-		});
+//			} else if (y > platformTopY) {
+//				world.getBlockAt(x, y, z).setType(Material.AIR);
+//			} else {
+//				world.getBlockAt(x, y, z).setType(Material.AIR); // set things to air by default
+//				// Build hollow area
+//				// North wall
+//				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
+//				// East wall
+//				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() + 1).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 1).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
+//				// South wall
+//				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() - 1, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() + 1, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
+//				// West wall
+//				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 2).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() + 1).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 1).setType(Material.LEGACY_END_BRICKS);
+//				world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ() - 2).setType(Material.LEGACY_END_BRICKS);
+//
+////				if(y == platformBottomY) {
+////					world.getBlockAt(spawnLocation.getBlockX(), y, spawnLocation.getBlockZ() + 2).setType(Material.WOODEN_DOOR);
+////					world.getBlockAt(spawnLocation.getBlockX(), y, spawnLocation.getBlockZ() - 2).setType(Material.WOODEN_DOOR);
+////					world.getBlockAt(spawnLocation.getBlockX() + 2, y, spawnLocation.getBlockZ()).setType(Material.WOODEN_DOOR);
+////					world.getBlockAt(spawnLocation.getBlockX() - 2, y, spawnLocation.getBlockZ()).setType(Material.WOODEN_DOOR);
+////				}
+//			}
+//		});
 
 		// Water drops
 		// North
-		world.getBlockAt(spawnLocation.getBlockX() - 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.LEGACY_STATIONARY_WATER);
-		world.getBlockAt(spawnLocation.getBlockX(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.LEGACY_STATIONARY_WATER);
-		world.getBlockAt(spawnLocation.getBlockX() + 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.LEGACY_STATIONARY_WATER);
-		// East
-		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 1).setType(Material.LEGACY_STATIONARY_WATER);
-		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ()).setType(Material.LEGACY_STATIONARY_WATER);
-		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 1).setType(Material.LEGACY_STATIONARY_WATER);
-		// South
-		world.getBlockAt(spawnLocation.getBlockX() - 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.LEGACY_STATIONARY_WATER);
-		world.getBlockAt(spawnLocation.getBlockX(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.LEGACY_STATIONARY_WATER);
-		world.getBlockAt(spawnLocation.getBlockX() + 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.LEGACY_STATIONARY_WATER);
-		// West
-		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 1).setType(Material.LEGACY_STATIONARY_WATER);
-		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ()).setType(Material.LEGACY_STATIONARY_WATER);
-		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 1).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX() - 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX() + 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 3).setType(Material.LEGACY_STATIONARY_WATER);
+//		// East
+//		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 1).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ()).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX() + 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 1).setType(Material.LEGACY_STATIONARY_WATER);
+//		// South
+//		world.getBlockAt(spawnLocation.getBlockX() - 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX(), spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX() + 1, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 3).setType(Material.LEGACY_STATIONARY_WATER);
+//		// West
+//		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() - 1).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ()).setType(Material.LEGACY_STATIONARY_WATER);
+//		world.getBlockAt(spawnLocation.getBlockX() - 3, spawnLocation.getBlockY() - CENTER_SPAWN_HEIGHT, spawnLocation.getBlockZ() + 1).setType(Material.LEGACY_STATIONARY_WATER);
 
 
 		// Create beacon
@@ -224,7 +224,7 @@ public class WorldModifierService {
 
 			int startingWoodStacks = 1;
 			for (int i = 0; i < startingWoodStacks; i++) {
-				inventory.addItem(new ItemStack(Material.LEGACY_LOG, 64));
+//				inventory.addItem(new ItemStack(Material.LEGACY_LOG, 64));
 			}
 		}
 

@@ -54,7 +54,7 @@ public class PlotAttackListener implements Listener {
 			}
 		});
 
-		if (event.getEntity() == null || event.getEntity().getType() == EntityType.PRIMED_TNT) {
+		if (event.getEntity().getType() == EntityType.PRIMED_TNT) {
 			notifyPlayersOfAttack(event.getLocation());
 		}
 	}
@@ -63,7 +63,7 @@ public class PlotAttackListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (event.isCancelled()) return;
 
-		if (event.getBlock().getType() == Material.LEGACY_MAGMA) {
+		if (event.getBlock().getType() == Material.LAVA) {
 			notifyAllUsersInPlot(event.getBlock().getLocation(), (user, distance, direction) -> {
 				if (distance > 10) {
 					chatService.sendAlertMessage(user, "The sound of enemy construction sizzles from the " + direction);
@@ -122,35 +122,6 @@ public class PlotAttackListener implements Listener {
 			e.printStackTrace();
 		} finally {
 			if (connection != null) connection.disconnect();
-		}
-	}
-
-	// Experimental!
-	// Send wolves in the plot to attack players around a given location
-	private void setDefendingAnimalsToCounterAttack(Location location) {
-		Plot plot = plotService.getIntersectedPlot(location);
-		if (plot == null || !plot.isTeamProtected()) return; // Counter attacks only occur in team protected plots
-
-		Collection<Entity> nearbyEntities = Keepcraft.getWorld().getNearbyEntities(location, 25, 25, 25);
-
-		List<LivingEntity> attackers = nearbyEntities
-				.stream()
-				.filter(entity -> entity.getType() == EntityType.PLAYER)
-				.filter(playerEntity -> {
-					Player player = (Player) playerEntity;
-					return !plot.isTeamProtected(userService.getOnlineUser(player.getName()).getTeam());
-				})
-				.map(entity -> (LivingEntity) entity)
-				.collect(Collectors.toList());
-
-		Random random = new Random();
-
-		for (Entity entity : nearbyEntities) {
-			if (entity.getType() == EntityType.WOLF) {
-				Wolf wolf = (Wolf) entity;
-				// todo check who owns the wolf?
-				wolf.setTarget(attackers.get(random.nextInt(attackers.size())));
-			}
 		}
 	}
 }

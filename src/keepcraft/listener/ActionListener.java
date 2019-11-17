@@ -79,7 +79,7 @@ public class ActionListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {
-		if (event.getBlockClicked().getType() == Material.LEGACY_STATIONARY_LAVA) {
+		if (event.getBlockClicked().getType() == Material.LAVA) {
 			// Don't allow people to scoop lava
 			event.setCancelled(true);
 			return;
@@ -111,7 +111,7 @@ public class ActionListener implements Listener {
 
 	private boolean nearDoor(Block target) {
 		for (BlockFace face : BlockFace.values()) {
-			if (target.getRelative(face).getType().equals(Material.LEGACY_IRON_DOOR_BLOCK)) {
+			if (target.getRelative(face).getType().equals(Material.IRON_DOOR)) {
 				return true;
 			}
 		}
@@ -120,12 +120,12 @@ public class ActionListener implements Listener {
 
 	private boolean isBoat(Material material) {
 		switch (material) {
-			case LEGACY_BOAT:
-			case LEGACY_BOAT_ACACIA:
-			case LEGACY_BOAT_BIRCH:
-			case LEGACY_BOAT_DARK_OAK:
-			case LEGACY_BOAT_JUNGLE:
-			case LEGACY_BOAT_SPRUCE:
+			case ACACIA_BOAT:
+			case BIRCH_BOAT:
+			case DARK_OAK_BOAT:
+			case JUNGLE_BOAT:
+			case OAK_BOAT:
+			case SPRUCE_BOAT:
 				return true;
 			default:
 				return false;
@@ -134,10 +134,15 @@ public class ActionListener implements Listener {
 
 	private boolean isPlate(Material material) {
 		switch (material) {
-			case LEGACY_WOOD_PLATE:
-			case LEGACY_STONE_PLATE:
-			case LEGACY_IRON_PLATE:
-			case LEGACY_GOLD_PLATE:
+			case ACACIA_PRESSURE_PLATE:
+			case BIRCH_PRESSURE_PLATE:
+			case DARK_OAK_PRESSURE_PLATE:
+			case HEAVY_WEIGHTED_PRESSURE_PLATE:
+			case JUNGLE_PRESSURE_PLATE:
+			case LIGHT_WEIGHTED_PRESSURE_PLATE:
+			case OAK_PRESSURE_PLATE:
+			case SPRUCE_PRESSURE_PLATE:
+			case STONE_PRESSURE_PLATE:
 				return true;
 			default:
 				return false;

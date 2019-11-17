@@ -267,29 +267,47 @@ public class Plot {
 						} else if (userPrivilege == UserPrivilege.MEMBER_START) {
 							// Special rules for starting members: can interact with basic doors, switches, vehicles
 							switch (interactedWith.getType()) {
-								case LEGACY_ENCHANTMENT_TABLE:
-								case LEGACY_WORKBENCH:
-								case LEGACY_WOODEN_DOOR:
+								case ENCHANTING_TABLE:
+								case CRAFTING_TABLE:
+								case OAK_DOOR:
 								case DARK_OAK_DOOR:
 								case ACACIA_DOOR:
 								case BIRCH_DOOR:
 								case JUNGLE_DOOR:
 								case SPRUCE_DOOR:
-								case LEGACY_TRAP_DOOR:
-								case LEGACY_WOOD_PLATE:
-								case LEGACY_STONE_PLATE:
+								case ACACIA_TRAPDOOR:
+								case BIRCH_TRAPDOOR:
+								case DARK_OAK_TRAPDOOR:
+								case IRON_TRAPDOOR:
+								case JUNGLE_TRAPDOOR:
+								case SPRUCE_TRAPDOOR:
+								case OAK_TRAPDOOR:
+								case ACACIA_PRESSURE_PLATE:
+								case BIRCH_PRESSURE_PLATE:
+								case DARK_OAK_PRESSURE_PLATE:
+								case HEAVY_WEIGHTED_PRESSURE_PLATE:
+								case JUNGLE_PRESSURE_PLATE:
+								case LIGHT_WEIGHTED_PRESSURE_PLATE:
+								case OAK_PRESSURE_PLATE:
+								case SPRUCE_PRESSURE_PLATE:
+								case STONE_PRESSURE_PLATE:
 								case LEVER:
-								case LEGACY_WOOD_BUTTON:
+								case BIRCH_BUTTON:
+								case ACACIA_BUTTON:
+								case DARK_OAK_BUTTON:
+								case JUNGLE_BUTTON:
+								case OAK_BUTTON:
+								case SPRUCE_BUTTON:
 								case STONE_BUTTON:
-								case LEGACY_BOAT:
-								case LEGACY_BOAT_ACACIA:
-								case LEGACY_BOAT_BIRCH:
-								case LEGACY_BOAT_DARK_OAK:
-								case LEGACY_BOAT_JUNGLE:
-								case LEGACY_BOAT_SPRUCE:
+								case BIRCH_BOAT:
+								case ACACIA_BOAT:
+								case DARK_OAK_BOAT:
+								case JUNGLE_BOAT:
+								case OAK_BOAT:
+								case SPRUCE_BOAT:
 								case MINECART:
 								case ENDER_CHEST:
-								case LEGACY_FENCE_GATE:
+								case OAK_FENCE_GATE:
 								case ACACIA_FENCE_GATE:
 								case BIRCH_FENCE_GATE:
 								case DARK_OAK_FENCE_GATE:
@@ -298,7 +316,7 @@ public class Plot {
 									return true;
 								case CHEST:
 									// Opens chest on wood
-									return interactedWith.getRelative(BlockFace.DOWN).getType() == Material.LEGACY_WOOD;
+									return interactedWith.getRelative(BlockFace.DOWN).getType() == Material.OAK_WOOD;
 								default:
 									return false;
 							}
@@ -341,15 +359,25 @@ public class Plot {
 //								return true;
 
 							case STONE_BUTTON:
-							case LEGACY_STONE_PLATE:
-							case LEGACY_IRON_PLATE:
-							case LEGACY_GOLD_PLATE:
+							case HEAVY_WEIGHTED_PRESSURE_PLATE:
+							case STONE_PRESSURE_PLATE:
 							case LEVER:
 							case TORCH:
-							case LEGACY_REDSTONE_TORCH_ON:
-							case LEGACY_REDSTONE_TORCH_OFF:
+							case REDSTONE_TORCH:
+							case REDSTONE_WALL_TORCH:
 							case PAINTING:
-							case LEGACY_SIGN:
+							case ACACIA_SIGN:
+							case ACACIA_WALL_SIGN:
+							case BIRCH_SIGN:
+							case BIRCH_WALL_SIGN:
+							case DARK_OAK_SIGN:
+							case SPRUCE_SIGN:
+							case SPRUCE_WALL_SIGN:
+							case DARK_OAK_WALL_SIGN:
+							case JUNGLE_SIGN:
+							case JUNGLE_WALL_SIGN:
+							case OAK_SIGN:
+							case OAK_WALL_SIGN:
 								return false;
 						}
 					}

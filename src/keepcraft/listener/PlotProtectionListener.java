@@ -46,7 +46,7 @@ public class PlotProtectionListener implements Listener {
 		Block block = event.getBlock();
 
 		// Blocks not allowed except by admin placement
-		if (block.getType() == Material.LEGACY_ENCHANTMENT_TABLE) {
+		if (block.getType() == Material.ENCHANTING_TABLE) {
 			handleDisallowedBlockPlacement(event);
 			return;
 		}
@@ -54,7 +54,7 @@ public class PlotProtectionListener implements Listener {
 		Plot plot = plotService.getIntersectedPlot(block.getLocation());
 
 		// Allow pistons only in friendly territory
-		if (block.getType() == Material.LEGACY_PISTON_BASE || block.getType() == Material.LEGACY_PISTON_STICKY_BASE) {
+		if (block.getType() == Material.PISTON || block.getType() == Material.STICKY_PISTON || block.getType() == Material.MOVING_PISTON) {
 			handlePistonPlacement(event, plot, user);
 			return;
 		}
@@ -70,7 +70,7 @@ public class PlotProtectionListener implements Listener {
 			return;
 		}
 		// Allow TNT & Magma (attack blocks) under certain conditions
-		if (blockType == Material.TNT || blockType == Material.LEGACY_MAGMA) {
+		if (blockType == Material.TNT || blockType == Material.LAVA) {
 			handleAttackBlockPlacement(event, plot, user);
 			return;
 		}
@@ -86,22 +86,21 @@ public class PlotProtectionListener implements Listener {
 		if (event.isCancelled()) return;
 
 		Player player = event.getPlayer();
-		if (player == null) return;
 
 		Block block = event.getBlock();
 		Material blockType = block.getType();
-		if ((blockType == Material.LEGACY_ENDER_STONE || blockType == Material.LEGACY_END_BRICKS) && !userService.getOnlineUser(player.getName()).isAdmin()) {
-			// Only admin may remove ender blocks
-			event.setCancelled(true);
-			return;
-		}
+//		if ((blockType == Material.LEGACY_ENDER_STONE || blockType == Material.LEGACY_END_BRICKS) && !userService.getOnlineUser(player.getName()).isAdmin()) {
+//			// Only admin may remove ender blocks
+//			event.setCancelled(true);
+//			return;
+//		}
 
 		switch (blockType) {
 			// Put materials here that can be broken no matter what
-			case LEGACY_CROPS:
-			case LEGACY_MELON_BLOCK:
+//			case LEGACY_CROPS:
+//			case LEGACY_MELON_BLOCK:
 			case PUMPKIN:
-			case LEGACY_SUGAR_CANE_BLOCK:
+//			case LEGACY_SUGAR_CANE_BLOCK:
 			case TNT:
 			case MELON_STEM:
 			case RED_MUSHROOM:

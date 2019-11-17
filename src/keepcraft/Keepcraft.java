@@ -124,6 +124,14 @@ public class Keepcraft extends JavaPlugin {
 			getCommand(plotCommand).setExecutor(plotCommandListener);
 		}
 
+		// Plot save/load commands
+		CommandListener plotSaveCommandListener = new PlotCommandListener(userService, plotService);
+		String[] plotSaveCommands = {"saveplot", "loadplot"};
+		for (String command : plotSaveCommands) {
+			getCommand(command).setExecutor(plotSaveCommandListener);
+		}
+
+
 		// Container commands
 		CommandListener containerCommandListener = new ContainerCommandListener(userService, plotService, containerService, chatService);
 		String[] containerCommands = {"chest"};

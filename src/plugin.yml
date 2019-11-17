@@ -1,6 +1,7 @@
 name: Keepcraft
 main: keepcraft.Keepcraft
-version: 2
+version: 3
+api-version: 1.13
 commands:
     g:
         description: Send global message to server
@@ -41,6 +42,12 @@ commands:
     chest:
         description: Edit a chest
         usage: /chest
+    saveplot:
+        description: Save a plot
+        usage: /saveplot
+    loadplot:
+        description: Load a plot
+        usage: /loadplot
     dispense:
         description: Dispense all chests
         usage: /dispense

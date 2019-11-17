@@ -33,12 +33,12 @@ public class PlotCommandListener extends CommandListener {
 				if (privilege == UserPrivilege.ADMIN) {
 					Player p = (Player) commandSender;
 					Location location = p.getLocation();
-					String name = "";
+					StringBuilder name = new StringBuilder();
 					for (int i = 1; i < args.length; i++) {
-						name += args[i] + " ";
+						name.append(args[i]).append(" ");
 					}
 
-					plotService.createAdminPlot(new WorldPoint(location), name.trim(), Plot.DEFAULT_RADIUS);
+					plotService.createAdminPlot(new WorldPoint(location), name.toString().trim(), Plot.DEFAULT_RADIUS);
 					commandSender.sendMessage(ChatService.Success + "A new plot has been created");
 					return true;
 				}
@@ -215,12 +215,12 @@ public class PlotCommandListener extends CommandListener {
 			} // Rename plot
 			else if (args[0].equals("name") && args.length > 1) {
 				if (sender.isAdmin() || sender.getName().equals(currentPlot.getCreatorName())) {
-					String name = "";
+					StringBuilder name = new StringBuilder();
 					for (int i = 1; i < args.length; i++) {
-						name += args[i] + " ";
+						name.append(args[i]).append(" ");
 					}
 
-					currentPlot.setName(name.trim());
+					currentPlot.setName(name.toString().trim());
 					plotService.updatePlot(currentPlot);
 					commandSender.sendMessage(ChatService.Success + "Plot renamed to " + currentPlot.getName());
 					return true;
